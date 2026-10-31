@@ -1,0 +1,1836 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Interviewed</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,700..900&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: white pages, purple for actions, stripes and one closing band. Header with role-based nav; content pages stack a page head over boxed sections; the studio stacks question, camera stage and controls. */
+:root {
+  color-scheme: light;
+  --bg: #ffffff;
+  --tint: #f8f5fd;
+  --ink: #1d1236;
+  --muted: #5b5075;
+  --line: #e4daf4;
+  --purple: #6a2fd8;
+  --purple-deep: #4b1fa5;
+  --purple-soft: #efe7fc;
+  --err: #a3156b;
+  --font-display: 'Archivo', 'Arial Narrow', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+img, video { max-width: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 1rem; line-height: 1.55;
+  padding-block: 20px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.shell { max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--purple); outline-offset: 2px; }
+p { margin: 0; }
+
+/* Header */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; }
+.brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-family: var(--font-display); font-stretch: 75%; font-weight: 800; font-size: 1.6rem; text-transform: uppercase; letter-spacing: 0.01em; }
+.rec { width: 14px; height: 14px; border-radius: 50%; background: var(--purple); flex: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .rec { animation: blink 2.4s steps(1, end) infinite; }
+  @keyframes blink { 0%, 70% { opacity: 1; } 71%, 100% { opacity: 0.25; } }
+}
+.mainnav { display: flex; gap: 4px; flex-wrap: wrap; flex: 1 1 auto; min-width: 0; }
+.mainnav a { text-decoration: none; font-weight: 600; padding: 8px 12px; border-radius: 6px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+.mainnav a:hover { background: var(--tint); color: var(--ink); }
+.mainnav a[aria-current="page"] { color: var(--purple-deep); background: var(--purple-soft); }
+.count { background: var(--purple); color: #fff; border-radius: 999px; font-size: 0.75rem; min-width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; padding: 0 6px; }
+.acct, .nav { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.who { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 600; }
+
+/* Avatars */
+.av { width: 36px; height: 36px; border-radius: 50%; background: var(--purple-soft); color: var(--purple-deep); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; object-fit: cover; flex: none; }
+.av.lg { width: 84px; height: 84px; font-size: 1.6rem; }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; background: var(--purple); color: #fff; border: 2px solid var(--purple); border-radius: 6px; padding: 11px 20px; min-height: 46px; }
+.btn:hover { background: var(--purple-deep); border-color: var(--purple-deep); }
+.btn.ghost { background: #fff; color: var(--purple); }
+.btn.ghost:hover { background: var(--purple-soft); border-color: var(--purple); }
+.btn.danger { background: #fff; color: var(--err); border-color: var(--err); }
+.btn.danger:hover { background: #fbeaf3; border-color: var(--err); }
+.btn.small { padding: 6px 13px; min-height: 38px; font-size: 0.93rem; }
+.btn.full { width: 100%; }
+.btn[aria-pressed="true"] { background: var(--purple-soft); color: var(--purple-deep); border-color: var(--purple); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn:disabled:hover { background: var(--purple); border-color: var(--purple); }
+.btn.ghost:disabled:hover { background: #fff; }
+.btn svg { width: 18px; height: 18px; flex: none; }
+
+/* Type */
+.eyebrow { font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+h1, h2 { font-family: var(--font-display); font-stretch: 70%; font-weight: 850; text-transform: uppercase; line-height: 0.95; letter-spacing: -0.005em; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2.6rem, 7vw, 5.2rem); }
+h2 { font-size: clamp(1.7rem, 4.5vw, 2.8rem); }
+h3 { margin: 0; font-size: 1.15rem; line-height: 1.25; }
+h1 em { font-style: normal; color: var(--purple); }
+.sub { color: var(--muted); }
+.meta { color: var(--muted); font-size: 0.92rem; }
+
+/* Home */
+.hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: 48px; align-items: center; }
+.hero-copy { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.lede { font-size: 1.15rem; color: var(--muted); max-width: 34em; }
+.cta-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.slate { background: #fff; border: 2px solid var(--ink); border-radius: 8px; overflow: hidden; min-width: 0; }
+.clapper { height: 30px; border-bottom: 2px solid var(--ink); background: repeating-linear-gradient(-45deg, var(--purple) 0 16px, #fff 16px 32px); }
+.slate-grid { display: grid; grid-template-columns: 1fr 1fr; }
+.slate-cell { padding: 12px 16px; border-bottom: 2px solid var(--ink); min-width: 0; }
+.slate-cell:nth-child(odd) { border-right: 2px solid var(--ink); }
+.slate-cell.last { border-bottom: 0; }
+.slate-cell small { display: block; font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.slate-cell b { font-family: var(--font-display); font-stretch: 75%; font-weight: 800; font-size: 1.35rem; text-transform: uppercase; overflow-wrap: anywhere; }
+.questions { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
+.questions li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 14px; align-items: baseline; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.questions li:last-child { border-bottom: 0; }
+.questions .q { font-family: var(--font-mono); font-weight: 500; color: var(--purple); }
+.questions .t { font-family: var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.slate-foot { display: flex; align-items: center; gap: 10px; padding: 14px 16px; font-size: 0.92rem; color: var(--muted); border-top: 1px solid var(--line); background: var(--tint); }
+.steps-head { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; list-style: none; margin: 0; padding: 0; }
+.step { background: var(--tint); border: 1px solid var(--line); border-radius: 8px; padding: 22px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.step .n { font-family: var(--font-mono); color: var(--purple); font-size: 0.85rem; letter-spacing: 0.1em; }
+.step h3 { font-family: var(--font-display); font-stretch: 75%; font-weight: 800; font-size: 1.5rem; text-transform: uppercase; line-height: 1; }
+.step p { color: var(--muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.closer { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; padding: 28px; border-radius: 8px; background: var(--purple); color: #fff; }
+.closer h2 { font-size: clamp(1.7rem, 4vw, 2.5rem); }
+.closer .btn { background: #fff; color: var(--purple-deep); border-color: #fff; }
+.closer .btn:hover { background: var(--purple-soft); border-color: var(--purple-soft); }
+
+/* Boxes, lists, chips */
+.page { display: flex; flex-direction: column; gap: 28px; min-width: 0; }
+.page-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+.page-head > div { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.page-head h1 { font-size: clamp(2.2rem, 6vw, 3.6rem); overflow-wrap: anywhere; }
+.box { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.box.tint { background: var(--tint); }
+.box.strong { border: 2px solid var(--ink); }
+.sec { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.sec > h2 { font-size: clamp(1.4rem, 3.4vw, 2rem); }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 16px; }
+.acts { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.row { display: flex; gap: 14px; align-items: flex-start; padding: 16px; border: 1px solid var(--line); border-radius: 8px; background: #fff; min-width: 0; flex-wrap: wrap; }
+.row .grow { flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.row .name { font-weight: 700; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { display: inline-flex; align-items: center; font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.04em; padding: 2px 10px; border-radius: 999px; background: var(--purple-soft); color: var(--purple-deep); white-space: nowrap; }
+.chip.solid { background: var(--purple); color: #fff; }
+.chip.muted { background: var(--tint); color: var(--muted); border: 1px solid var(--line); }
+.chip.warn { background: #fbeaf3; color: var(--err); }
+.rounds { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.rounds li { display: flex; gap: 8px 12px; flex-wrap: wrap; align-items: center; font-size: 0.93rem; padding: 8px 10px; background: var(--tint); border-radius: 6px; }
+.rounds a { color: var(--purple-deep); font-weight: 600; }
+.excerpt { color: var(--muted); }
+.empty { border: 2px dashed var(--line); border-radius: 8px; padding: 32px 22px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; background: var(--tint); }
+.empty h3 { font-family: var(--font-display); font-stretch: 75%; font-weight: 800; font-size: 1.5rem; text-transform: uppercase; }
+.empty p { color: var(--muted); max-width: 40em; }
+.notice { font-family: var(--font-mono); font-size: 0.82rem; color: var(--muted); }
+.back { color: var(--purple-deep); font-weight: 600; }
+.pre { white-space: pre-line; }
+
+/* Forms */
+form { display: flex; flex-direction: column; gap: 16px; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; border: 0; padding: 0; margin: 0; }
+.row2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+label, legend, .label { font-weight: 600; font-size: 0.95rem; padding: 0; }
+.opt { font-weight: 400; color: var(--muted); }
+input[type="text"], input[type="email"], input[type="password"], input[type="datetime-local"], select, textarea {
+  font: inherit; font-size: 1rem; color: var(--ink); background: var(--tint); border: 1.5px solid var(--line);
+  border-radius: 6px; padding: 12px 14px; width: 100%; min-height: 48px; }
+textarea { resize: vertical; min-height: 96px; }
+[aria-invalid="true"] { border-color: var(--err) !important; }
+.err { color: var(--err); font-size: 0.9rem; }
+.err:empty { display: none; }
+.hint { font-size: 0.88rem; color: var(--muted); }
+.hint[data-ok="true"] { color: var(--purple-deep); font-weight: 600; }
+.check { display: flex; gap: 10px; align-items: flex-start; font-size: 0.95rem; font-weight: 500; }
+.check input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--purple); flex: none; }
+.pw { position: relative; display: flex; }
+.pw input { padding-right: 76px; }
+.pw button { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font: inherit; font-size: 0.85rem; font-weight: 600; background: none; border: 0; color: var(--purple); cursor: pointer; padding: 8px 10px; border-radius: 4px; }
+.rc-set { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.rc { position: relative; display: block; }
+.rc input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+.rc-box { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; border: 2px solid var(--line); border-radius: 8px; background: #fff; height: 100%; }
+.rc-box b { font-size: 1.05rem; }
+.rc-box small { color: var(--muted); font-size: 0.9rem; font-weight: 400; }
+.rc input:checked + .rc-box { border-color: var(--purple); background: var(--purple-soft); }
+.rc input:focus-visible + .rc-box { outline: 3px solid var(--purple); outline-offset: 2px; }
+.qrow { display: flex; gap: 8px; align-items: center; }
+.qrow input { flex: 1 1 auto; min-width: 0; }
+.qrow .qn { font-family: var(--font-mono); color: var(--purple); font-size: 0.85rem; }
+.qed { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.qed .qrow { width: 100%; }
+.auth { display: grid; grid-template-columns: minmax(0, 520px) minmax(0, 1fr); gap: 56px; align-items: start; }
+.auth h1 { font-size: clamp(2.2rem, 6vw, 3.2rem); }
+.pitch { display: flex; flex-direction: column; gap: 18px; padding-top: 12px; min-width: 0; }
+.pitch ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.pitch li { display: grid; grid-template-columns: 5.5em minmax(0, 1fr); gap: 14px; align-items: baseline; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.pitch .tag { font-family: var(--font-mono); font-size: 0.8rem; color: var(--purple); letter-spacing: 0.08em; text-transform: uppercase; }
+.swap { color: var(--muted); }
+.swap a { color: var(--purple-deep); font-weight: 700; }
+.photo-edit { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+
+/* Video cards, watch, playlists */
+.vcard { background: #fff; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
+.vthumb { aspect-ratio: 16 / 9; background: var(--purple-soft); color: var(--purple); display: flex; align-items: center; justify-content: center; position: relative; text-decoration: none; }
+.vthumb svg { width: 44px; height: 44px; }
+.vthumb .dur { position: absolute; right: 8px; bottom: 8px; background: var(--ink); color: #fff; font-family: var(--font-mono); font-size: 0.75rem; padding: 1px 8px; border-radius: 4px; }
+.vbody { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.vbody h3 { overflow-wrap: anywhere; }
+.vbody h3 a { text-decoration: none; }
+.vbody h3 a:hover { text-decoration: underline; }
+.watch { max-width: 880px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+.vstage { aspect-ratio: 16 / 9; width: 100%; background: var(--ink); border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.vstage video { width: 100%; height: 100%; object-fit: contain; display: block; }
+.vstage .vmissing { color: #e9defb; padding: 24px; text-align: center; }
+.title-line { font-family: var(--font-display); font-stretch: 75%; font-weight: 800; font-size: clamp(1.8rem, 4.5vw, 2.6rem); text-transform: uppercase; line-height: 1; margin: 0; overflow-wrap: anywhere; }
+.byline { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; color: var(--muted); }
+.byline a { color: var(--ink); font-weight: 700; }
+.quote { border-left: 4px solid var(--purple); padding: 4px 0 4px 14px; font-size: 1.1rem; font-weight: 600; }
+.seg { display: inline-flex; border: 2px solid var(--purple); border-radius: 6px; overflow: hidden; }
+.seg button { font: inherit; font-weight: 600; background: #fff; color: var(--purple); border: 0; padding: 7px 14px; min-height: 38px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--purple); color: #fff; }
+.ctl { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.ctl > .label { min-width: 7em; }
+.comment { display: flex; gap: 12px; align-items: flex-start; }
+.comment .body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.comment .who2 { font-weight: 700; }
+.comment .txt { white-space: pre-wrap; overflow-wrap: anywhere; }
+.pl-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+
+/* Studio */
+.studio { max-width: 860px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 22px; }
+.studio-head { display: flex; flex-direction: column; gap: 8px; }
+.studio-head h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); overflow-wrap: anywhere; }
+.qcard { border: 2px solid var(--ink); border-radius: 8px; overflow: hidden; background: #fff; }
+.qcard .clapper { height: 18px; background: repeating-linear-gradient(-45deg, var(--purple) 0 12px, #fff 12px 24px); }
+.qbody { padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 14px; }
+.qmeta { display: flex; gap: 12px; flex-wrap: wrap; font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); align-items: center; }
+.setchip { color: var(--purple-deep); background: var(--purple-soft); padding: 2px 10px; border-radius: 999px; }
+.qtext { font-size: clamp(1.3rem, 3.4vw, 1.85rem); font-weight: 600; line-height: 1.3; text-wrap: pretty; max-width: 34em; }
+.qtools { display: flex; gap: 8px; flex-wrap: wrap; }
+.qsteps { list-style: none; margin: 0; padding: 0; display: flex; gap: 8px; flex-wrap: wrap; }
+.qstep { font: inherit; font-weight: 700; font-family: var(--font-mono); font-size: 0.85rem; background: #fff; color: var(--purple-deep); border: 2px solid var(--line); border-radius: 6px; padding: 6px 12px; cursor: pointer; min-height: 38px; }
+.qstep[aria-current="step"] { border-color: var(--purple); background: var(--purple-soft); }
+.qstep[data-done="true"]::after { content: " done"; color: var(--muted); font-weight: 400; }
+.qstep:disabled { opacity: 0.5; cursor: not-allowed; }
+.stage { position: relative; aspect-ratio: 16 / 9; width: 100%; max-width: 100%; background: var(--ink); border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.stage video { width: 100%; height: 100%; object-fit: cover; display: block; background: var(--ink); }
+.stage video#playback { object-fit: contain; }
+.stage #cam { transform: scaleX(-1); }
+.placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 24px; text-align: center; color: #e9defb; }
+.placeholder svg { width: 44px; height: 44px; }
+.placeholder p { max-width: 24em; }
+.badges { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; justify-content: space-between; gap: 8px; pointer-events: none; }
+.badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.94); color: var(--ink); padding: 4px 12px; border-radius: 999px; font-family: var(--font-mono); font-size: 0.82rem; font-weight: 500; }
+.badge .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--purple); }
+.badge[data-live="false"] .dot { display: none; }
+.badge[data-paused="true"] .dot { display: inline-block; background: var(--muted); }
+.badge.time { font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: no-preference) { .badge[data-live="true"] .dot { animation: blink 1.4s steps(1, end) infinite; } }
+.main-action { display: flex; gap: 10px; flex-wrap: wrap; }
+.controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.controls .btn { width: 100%; padding-inline: 10px; }
+.saveopts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.stage-err { border-left: 4px solid var(--err); padding: 10px 14px; background: #fff; color: var(--err); font-weight: 500; }
+.stage-err:empty { display: none; }
+.review { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; padding: 14px 16px; background: var(--purple-soft); border-radius: 8px; }
+
+/* Toast and dialog */
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: #fff; padding: 12px 18px; border-radius: 8px; max-width: min(92vw, 520px); z-index: 50; font-weight: 600; box-shadow: 0 6px 24px rgba(29,18,54,0.28); }
+.dlg-wrap { position: fixed; inset: 0; background: rgba(29,18,54,0.45); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 40; }
+.dlg { background: #fff; border-radius: 10px; padding: 24px; width: min(100%, 520px); display: flex; flex-direction: column; gap: 14px; border: 2px solid var(--ink); }
+.dlg h3 { font-family: var(--font-display); font-stretch: 75%; font-weight: 800; font-size: 1.6rem; text-transform: uppercase; }
+
+footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 0.9rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 20px; }
+
+@media (max-width: 860px) {
+  .hero, .auth { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+  .steps, .two { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 560px) {
+  .row2, .rc-set, .saveopts { grid-template-columns: minmax(0, 1fr); }
+  .box, .dlg { padding: 16px; }
+  .slate-cell b { font-size: 1.15rem; }
+  .questions li { grid-template-columns: auto minmax(0, 1fr); }
+  .questions .t { grid-column: 2; }
+  .controls .btn { font-size: 0.92rem; gap: 6px; }
+  .controls .btn svg { display: none; }
+  .qbody { padding: 16px; }
+}
+</style>
+
+<div class="shell">
+  <header class="top" id="top"></header>
+
+  <!-- Home -->
+  <main id="view-home" class="shell" hidden>
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow">Video interviews on your own time</span>
+        <h1>Get <em>Interviewed.</em></h1>
+        <p class="lede">Employers post jobs and ask their own questions. Interviewers record their answers on camera whenever it suits them, share them as public or private videos, and move through as many rounds as the employer wants.</p>
+        <div class="cta-row">
+          <a class="btn" href="#signup">Create an account</a>
+          <a class="btn ghost" href="#login">Log in</a>
+        </div>
+      </div>
+      <div class="slate" role="img" aria-label="Example interview card: Product Designer, round 2, take 1 of 3, 90 second limit, with three recorded questions">
+        <div class="clapper"></div>
+        <div class="slate-grid">
+          <div class="slate-cell"><small>Role</small><b>Product Designer</b></div>
+          <div class="slate-cell"><small>Round</small><b>2 of 3</b></div>
+          <div class="slate-cell last"><small>Format</small><b>Pre-recorded</b></div>
+          <div class="slate-cell last"><small>Answer limit</small><b>01:30</b></div>
+        </div>
+        <ul class="questions">
+          <li><span class="q">Q1</span><span>Tell us about a project you shipped and what you would change.</span><span class="t">01:30</span></li>
+          <li><span class="q">Q2</span><span>How do you respond to feedback you disagree with?</span><span class="t">01:30</span></li>
+          <li><span class="q">Q3</span><span>Walk us through one piece from your portfolio.</span><span class="t">03:00</span></li>
+        </ul>
+        <div class="slate-foot"><span class="rec" aria-hidden="true"></span>Example card. Employers write their own questions.</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="steps-head"><span class="eyebrow">How it works</span><h2>Three steps, no scheduling</h2></div>
+      <ol class="steps">
+        <li class="step"><span class="n">STEP 1</span><h3>Employers post a job</h3><p>List as many jobs as you need and write custom questions for each one.</p></li>
+        <li class="step"><span class="n">STEP 2</span><h3>Interviewers show interest</h3><p>Interviewers browse jobs and say they are interested. Employers see the list and send invitations.</p></li>
+        <li class="step"><span class="n">STEP 3</span><h3>Round after round</h3><p>Each round is either a pre-recorded interview or a live one, and a live one can be recorded.</p></li>
+      </ol>
+    </section>
+
+    <section class="two">
+      <div class="box tint">
+        <span class="eyebrow">For interviewers</span>
+        <h3>Record, keep and share your videos</h3>
+        <p class="sub">Record in the studio while you watch yourself, with pause, stop and save, and redo. Videos stay on the site until you download them. Choose public or private, build playlists, and decide who can read comments.</p>
+      </div>
+      <div class="box tint">
+        <span class="eyebrow">For employers</span>
+        <h3>Verified, organised hiring</h3>
+        <p class="sub">Sign up with your business email, post jobs, see who is interested, and invite people to as many rounds as you like. Download or share any video with a link.</p>
+      </div>
+    </section>
+
+    <section class="closer">
+      <h2>Ready to roll?</h2>
+      <a class="btn" href="#signup">Create an account</a>
+    </section>
+  </main>
+
+  <!-- Rendered pages -->
+  <main id="app" tabindex="-1" hidden></main>
+
+  <!-- Recording studio -->
+  <main id="view-studio" class="studio" hidden>
+    <div class="studio-head">
+      <span class="eyebrow" id="st-eyebrow">Recording studio</span>
+      <h1 id="session-title">Session 1</h1>
+    </div>
+
+    <section class="qcard" aria-label="Question for this session">
+      <div class="clapper"></div>
+      <div class="qbody" id="qcard-body" aria-live="polite"></div>
+    </section>
+
+    <section aria-label="Camera and recording" style="display:flex;flex-direction:column;gap:14px">
+      <div class="stage" id="stage">
+        <video id="cam" playsinline muted autoplay hidden></video>
+        <video id="playback" playsinline controls hidden></video>
+        <div class="placeholder" id="stage-ph">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="13" height="12" rx="2.5"/><path d="M15.5 10.5 21 7.5v9l-5.5-3"/></svg>
+          <p>Your camera is off. Turn it on to see yourself before you record.</p>
+        </div>
+        <div class="badges">
+          <span class="badge" id="badge-state" data-live="false" data-paused="false"><span class="dot"></span><span id="badge-state-text">Camera off</span></span>
+          <span class="badge time" id="badge-time">00:00</span>
+        </div>
+      </div>
+
+      <p class="stage-err" id="studio-err" role="alert"></p>
+      <p class="notice" id="live-note" hidden>Live interview room. Two-way live video needs a video-call service, which this prototype does not include, so recording captures your own camera and microphone.</p>
+
+      <div class="main-action">
+        <button class="btn" type="button" id="btn-camera">Turn on camera</button>
+        <button class="btn" type="button" id="btn-start" hidden>Start recording</button>
+        <button class="btn ghost" type="button" id="btn-camoff" hidden>Turn off camera</button>
+        <button class="btn ghost" type="button" id="btn-upload">Upload a video instead</button>
+        <input type="file" id="file-up" accept="video/*" hidden>
+      </div>
+
+      <div class="controls" role="group" aria-label="Recording controls">
+        <button class="btn ghost" type="button" id="btn-pause" disabled>
+          <svg id="ico-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+          <svg id="ico-resume" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" hidden><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>
+          <span id="pause-label">Pause</span>
+        </button>
+        <button class="btn" type="button" id="btn-stop" disabled>
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="5.5" y="5.5" width="13" height="13" rx="2"/></svg>
+          <span>Stop and save</span>
+        </button>
+        <button class="btn ghost" type="button" id="btn-redo" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3.5 4v4.5H8"/></svg>
+          <span id="redo-label">Redo</span>
+        </button>
+      </div>
+
+      <div class="saveopts" id="save-opts" hidden>
+        <div class="field"><label for="v-title">Title <span class="opt">(optional)</span></label><input type="text" id="v-title" maxlength="80"></div>
+        <div class="field" id="vis-field"><label for="v-vis">Who can watch</label>
+          <select id="v-vis"><option value="private">Only employers</option><option value="public">Everyone</option></select>
+        </div>
+      </div>
+
+      <div class="review" id="review-actions" hidden>
+        <span id="review-text">Your answer was saved to the interview.</span>
+        <button class="btn small" type="button" id="btn-next">Next question</button>
+      </div>
+    </section>
+
+    <p class="notice">Recordings are saved in the site. They are not downloaded unless you press Download.</p>
+  </main>
+
+  <footer>
+    <span>Interviewed. Video interviews for interviewers and employers.</span>
+    <span>&copy; 2026 · <a href="#admin-setup">Administrator</a></span>
+  </footer>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<div id="dlg-wrap" class="dlg-wrap" hidden>
+  <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="dlg-title">
+    <h3 id="dlg-title">Share link</h3>
+    <p class="sub" id="dlg-sub"></p>
+    <input type="text" id="dlg-input" readonly aria-label="Shareable link">
+    <p class="notice">Prototype: accounts and videos are stored on this device, so a link opens only in this browser.</p>
+    <div class="acts"><button class="btn" type="button" data-act="dlg-copy">Copy link</button><button class="btn ghost" type="button" data-act="dlg-close">Close</button></div>
+  </div>
+</div>
+<script>
+(function () {
+'use strict';
+
+/* ================= Helpers ================= */
+function $(id) { return document.getElementById(id); }
+window.addEventListener('error', function (e) { try { var t = document.getElementById('toast'); t.textContent = 'Something went wrong: ' + (e.message || 'unknown error'); t.hidden = false; } catch (x) {} });
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+function uid() { return 'x' + Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4); }
+function pad(n) { return (n < 10 ? '0' : '') + n; }
+function byId(arr, id) { for (var i = 0; i < arr.length; i++) if (arr[i].id === id) return arr[i]; return null; }
+function initials(n) {
+  var p = String(n || '?').trim().split(/\s+/);
+  return ((p[0] || '?').charAt(0) + (p.length > 1 ? p[p.length - 1].charAt(0) : '')).toUpperCase();
+}
+function avatar(u, big) {
+  var cls = 'av' + (big ? ' lg' : '');
+  if (u && u.photo) return '<img class="' + cls + '" src="' + esc(u.photo) + '" alt="">';
+  return '<span class="' + cls + '" aria-hidden="true">' + esc(initials(u && u.name)) + '</span>';
+}
+function avatarSvg(name) {
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256"><rect width="256" height="256" fill="#6a2fd8"/><circle cx="128" cy="100" r="46" fill="#efe7fc"/><path d="M36 256c0-56 40-92 92-92s92 36 92 92z" fill="#efe7fc"/><text x="128" y="118" font-family="Arial,sans-serif" font-size="44" font-weight="700" text-anchor="middle" fill="#4b1fa5">' + esc(initials(name)) + '</text></svg>';
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+function fmtDate(ts) { return new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }); }
+function fmtDateTime(s) { var d = new Date(s); return isNaN(d) ? '' : d.toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); }
+function fmtDur(ms) { var s = Math.floor((ms || 0) / 1000); return pad(Math.floor(s / 60)) + ':' + pad(s % 60); }
+function chip(t, cls) { return '<span class="chip' + (cls ? ' ' + cls : '') + '">' + esc(t) + '</span>'; }
+function slug(s) { return String(s || 'video').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 50) || 'video'; }
+function cut(s, n) { s = String(s || ''); return s.length > n ? s.slice(0, n - 1).trim() + '…' : s; }
+function opts(list, sel) { return list.map(function (o) { return '<option' + (o === sel ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join(''); }
+
+var toastTimer = null;
+function toast(msg) {
+  var t = $('toast');
+  t.textContent = msg; t.hidden = false;
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () { t.hidden = true; }, 4000);
+}
+
+/* ================= Storage ================= */
+var KEY = 'interviewed.v1', SKEY = 'interviewed.session', mem = {};
+function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return mem[k] || null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { mem[k] = v; } }
+function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} delete mem[k]; }
+
+function seed() {
+  var now = Date.now(), d = { users: [], jobs: [], invites: [], interests: [], videos: [], playlists: [], comments: [] };
+  d.users.push(
+    { id: 'demoemp', role: 'employer', name: 'Priya Natarajan', email: 'priya@northwind.example', company: 'Northwind Studio', verified: true, demo: true, headline: 'Talent partner at Northwind Studio', location: 'Chicago, IL', about: 'Example employer account for trying out Interviewed.', photo: null, passHash: '', createdAt: now },
+    { id: 'demoemp2', role: 'employer', name: 'Marcus Webb', email: 'marcus@harborpine.example', company: 'Harbor & Pine', verified: true, demo: true, headline: 'Head of Analytics at Harbor & Pine', location: 'Portland, ME', about: 'Example employer account.', photo: null, passHash: '', createdAt: now },
+    { id: 'demoint', role: 'interviewer', name: 'Jordan Rivera', email: 'jordan@example.com', verified: false, demo: true, headline: 'Product designer, six years in fintech', location: 'Brooklyn, NY', about: 'Example interviewer account. I like turning messy workflows into calm interfaces.', photo: null, passHash: '', createdAt: now }
+  );
+  d.jobs.push(
+    { id: 'job1', employerId: 'demoemp', title: 'Product Designer', type: 'Full-time', mode: 'Hybrid', location: 'Chicago, IL', description: 'Own the design of our scheduling tools from first sketch to shipped screen. You will work with two engineers and a product manager.', questions: ['Tell us about a project you shipped and what you would change.', 'How do you respond to feedback you disagree with?', 'Walk us through one piece from your portfolio.'], status: 'open', createdAt: now - 3 * 86400000 },
+    { id: 'job2', employerId: 'demoemp', title: 'Customer Success Lead', type: 'Full-time', mode: 'Remote', location: 'Anywhere in the US', description: 'Lead a small team that helps studios get the most from our product. You will run onboarding calls and write the playbook.', questions: ['Describe a customer you turned around.', 'How do you decide what to automate?'], status: 'open', createdAt: now - 2 * 86400000 },
+    { id: 'job3', employerId: 'demoemp2', title: 'Data Analyst', type: 'Contract', mode: 'On-site', location: 'Portland, ME', description: 'Build weekly reports for our fleet team and answer ad hoc questions from operations.', questions: ['What was the hardest dataset you cleaned?', 'Explain a confusing metric to a non-expert.'], status: 'open', createdAt: now - 86400000 }
+  );
+  d.interests.push({ id: 'int1', jobId: 'job1', interviewerId: 'demoint', createdAt: now - 86400000 });
+  d.invites.push({ id: 'inv1', jobId: 'job1', employerId: 'demoemp', interviewerId: 'demoint', round: 1, kind: 'prerecorded', scheduledAt: '', questions: d.jobs[0].questions.slice(), note: 'Thanks for your interest. Answer each question in about a minute and a half.', status: 'invited', answers: {}, videoIds: [], createdAt: now - 43200000 });
+  return d;
+}
+var db;
+try { db = JSON.parse(lsGet(KEY) || 'null'); } catch (e) { db = null; }
+if (!db || !db.users) { db = seed(); }
+function save() { lsSet(KEY, JSON.stringify(db)); }
+save();
+
+var sessionId = lsGet(SKEY) || '';
+function me() { return sessionId ? byId(db.users, sessionId) : null; }
+function setSession(id) { sessionId = id || ''; if (id) lsSet(SKEY, id); else lsDel(SKEY); }
+
+/* Video files live in IndexedDB so they stay in the site */
+var idb = null, memBlobs = {};
+var idbReady = new Promise(function (res) {
+  try {
+    var rq = indexedDB.open('interviewed', 1);
+    rq.onupgradeneeded = function () { rq.result.createObjectStore('videos'); };
+    rq.onsuccess = function () { idb = rq.result; res(); };
+    rq.onerror = function () { res(); };
+    rq.onblocked = function () { res(); };
+  } catch (e) { res(); }
+});
+function blobPut(id, blob) {
+  return idbReady.then(function () {
+    if (!idb) { memBlobs[id] = blob; return; }
+    return new Promise(function (res) {
+      try {
+        var tx = idb.transaction('videos', 'readwrite');
+        tx.objectStore('videos').put(blob, id);
+        tx.oncomplete = function () { res(); };
+        tx.onerror = function () { memBlobs[id] = blob; res(); };
+      } catch (e) { memBlobs[id] = blob; res(); }
+    });
+  });
+}
+function blobGet(id) {
+  return idbReady.then(function () {
+    if (memBlobs[id]) return memBlobs[id];
+    if (!idb) return null;
+    return new Promise(function (res) {
+      try {
+        var rq = idb.transaction('videos', 'readonly').objectStore('videos').get(id);
+        rq.onsuccess = function () { res(rq.result || null); };
+        rq.onerror = function () { res(null); };
+      } catch (e) { res(null); }
+    });
+  });
+}
+function blobDel(id) {
+  delete memBlobs[id];
+  return idbReady.then(function () {
+    if (!idb) return;
+    try { idb.transaction('videos', 'readwrite').objectStore('videos').delete(id); } catch (e) {}
+  });
+}
+var urls = {};
+function getUrl(id) {
+  if (urls[id]) return Promise.resolve(urls[id]);
+  return blobGet(id).then(function (b) {
+    if (!b) return null;
+    urls[id] = URL.createObjectURL(b);
+    return urls[id];
+  });
+}
+function attachVideo(el, id) {
+  getUrl(id).then(function (u) {
+    if (!el.isConnected) return;
+    if (!u) { el.parentNode.innerHTML = '<p class="vmissing">This video file is not on this device.</p>'; return; }
+    el.src = u;
+  });
+}
+
+/* Passwords are hashed before they are stored */
+function hashPw(pw) {
+  var text = 'interviewed:' + pw;
+  function simple() { var h = 5381; for (var i = 0; i < text.length; i++) h = ((h << 5) + h + text.charCodeAt(i)) | 0; return 'd' + (h >>> 0).toString(16); }
+  try {
+    if (window.crypto && crypto.subtle && crypto.subtle.digest) {
+      return Promise.resolve(crypto.subtle.digest('SHA-256', new TextEncoder().encode(text))).then(function (b) {
+        return Array.prototype.map.call(new Uint8Array(b), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+      }).catch(function () { return simple(); });
+    }
+  } catch (e) {}
+  return Promise.resolve(simple());
+}
+
+var FREE_MAIL = /^(gmail|googlemail|yahoo|ymail|hotmail|outlook|live|msn|aol|icloud|me|mac|proton|protonmail|pm|gmx|mail|zoho|yandex|comcast|verizon|att|sbcglobal|qq|163|126)\.[a-z.]+$/i;
+function validEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); }
+function isBusinessEmail(v) { var d = String(v).split('@')[1] || ''; return validEmail(v) && !FREE_MAIL.test(d); }
+
+/* ================= Rules ================= */
+function canView(v, u) {
+  if (u && u.role === 'admin') return true;
+  var ow = byId(db.users, v.ownerId);
+  if (ow && ow.suspended) return false;
+  if (v.hidden) return !!u && u.id === v.ownerId;
+  if (v.inviteId) {
+    var inv = byId(db.invites, v.inviteId);
+    if (!u) return false;
+    return u.id === v.ownerId || !!(inv && (inv.employerId === u.id || inv.interviewerId === u.id));
+  }
+  if (v.visibility !== 'private') return true;
+  if (!u) return false;
+  return u.id === v.ownerId || u.role === 'employer';
+}
+function removeVideo(id) {
+  db.videos = db.videos.filter(function (v) { return v.id !== id; });
+  db.playlists.forEach(function (p) { p.videoIds = p.videoIds.filter(function (x) { return x !== id; }); });
+  db.comments = db.comments.filter(function (c) { return c.videoId !== id; });
+  db.invites.forEach(function (i) {
+    i.videoIds = (i.videoIds || []).filter(function (x) { return x !== id; });
+    Object.keys(i.answers || {}).forEach(function (k) { if (i.answers[k] === id) delete i.answers[k]; });
+  });
+  if (urls[id]) { try { URL.revokeObjectURL(urls[id]); } catch (e) {} delete urls[id]; }
+  return blobDel(id);
+}
+function allAnswered(inv) { return inv.questions.length > 0 && inv.questions.every(function (q, i) { return !!inv.answers[i]; }); }
+function userName(id) { var u = byId(db.users, id); return u ? u.name : 'Unknown'; }
+function companyOf(u) { return u ? (u.company || u.name) : ''; }
+function jobMeta(j) { return [j.type, j.mode, j.location].filter(Boolean).join(' · '); }
+
+/* ================= Sharing, downloads, dialog ================= */
+function shareLink(kind, id) { return location.href.split('#')[0] + '#' + kind + '-' + id; }
+var dlgReturn = null;
+function showShare(kind, id) {
+  var link = shareLink(kind, id);
+  $('dlg-sub').textContent = kind === 'list' ? 'Anyone with this link can open the playlist. Private videos stay locked to people who may not watch them.' : 'Anyone with this link can open the video if they are allowed to watch it.';
+  $('dlg-input').value = link;
+  dlgReturn = document.activeElement;
+  $('dlg-wrap').hidden = false;
+  $('dlg-input').focus(); $('dlg-input').select();
+}
+function closeDlg() { $('dlg-wrap').hidden = true; if (dlgReturn && dlgReturn.focus) { try { dlgReturn.focus(); } catch (e) {} } }
+function copyDlg() {
+  var inp = $('dlg-input'); inp.focus(); inp.select();
+  var done = function () { toast('Link copied'); };
+  var fail = function () { toast('Press Ctrl+C or Cmd+C to copy the link.'); };
+  try { navigator.clipboard.writeText(inp.value).then(done, fail); } catch (e) { fail(); }
+}
+function downloadVideo(id) {
+  var v = byId(db.videos, id);
+  if (!v) return;
+  blobGet(id).then(function (blob) {
+    if (!blob) { toast('The video file is not on this device.'); return; }
+    var ext = /mp4/.test(blob.type) ? 'mp4' : 'webm';
+    var name = slug(v.title) + '.' + ext;
+    var cl = window.claude;
+    var viaCap = (cl && cl.use) ? cl.use('downloads') : Promise.resolve(null);
+    viaCap.then(function (d) {
+      if (d) {
+        return d.save({ filename: name, data: blob }).then(function () { toast('Download started'); }, function (e) {
+          toast(e && e.code === 'declined' ? 'Download cancelled.' : 'Downloads are not available here.');
+        });
+      }
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = name; a.style.display = 'none';
+      document.body.appendChild(a); a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+      toast('Download started');
+    }, function () { toast('Downloads are not available here.'); });
+  });
+}
+
+/* Two-press confirmation for destructive buttons */
+function confirmTwice(el, label, fn) {
+  if (el.dataset.armed === '1') { fn(); return; }
+  var old = el.textContent;
+  el.dataset.armed = '1'; el.textContent = label;
+  setTimeout(function () { if (el.isConnected) { el.dataset.armed = ''; el.textContent = old; } }, 3500);
+}
+
+function showErrors(form, errs) {
+  form.querySelectorAll('[data-err]').forEach(function (e) { e.textContent = ''; });
+  form.querySelectorAll('[aria-invalid="true"]').forEach(function (e) { e.setAttribute('aria-invalid', 'false'); });
+  var first = null, keys = Object.keys(errs);
+  keys.forEach(function (k) {
+    var e = form.querySelector('[data-err="' + k + '"]'); if (e) e.textContent = errs[k];
+    var inp = form.elements[k]; if (inp && inp.length && !inp.tagName) inp = inp[0];
+    if (inp && inp.setAttribute) { inp.setAttribute('aria-invalid', 'true'); if (!first) first = inp; }
+  });
+  if (first && first.focus) first.focus();
+  return keys.length > 0;
+}
+
+/* ================= Router, header, events ================= */
+var R = { name: '', arg: '', key: '' };
+var ui = {};
+var pendingInvite = null;
+var acts = {}, forms = {}, changes = {};
+var NEEDS_LOGIN = { setup: 1, jobs: 1, invites: 1, job: 1, studio: 1, live: 1, videos: 1, playlists: 1, explore: 1, person: 1, profile: 1 };
+
+function homeFor(u) { return u && u.role === 'admin' ? 'admin' : 'jobs'; }
+var ADMIN_BLOCKED = { jobs: 1, job: 1, invites: 1, studio: 1, live: 1, videos: 1, playlists: 1, setup: 1, profile: 1 };
+var curHash = location.hash.replace(/^#/, '');
+function go(h) {
+  curHash = h;
+  try { if (location.hash !== '#' + h && !(h === '' && !location.hash)) location.hash = h; } catch (e) {}
+  route();
+}
+function refresh() { route(true); }
+function show(html, after) {
+  var a = $('app'); a.innerHTML = html;
+  if (after) after(a);
+}
+function navKey() {
+  var u = me(), n = R.name;
+  if (n === 'job') return 'jobs';
+  if (n === 'live') return u && u.role === 'interviewer' ? 'invites' : 'jobs';
+  if (n === 'list') return 'playlists';
+  return n;
+}
+function renderHeader() {
+  var u = me(), nav = '';
+  if (u) {
+    var items = u.role === 'admin' ? [['admin', 'Admin'], ['explore', 'Explore']] : u.role === 'employer'
+      ? [['jobs', 'Jobs'], ['studio', 'Studio'], ['videos', 'My videos'], ['playlists', 'Playlists'], ['explore', 'Explore']]
+      : [['jobs', 'Jobs'], ['invites', 'Invitations'], ['studio', 'Studio'], ['videos', 'My videos'], ['playlists', 'Playlists'], ['explore', 'Explore']];
+    var pending = u.role === 'interviewer' ? db.invites.filter(function (i) { return i.interviewerId === u.id && i.status === 'invited'; }).length : 0;
+    var key = navKey();
+    nav = '<nav class="mainnav" aria-label="Main">' + items.map(function (it) {
+      return '<a href="#' + it[0] + '"' + (key === it[0] ? ' aria-current="page"' : '') + '>' + it[1] +
+        (it[0] === 'invites' && pending ? '<span class="count" aria-label="' + pending + ' new">' + pending + '</span>' : '') + '</a>';
+    }).join('') + '</nav>' +
+      '<div class="acct"><a class="who" href="#' + (u.role === 'admin' ? 'admin' : 'profile') + '">' + avatar(u) + '<span>' + esc(u.name.split(' ')[0]) + '</span></a>' +
+      '<button class="btn ghost small" type="button" data-act="signout">Sign out</button></div>';
+  } else {
+    nav = '<div class="acct"><a class="btn ghost small" href="#login">Log in</a><a class="btn small" href="#signup">Sign up</a></div>';
+  }
+  $('top').innerHTML = '<a class="brand" href="#' + (u ? homeFor(u) : '') + '"><span class="rec" aria-hidden="true"></span>Interviewed</a>' + nav;
+}
+
+function route(noScroll) {
+  var h = curHash, i = h.indexOf('-');
+  var name = i < 0 ? h : h.slice(0, i), arg = i < 0 ? '' : h.slice(i + 1);
+  var u = me();
+  if (!name) name = 'home';
+  if (u && u.suspended) { setSession(''); u = null; toast('This account has been suspended by an administrator.'); }
+  if (name === 'admin' && arg !== 'setup') {
+    if (!u) { ui.next = h; go('login'); return; }
+    if (u.role !== 'admin') { go('jobs'); return; }
+  }
+  if (u && u.role === 'admin' && ADMIN_BLOCKED[name]) { go('admin'); return; }
+  if (u && (name === 'home' || name === 'login' || name === 'signup')) { go(homeFor(u)); return; }
+  if (!u && NEEDS_LOGIN[name]) { ui.next = h; if (name !== 'login') { R.name = ''; go('login'); return; } }
+  if (u && name === 'invites' && u.role !== 'interviewer') { go('jobs'); return; }
+  if (u && name === 'job' && arg === 'new' && u.role !== 'employer') { go('jobs'); return; }
+  var key = name + '-' + arg;
+  var wasStudio = R.name === 'studio' || R.name === 'live';
+  if (wasStudio) studioLeave();
+  if (key !== R.key) { var keepNext = ui.next; ui = {}; if (keepNext) ui.next = keepNext; }
+  R.name = name; R.arg = arg; R.key = key;
+
+  $('view-home').hidden = true; $('app').hidden = true; $('view-studio').hidden = true;
+  renderHeader();
+  if (name === 'home') { $('view-home').hidden = false; }
+  else if (name === 'studio' || name === 'live') { $('view-studio').hidden = false; studioEnter(name, arg); }
+  else {
+    $('app').hidden = false;
+    var views = { login: viewLogin, signup: viewSignup, setup: viewSetup, profile: viewProfile, person: viewPerson,
+      jobs: viewJobs, job: viewJob, invites: viewInvites, videos: viewVideos, watch: viewWatch, playlists: viewPlaylists,
+      list: viewList, explore: viewExplore, admin: viewAdmin };
+    (views[name] || viewNotFound)(arg);
+  }
+  if (!noScroll) window.scrollTo(0, 0);
+}
+function viewNotFound() {
+  show('<div class="page"><div class="empty"><h3>Page not found</h3><p>That page does not exist or has moved.</p><a class="btn" href="#">Go home</a></div></div>');
+}
+
+/* Event delegation */
+document.addEventListener('click', function (e) {
+  var el = e.target.closest ? e.target.closest('[data-act]') : null;
+  if (!el || el.disabled) return;
+  var fn = acts[el.dataset.act];
+  if (fn) fn(el, e);
+});
+document.addEventListener('submit', function (e) {
+  var f = e.target.closest ? e.target.closest('form[data-form]') : null;
+  if (!f) return;
+  e.preventDefault();
+  var fn = forms[f.dataset.form];
+  if (fn) fn(f, e);
+});
+document.addEventListener('change', function (e) {
+  var el = e.target.closest ? e.target.closest('[data-change]') : null;
+  if (!el) return;
+  var fn = changes[el.dataset.change];
+  if (fn) fn(el, e);
+});
+/* Sandboxed frames can block the browser's own form submit, so submit buttons and Enter are handled directly */
+document.addEventListener('click', function (e) {
+  var b = e.target.closest ? e.target.closest('button[type="submit"]') : null;
+  if (!b) return;
+  var f = b.closest('form[data-form]'); if (!f) return;
+  e.preventDefault();
+  var fn = forms[f.dataset.form]; if (fn) fn(f, e);
+});
+document.addEventListener('keydown', function (e) {
+  if (e.key !== 'Enter') return;
+  var t = e.target; if (!t || t.tagName !== 'INPUT' || /^(checkbox|radio|file|button|submit)$/.test(t.type)) return;
+  var f = t.closest('form[data-form]'); if (!f) return;
+  e.preventDefault();
+  var fn = forms[f.dataset.form]; if (fn) fn(f, e);
+});
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('dlg-wrap').hidden) closeDlg(); });
+$('dlg-wrap').addEventListener('click', function (e) { if (e.target === $('dlg-wrap')) closeDlg(); });
+window.addEventListener('hashchange', function () {
+  var h = location.hash.replace(/^#/, '');
+  if (h !== curHash) { curHash = h; route(); }
+});
+document.addEventListener('click', function (e) {
+  var a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+  if (!a || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || a.hasAttribute('download')) return;
+  e.preventDefault();
+  var h = a.getAttribute('href').slice(1);
+  if (h !== curHash) go(h);
+});
+
+acts['dlg-close'] = closeDlg;
+acts['dlg-copy'] = copyDlg;
+acts.signout = function () { setSession(''); ui = {}; R.key = ''; go(''); };
+acts.share = function (el) { showShare(el.dataset.kind, el.dataset.id); };
+acts.download = function (el) { downloadVideo(el.dataset.id); };
+acts['pw-toggle'] = function (el) {
+  var inp = $(el.dataset.for), show2 = inp.type === 'password';
+  inp.type = show2 ? 'text' : 'password'; el.textContent = show2 ? 'Hide' : 'Show';
+  el.setAttribute('aria-pressed', show2 ? 'true' : 'false');
+};
+acts['q-add'] = function (el) {
+  var ed = el.closest('.qed'); if (!ed) return;
+  var rows = ed.querySelectorAll('.qrow');
+  if (rows.length >= 10) { toast('You can add up to 10 questions.'); return; }
+  var d = document.createElement('div'); d.className = 'qrow';
+  d.innerHTML = qRowHtml(ed.dataset.name, '');
+  ed.insertBefore(d, el);
+  var inp = d.querySelector('input'); if (inp) inp.focus();
+};
+acts['q-del'] = function (el) { var r = el.closest('.qrow'); if (r) r.remove(); };
+function qRowHtml(name, val) {
+  return '<span class="qn">Q</span><input type="text" name="' + esc(name) + '" value="' + esc(val) + '" maxlength="300" aria-label="Question">' +
+    '<button type="button" class="btn ghost small" data-act="q-del" aria-label="Remove question">Remove</button>';
+}
+function qEditor(name, list) {
+  var rows = (list && list.length ? list : ['']).map(function (q) { return '<div class="qrow">' + qRowHtml(name, q) + '</div>'; }).join('');
+  return '<div class="qed" data-name="' + esc(name) + '">' + rows + '<button type="button" class="btn ghost small" data-act="q-add">Add a question</button></div>';
+}
+function readQs(form, name) {
+  var out = [];
+  form.querySelectorAll('input[name="' + name + '"]').forEach(function (i) { var t = i.value.trim(); if (t) out.push(t); });
+  return out;
+}
+
+/* ================= Log in, sign up, profile ================= */
+function pwField(id, label, auto, extra) {
+  return '<div class="field"><label for="' + id + '">' + label + '</label><div class="pw"><input type="password" id="' + id + '" name="' + id + '" autocomplete="' + auto + '" aria-describedby="' + id + '-hint">' +
+    '<button type="button" data-act="pw-toggle" data-for="' + id + '" aria-pressed="false">Show</button></div>' +
+    (extra || '') + '<p class="err" data-err="' + id + '" id="' + id + '-err" aria-live="polite"></p></div>';
+}
+
+function viewLogin() {
+  show('<div class="auth"><div class="box strong"><h1>Log in</h1><p class="sub">Welcome back.</p>' +
+    '<form data-form="login" novalidate>' +
+    '<div class="field"><label for="email">Email</label><input type="email" id="email" name="email" autocomplete="email" inputmode="email"><p class="err" data-err="email" aria-live="polite"></p></div>' +
+    pwField('password', 'Password', 'current-password', '<span id="password-hint" hidden></span>') +
+    '<button class="btn full" type="submit">Log in</button></form>' +
+    '<p class="swap">New to Interviewed? <a href="#signup">Create an account</a></p>' +
+    '<div class="box tint"><p class="label">Just looking around?</p><p class="sub">Open an example account to try each side without signing up.</p>' +
+    '<div class="acts"><button class="btn ghost small" type="button" data-act="demo" data-id="demoint">Try as an interviewer</button><button class="btn ghost small" type="button" data-act="demo" data-id="demoemp">Try as an employer</button></div></div></div>' +
+    '<aside class="pitch"><span class="eyebrow">Interviewed</span><h2>Your questions. Their answers. Your schedule.</h2><ul>' +
+    '<li><span class="tag">Post</span><span>Employers list jobs and write their own questions.</span></li>' +
+    '<li><span class="tag">Record</span><span>Interviewers answer on camera and keep every video in one place.</span></li>' +
+    '<li><span class="tag">Advance</span><span>Invite people to as many rounds as you need.</span></li></ul></aside></div>');
+}
+acts.demo = function (el) { setSession(el.dataset.id); var n = ui.next; ui = {}; R.key = ''; go(n || homeFor(me())); };
+forms.login = function (f) {
+  var email = f.elements.email.value.trim().toLowerCase(), pw = f.elements.password.value, errs = {};
+  if (!validEmail(email)) errs.email = 'Enter the email you signed up with, like name@company.com.';
+  if (!pw) errs.password = 'Enter your password.';
+  if (showErrors(f, errs)) return;
+  hashPw(pw).then(function (h) {
+    var u = db.users.filter(function (x) { return x.email.toLowerCase() === email; })[0];
+    if (!u || !u.passHash || u.passHash !== h) { showErrors(f, { password: 'That email and password do not match.' }); return; }
+    if (u.suspended) { showErrors(f, { password: 'This account has been suspended by an administrator.' }); return; }
+    setSession(u.id); var n = ui.next; ui = {}; R.key = ''; go(n || homeFor(u));
+  });
+};
+
+function viewSignup() {
+  show('<div class="auth"><div class="box strong"><h1>Sign up</h1><p class="sub">Choose how you will use Interviewed. You can set up your profile next.</p>' +
+    '<form data-form="signup" novalidate>' +
+    '<fieldset class="field"><legend>I am joining as</legend><div class="rc-set">' +
+    '<label class="rc"><input type="radio" name="role" value="interviewer" data-change="role"><span class="rc-box"><b>Interviewer</b><small>Record interviews, answer employer questions and share your videos.</small></span></label>' +
+    '<label class="rc"><input type="radio" name="role" value="employer" data-change="role"><span class="rc-box"><b>Employer</b><small>Post jobs, write questions, invite people to interview rounds.</small></span></label>' +
+    '</div><p class="err" data-err="role" aria-live="polite"></p></fieldset>' +
+    '<div class="field"><label for="name">Full name</label><input type="text" id="name" name="name" autocomplete="name"><p class="err" data-err="name" aria-live="polite"></p></div>' +
+    '<div class="field"><label for="email" id="email-label">Email</label><input type="email" id="email" name="email" autocomplete="email" inputmode="email"><p class="hint" id="email-hint" hidden>Use your business email. It is how we verify you as an employer.</p><p class="err" data-err="email" aria-live="polite"></p></div>' +
+    '<div class="field" id="company-field" hidden><label for="company">Company name</label><input type="text" id="company" name="company" autocomplete="organization" maxlength="80"><p class="err" data-err="company" aria-live="polite"></p></div>' +
+    pwField('password', 'Password', 'new-password', '<p class="hint" id="password-hint">Use at least 8 characters.</p>') +
+    '<div class="field"><label class="check" for="terms"><input type="checkbox" id="terms" name="terms"> <span>I agree to the terms of service and privacy policy.</span></label><p class="err" data-err="terms" aria-live="polite"></p></div>' +
+    '<button class="btn full" type="submit">Create account</button></form>' +
+    '<p class="swap">Already have an account? <a href="#login">Log in</a></p></div>' +
+    '<aside class="pitch"><span class="eyebrow">What you get</span><h2>Video interviews without the scheduling</h2><ul>' +
+    '<li><span class="tag">Interviewers</span><span>Record in the studio, keep videos on the site, choose public or private, build playlists.</span></li>' +
+    '<li><span class="tag">Employers</span><span>Post jobs, see who is interested, invite to as many rounds as you want.</span></li>' +
+    '<li><span class="tag">Profiles</span><span>Import your details from LinkedIn or enter them yourself.</span></li></ul></aside></div>');
+}
+changes.role = function (el) {
+  var emp = el.value === 'employer';
+  $('company-field').hidden = !emp;
+  $('email-hint').hidden = !emp;
+  $('email-label').textContent = emp ? 'Business email' : 'Email';
+};
+forms.signup = function (f) {
+  var role = f.elements.role.value, name = f.elements.name.value.trim(), email = f.elements.email.value.trim().toLowerCase();
+  var company = f.elements.company.value.trim(), pw = f.elements.password.value, errs = {};
+  if (!role) errs.role = 'Choose Interviewer or Employer.';
+  if (!name) errs.name = 'Enter your full name.';
+  if (!validEmail(email)) errs.email = 'Enter a valid email, like name@company.com.';
+  else if (role === 'employer' && !isBusinessEmail(email)) errs.email = 'Employers need a business email, like name@yourcompany.com. Personal addresses such as Gmail cannot be verified.';
+  else if (db.users.some(function (x) { return x.email.toLowerCase() === email; })) errs.email = 'An account with this email already exists. Log in instead.';
+  if (role === 'employer' && !company) errs.company = 'Enter your company name.';
+  if (pw.length < 8) errs.password = 'Your password needs at least 8 characters.';
+  if (!f.elements.terms.checked) errs.terms = 'Accept the terms to create your account.';
+  if (showErrors(f, errs)) return;
+  hashPw(pw).then(function (h) {
+    var u = { id: uid(), role: role, name: name, email: email, company: role === 'employer' ? company : '', verified: role === 'employer', headline: '', location: '', about: '', photo: null, linkedin: false, passHash: h, createdAt: Date.now() };
+    db.users.push(u); save(); setSession(u.id); ui = {}; R.key = '';
+    toast(role === 'employer' ? 'Account created. Your business email is accepted.' : 'Account created.');
+    go('setup');
+  });
+};
+
+/* Profile form shared by setup and profile */
+function draftOf(u) {
+  if (!ui.draft) ui.draft = { name: u.name, company: u.company || '', headline: u.headline || '', location: u.location || '', about: u.about || '', photo: u.photo || null };
+  return ui.draft;
+}
+function photoPrev(d, name) { return avatar({ name: name, photo: d.photo }, true); }
+function profileForm(u, full) {
+  var d = draftOf(u);
+  return '<form data-form="profile" data-full="' + (full ? '1' : '') + '" novalidate>' +
+    (full ? '<div class="row2"><div class="field"><label for="p-name">Full name</label><input type="text" id="p-name" name="name" value="' + esc(d.name) + '" autocomplete="name"><p class="err" data-err="name" aria-live="polite"></p></div>' +
+      (u.role === 'employer' ? '<div class="field"><label for="p-company">Company name</label><input type="text" id="p-company" name="company" value="' + esc(d.company) + '" maxlength="80"><p class="err" data-err="company" aria-live="polite"></p></div>' : '<div></div>') + '</div>' : '') +
+    '<div class="photo-edit"><span id="photo-prev">' + photoPrev(d, d.name || u.name) + '</span>' +
+    '<div class="field"><label for="p-photo">Profile picture</label><input type="file" id="p-photo" accept="image/*" data-change="photo"></div>' +
+    (d.photo ? '<button type="button" class="btn ghost small" data-act="photo-remove">Remove picture</button>' : '') + '</div>' +
+    '<div class="row2"><div class="field"><label for="p-headline">Headline</label><input type="text" id="p-headline" name="headline" value="' + esc(d.headline) + '" maxlength="120" placeholder="' + (u.role === 'employer' ? 'Talent partner at your company' : 'Product designer, six years in fintech') + '"></div>' +
+    '<div class="field"><label for="p-location">Location</label><input type="text" id="p-location" name="location" value="' + esc(d.location) + '" maxlength="80"></div></div>' +
+    '<div class="field"><label for="p-about">About</label><textarea id="p-about" name="about" maxlength="1000">' + esc(d.about) + '</textarea></div>' +
+    '<div class="acts"><button class="btn" type="submit">' + (full ? 'Save profile' : 'Save and continue') + '</button>' +
+    (full ? '' : '<a class="btn ghost" href="#jobs">Skip for now</a>') + '</div></form>';
+}
+function syncDraft(f) {
+  var d = ui.draft || {};
+  ['name', 'company', 'headline', 'location', 'about'].forEach(function (k) { if (f.elements[k]) d[k] = f.elements[k].value; });
+  ui.draft = d;
+}
+function liBox() {
+  return '<div class="box tint"><div class="acts"><button class="btn" type="button" data-act="li-import">Import from LinkedIn</button>' +
+    (ui.linkedin ? chip('Imported from LinkedIn (demo)', 'solid') : '') + '</div>' +
+    '<p class="notice">Demo import. A real LinkedIn connection needs a LinkedIn developer app and a server, so this fills in sample details and a sample picture. Review and edit everything before you save.</p></div>';
+}
+acts['li-import'] = function () {
+  var u = me(), f = document.querySelector('form[data-form="profile"]'); if (f) syncDraft(f);
+  var d = ui.draft || draftOf(u), nm = d.name || u.name;
+  if (u.role === 'employer') {
+    d.headline = 'Talent acquisition lead at ' + (d.company || u.company || 'your company'); d.location = 'Chicago, IL';
+    d.about = 'I lead hiring for a growing team. I care about clear job descriptions, fair interviews and fast replies.';
+  } else {
+    d.headline = 'Product designer, six years in fintech'; d.location = 'Brooklyn, NY';
+    d.about = 'I design calm, clear interfaces for complicated workflows. Currently looking for a product design role on a small team.';
+  }
+  d.photo = avatarSvg(nm); ui.draft = d; ui.linkedin = true; ui.setupMode = 'form';
+  refresh(); toast('Profile details imported. Review them, then save.');
+};
+acts['manual'] = function () { ui.setupMode = 'form'; refresh(); };
+acts['photo-remove'] = function () { var f = document.querySelector('form[data-form="profile"]'); if (f) syncDraft(f); ui.draft.photo = null; refresh(); };
+changes.photo = function (el) {
+  var file = el.files && el.files[0]; if (!file) return;
+  var img = new Image(), url = URL.createObjectURL(file);
+  img.onload = function () {
+    var s = 256 / Math.max(img.width, img.height, 1); if (s > 1) s = 1;
+    var c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    URL.revokeObjectURL(url);
+    var f = document.querySelector('form[data-form="profile"]'); if (f) syncDraft(f);
+    ui.draft.photo = c.toDataURL('image/jpeg', 0.82); refresh();
+  };
+  img.onerror = function () { URL.revokeObjectURL(url); toast('That file is not a picture we can read.'); };
+  img.src = url;
+};
+forms.profile = function (f) {
+  var u = me(), full = f.dataset.full === '1'; syncDraft(f); var d = ui.draft, errs = {};
+  if (full && !d.name.trim()) errs.name = 'Enter your name.';
+  if (full && u.role === 'employer' && !d.company.trim()) errs.company = 'Enter your company name.';
+  if (showErrors(f, errs)) return;
+  if (full) { u.name = d.name.trim(); if (u.role === 'employer') u.company = d.company.trim(); }
+  u.headline = d.headline.trim(); u.location = d.location.trim(); u.about = d.about.trim(); u.photo = d.photo || null;
+  if (ui.linkedin) u.linkedin = true;
+  save(); var wasSetup = !full; ui = {}; R.key = '';
+  toast(wasSetup ? 'Profile saved.' : 'Profile updated.');
+  go(wasSetup ? 'jobs' : 'profile');
+};
+
+function viewSetup() {
+  var u = me(), form = ui.setupMode === 'form';
+  show('<div class="page" style="max-width:760px"><div class="page-head"><div><span class="eyebrow">Step 2 of 2</span><h1>Set up your profile</h1></div></div>' +
+    '<p class="sub">' + (u.role === 'employer' ? 'Employers' : 'Interviewers') + ' can import everything from LinkedIn, including the profile picture, or enter details manually.</p>' +
+    (form ? '' : '<div class="two"><div class="box"><h3>Import from LinkedIn</h3><p class="sub">Fill your headline, location, about and picture in one step.</p><button class="btn" type="button" data-act="li-import">Import from LinkedIn</button><p class="notice">Demo import with sample details.</p></div>' +
+      '<div class="box"><h3>Enter it myself</h3><p class="sub">Type your details and upload a picture.</p><button class="btn ghost" type="button" data-act="manual">Enter manually</button></div></div>' +
+      '<p><a class="back" href="#jobs">Skip for now</a></p>') +
+    (form ? liBox() + '<div class="box">' + profileForm(u, false) + '</div>' : '') + '</div>');
+}
+function viewProfile() {
+  var u = me();
+  show('<div class="page" style="max-width:760px"><div class="page-head"><div><span class="eyebrow">Your account</span><h1>Profile</h1></div>' +
+    '<div class="chips">' + chip(u.role === 'employer' ? 'Employer' : 'Interviewer') + (u.role === 'employer' && u.verified ? chip('Verified business email', 'solid') : '') + (u.linkedin ? chip('LinkedIn (demo)', 'muted') : '') + '</div></div>' +
+    '<p class="sub">Signed in as ' + esc(u.email) + '</p>' + liBox() + '<div class="box">' + profileForm(u, true) + '</div></div>');
+}
+
+function viewPerson(id) {
+  var p = byId(db.users, id), u = me();
+  if (!p) { viewNotFound(); return; }
+  var vids = db.videos.filter(function (v) { return v.ownerId === p.id && !v.inviteId && canView(v, u); }).sort(function (a, b) { return b.createdAt - a.createdAt; });
+  var inv = '';
+  if (u.role === 'employer' && p.role === 'interviewer') {
+    var mine = db.jobs.filter(function (j) { return j.employerId === u.id && j.status === 'open'; });
+    inv = '<div class="box tint"><h3>Invite to a job</h3>' + (mine.length ?
+      '<div class="acts"><select id="pi-job" aria-label="Job" style="width:auto;max-width:100%">' + mine.map(function (j) { return '<option value="' + j.id + '">' + esc(j.title) + '</option>'; }).join('') + '</select>' +
+      '<button class="btn small" type="button" data-act="person-invite" data-id="' + p.id + '">Invite</button></div>' :
+      '<p class="sub">Post a job first, then you can invite interviewers to it.</p><a class="btn small" href="#job-new">Post a job</a>') + '</div>';
+  }
+  var jobs = '';
+  if (p.role === 'employer') {
+    var pj = db.jobs.filter(function (j) { return j.employerId === p.id && j.status === 'open'; });
+    jobs = '<section class="sec"><h2>Open jobs</h2>' + (pj.length ? '<ul class="list">' + pj.map(function (j) { return '<li class="row"><div class="grow"><a class="name" href="#job-' + j.id + '">' + esc(j.title) + '</a><span class="meta">' + esc(jobMeta(j)) + '</span></div></li>'; }).join('') + '</ul>' : '<p class="sub">No open jobs.</p>') + '</section>';
+  }
+  show('<div class="page"><div class="page-head"><div style="flex-direction:row;align-items:center;gap:16px">' + avatar(p, true) + '<div style="display:flex;flex-direction:column;gap:6px;min-width:0"><h1>' + esc(p.name) + '</h1><p class="sub">' + esc(p.headline || '') + '</p>' +
+    '<div class="chips">' + chip(p.role === 'employer' ? 'Employer' : 'Interviewer') + (p.role === 'employer' ? chip(p.company) : '') + (p.verified && p.role === 'employer' ? chip('Verified', 'solid') : '') + (p.location ? chip(p.location, 'muted') : '') + '</div></div></div></div>' +
+    (p.about ? '<p class="pre" style="max-width:46em">' + esc(p.about) + '</p>' : '') + inv + jobs +
+    '<section class="sec"><h2>Videos</h2>' + (vids.length ? '<div class="cards">' + vids.map(function (v) { return videoCard(v, false); }).join('') + '</div>' : '<p class="sub">No videos you can watch yet.</p>') + '</section></div>');
+}
+acts['person-invite'] = function (el) {
+  var jobId = $('pi-job').value; pendingInvite = { jobId: jobId, interviewerId: el.dataset.id }; go('job-' + jobId);
+};
+
+/* ================= Jobs, interest, invitations ================= */
+function isInterested(jobId, uid2) { return db.interests.some(function (i) { return i.jobId === jobId && i.interviewerId === uid2; }); }
+function interestBtn(j, u) {
+  var on = isInterested(j.id, u.id);
+  return '<button class="btn small' + (on ? '' : '') + '" type="button" data-act="interest" data-id="' + j.id + '" aria-pressed="' + (on ? 'true' : 'false') + '"' + (j.status !== 'open' && !on ? ' disabled' : '') + '>' + (on ? 'Interested' : "I'm interested") + '</button>';
+}
+function jobCard(j, u) {
+  var emp = byId(db.users, j.employerId) || {};
+  return '<article class="box"><div><h3><a href="#job-' + j.id + '">' + esc(j.title) + '</a></h3><p class="sub">' + esc(companyOf(emp)) + '</p></div>' +
+    '<div class="chips">' + (emp.verified ? chip('Verified employer', 'solid') : '') + (emp.demo ? chip('Example', 'muted') : '') + (j.status !== 'open' ? chip('Closed', 'warn') : '') + '</div>' +
+    '<p class="meta">' + esc(jobMeta(j)) + '</p><p class="excerpt">' + esc(cut(j.description, 170)) + '</p>' +
+    '<div class="acts">' + interestBtn(j, u) + '<a class="btn ghost small" href="#job-' + j.id + '">Details</a></div></article>';
+}
+
+function viewJobs() {
+  var u = me();
+  if (u.role === 'employer') {
+    var mine = db.jobs.filter(function (j) { return j.employerId === u.id; }).sort(function (a, b) { return b.createdAt - a.createdAt; });
+    show('<div class="page"><div class="page-head"><div><span class="eyebrow">' + esc(u.company) + '</span><h1>Your jobs</h1></div><a class="btn" href="#job-new">Post a job</a></div>' +
+      (mine.length ? '<ul class="list">' + mine.map(function (j) {
+        var n = db.interests.filter(function (i) { return i.jobId === j.id; }).length, m = db.invites.filter(function (i) { return i.jobId === j.id; }).length;
+        return '<li class="row"><div class="grow"><a class="name" href="#job-' + j.id + '">' + esc(j.title) + '</a><span class="meta">' + esc(jobMeta(j)) + '</span>' +
+          '<div class="chips">' + chip(j.status === 'open' ? 'Open' : 'Closed', j.status === 'open' ? 'solid' : 'muted') + chip(n + ' interested') + chip(m + ' invitations', 'muted') + chip(j.questions.length + ' questions', 'muted') + '</div></div>' +
+          '<a class="btn ghost small" href="#job-' + j.id + '">Manage</a></li>';
+      }).join('') + '</ul>' :
+        '<div class="empty"><h3>No jobs yet</h3><p>Post your first job, add your own questions, and interviewers can tell you they are interested.</p><a class="btn" href="#job-new">Post a job</a></div>') + '</div>');
+    return;
+  }
+  var open = db.jobs.filter(function (j) { return j.status === 'open' && !(byId(db.users, j.employerId) || {}).suspended; }).sort(function (a, b) { return b.createdAt - a.createdAt; });
+  show('<div class="page"><div class="page-head"><div><span class="eyebrow">Job board</span><h1>Open jobs</h1></div></div>' +
+    '<p class="sub">Tell an employer you are interested and they can invite you to interview.</p>' +
+    (open.length ? '<div class="cards">' + open.map(function (j) { return jobCard(j, u); }).join('') + '</div>' : '<div class="empty"><h3>No open jobs yet</h3><p>Check back soon.</p></div>') + '</div>');
+}
+acts.interest = function (el) {
+  var u = me(), id = el.dataset.id, was = isInterested(id, u.id);
+  if (was) db.interests = db.interests.filter(function (i) { return !(i.jobId === id && i.interviewerId === u.id); });
+  else db.interests.push({ id: uid(), jobId: id, interviewerId: u.id, createdAt: Date.now() });
+  save(); toast(was ? 'Interest removed.' : 'The employer can now see you are interested.'); refresh();
+};
+
+function jobForm(j) {
+  j = j || { questions: [], type: 'Full-time', mode: 'Hybrid' };
+  return '<form data-form="job" novalidate><input type="hidden" name="id" value="' + esc(j.id || '') + '">' +
+    '<div class="field"><label for="j-title">Job title</label><input type="text" id="j-title" name="title" value="' + esc(j.title || '') + '" maxlength="80"><p class="err" data-err="title" aria-live="polite"></p></div>' +
+    '<div class="row2"><div class="field"><label for="j-type">Type</label><select id="j-type" name="type">' + opts(['Full-time', 'Part-time', 'Contract', 'Internship'], j.type) + '</select></div>' +
+    '<div class="field"><label for="j-mode">Work style</label><select id="j-mode" name="mode">' + opts(['On-site', 'Hybrid', 'Remote'], j.mode) + '</select></div></div>' +
+    '<div class="field"><label for="j-loc">Location</label><input type="text" id="j-loc" name="location" value="' + esc(j.location || '') + '" maxlength="80"></div>' +
+    '<div class="field"><label for="j-desc">Description</label><textarea id="j-desc" name="description" maxlength="2000">' + esc(j.description || '') + '</textarea></div>' +
+    '<div class="field"><span class="label">Your questions for this job</span><span class="hint">Interviewers answer these on camera. Add up to 10.</span>' + qEditor('q', j.questions) + '</div>' +
+    '<div class="acts"><button class="btn" type="submit">' + (j.id ? 'Save changes' : 'Post job') + '</button>' + (j.id ? '' : '<a class="btn ghost" href="#jobs">Cancel</a>') + '</div></form>';
+}
+forms.job = function (f) {
+  var u = me(), id = f.elements.id.value, title = f.elements.title.value.trim(), errs = {};
+  if (!title) errs.title = 'Enter a job title.';
+  if (showErrors(f, errs)) return;
+  var vals = { title: title, type: f.elements.type.value, mode: f.elements.mode.value, location: f.elements.location.value.trim(), description: f.elements.description.value.trim(), questions: readQs(f, 'q') };
+  var j = id ? byId(db.jobs, id) : null;
+  if (j && j.employerId === u.id) { Object.keys(vals).forEach(function (k) { j[k] = vals[k]; }); }
+  else { j = Object.assign({ id: uid(), employerId: u.id, status: 'open', createdAt: Date.now() }, vals); db.jobs.push(j); }
+  save(); toast(id ? 'Job saved.' : 'Job posted.'); go('job-' + j.id);
+};
+
+function viewJob(id) {
+  var u = me();
+  if (id === 'new') {
+    show('<div class="page" style="max-width:760px"><a class="back" href="#jobs">Back to jobs</a><div class="page-head"><div><h1>Post a job</h1></div></div><div class="box">' + jobForm() + '</div></div>');
+    return;
+  }
+  var j = byId(db.jobs, id);
+  if (!j) { viewNotFound(); return; }
+  if (u.role === 'employer') {
+    if (j.employerId !== u.id) { viewNotFound(); return; }
+    if (pendingInvite && pendingInvite.jobId === j.id) { ui.invite = pendingInvite.interviewerId; pendingInvite = null; }
+    viewJobManage(j, u); return;
+  }
+  var emp = byId(db.users, j.employerId) || {};
+  var mine = db.invites.filter(function (i) { return i.jobId === j.id && i.interviewerId === u.id; }).sort(function (a, b) { return a.round - b.round; });
+  show('<div class="page" style="max-width:820px"><a class="back" href="#jobs">Back to jobs</a><div class="page-head"><div><span class="eyebrow">' + esc(companyOf(emp)) + '</span><h1>' + esc(j.title) + '</h1></div>' + interestBtn(j, u) + '</div>' +
+    '<div class="chips">' + (emp.verified ? chip('Verified employer', 'solid') : '') + chip(jobMeta(j), 'muted') + (j.status !== 'open' ? chip('Closed', 'warn') : '') + '</div>' +
+    '<div class="box"><h3>About the job</h3><p class="pre">' + esc(j.description || 'No description yet.') + '</p></div>' +
+    '<p class="sub">The employer has written ' + j.questions.length + ' question' + (j.questions.length === 1 ? '' : 's') + ' for this job. You see them when you are invited.</p>' +
+    (mine.length ? '<section class="sec"><h2>Your interviews</h2><ul class="list">' + mine.map(function (i) { return inviteRow(i, u); }).join('') + '</ul></section>' : '') + '</div>');
+}
+
+function candidateRow(p, j) {
+  var invs = db.invites.filter(function (i) { return i.jobId === j.id && i.interviewerId === p.id; }).sort(function (a, b) { return a.round - b.round; });
+  var next = invs.length ? Math.max.apply(null, invs.map(function (i) { return i.round; })) + 1 : 1;
+  var rounds = invs.map(function (i) {
+    var n = Object.keys(i.answers || {}).length, links = '';
+    if (i.kind === 'prerecorded') {
+      links = '<span>' + n + ' of ' + i.questions.length + ' answered</span>' + Object.keys(i.answers || {}).map(function (k) { return '<a href="#watch-' + i.answers[k] + '">Answer ' + (+k + 1) + '</a>'; }).join('');
+    } else {
+      links = '<span>' + esc(fmtDateTime(i.scheduledAt)) + '</span>' + (i.videoIds || []).map(function (v) { return '<a href="#watch-' + v + '">Recording</a>'; }).join('') +
+        (i.status === 'accepted' || i.status === 'invited' ? '<a href="#live-' + i.id + '">Open live room</a><button type="button" class="btn ghost small" data-act="inv-complete" data-id="' + i.id + '">Mark complete</button>' : '');
+    }
+    return '<li><b>Round ' + i.round + '</b>' + chip(i.kind === 'live' ? 'Live' : 'Pre-recorded', 'muted') + chip(i.status, i.status === 'completed' ? 'solid' : (i.status === 'declined' ? 'warn' : '')) + links + '</li>';
+  }).join('');
+  return '<li class="row">' + avatar(p) + '<div class="grow"><a class="name" href="#person-' + p.id + '">' + esc(p.name) + '</a><span class="meta">' + esc(p.headline || p.email) + '</span>' +
+    (isInterested(j.id, p.id) ? '<div class="chips">' + chip('Interested', 'solid') + '</div>' : '') + (rounds ? '<ul class="rounds">' + rounds + '</ul>' : '') + '</div>' +
+    '<button class="btn small" type="button" data-act="invite-open" data-id="' + p.id + '">Invite to round ' + next + '</button></li>';
+}
+function invitePanel(j, p) {
+  var invs = db.invites.filter(function (i) { return i.jobId === j.id && i.interviewerId === p.id; });
+  var round = invs.length ? Math.max.apply(null, invs.map(function (i) { return i.round; })) + 1 : 1;
+  return '<div class="box strong"><h3>Invite ' + esc(p.name) + ' to round ' + round + '</h3>' +
+    '<form data-form="invite" novalidate><input type="hidden" name="uid" value="' + p.id + '"><input type="hidden" name="job" value="' + j.id + '">' +
+    '<fieldset class="field"><legend>Interview format</legend><div class="rc-set">' +
+    '<label class="rc"><input type="radio" name="kind" value="prerecorded" checked data-change="kind"><span class="rc-box"><b>Pre-recorded</b><small>They record answers to your questions on their own time.</small></span></label>' +
+    '<label class="rc"><input type="radio" name="kind" value="live" data-change="kind"><span class="rc-box"><b>Live interview</b><small>You meet at a set time. The live session can be recorded.</small></span></label></div></fieldset>' +
+    '<div class="field" id="when-field" hidden><label for="when">Date and time</label><input type="datetime-local" id="when" name="when"><p class="err" data-err="when" aria-live="polite"></p></div>' +
+    '<div class="field"><span class="label">Questions for this round</span><span class="hint">Pre-recorded rounds need at least one. For a live round they act as a guide.</span>' + qEditor('iq', j.questions) + '<p class="err" data-err="iq" aria-live="polite"></p></div>' +
+    '<div class="field"><label for="note">Message <span class="opt">(optional)</span></label><textarea id="note" name="note" maxlength="500"></textarea></div>' +
+    '<div class="acts"><button class="btn" type="submit">Send invitation</button><button class="btn ghost" type="button" data-act="invite-cancel">Cancel</button></div></form></div>';
+}
+changes.kind = function (el) { $('when-field').hidden = el.value !== 'live'; };
+acts['invite-open'] = function (el) { ui.invite = el.dataset.id; refresh(); setTimeout(function () { var p = $('invite-anchor'); if (p) p.scrollIntoView({ block: 'center' }); }, 0); };
+acts['invite-cancel'] = function () { ui.invite = ''; refresh(); };
+acts['invite-pick'] = function () { var v = $('pick-int').value; if (!v) { toast('Choose an interviewer first.'); return; } ui.invite = v; refresh(); };
+forms.invite = function (f) {
+  var u = me(), j = byId(db.jobs, f.elements.job.value), p = byId(db.users, f.elements.uid.value), errs = {};
+  var kind = f.elements.kind.value, qs = readQs(f, 'iq'), when = f.elements.when.value;
+  if (kind === 'live' && !when) errs.when = 'Choose a date and time for the live interview.';
+  if (kind === 'prerecorded' && !qs.length) errs.iq = 'Add at least one question for a pre-recorded round.';
+  if (showErrors(f, errs)) return;
+  var invs = db.invites.filter(function (i) { return i.jobId === j.id && i.interviewerId === p.id; });
+  var round = invs.length ? Math.max.apply(null, invs.map(function (i) { return i.round; })) + 1 : 1;
+  db.invites.push({ id: uid(), jobId: j.id, employerId: u.id, interviewerId: p.id, round: round, kind: kind, scheduledAt: kind === 'live' ? when : '', questions: qs, note: f.elements.note.value.trim(), status: 'invited', answers: {}, videoIds: [], createdAt: Date.now() });
+  save(); ui.invite = ''; toast('Round ' + round + ' invitation sent to ' + p.name + '.'); refresh();
+};
+acts['inv-complete'] = function (el) { var i = byId(db.invites, el.dataset.id); if (i) { i.status = 'completed'; save(); toast('Round marked complete.'); refresh(); } };
+
+function viewJobManage(j, u) {
+  var interested = db.interests.filter(function (i) { return i.jobId === j.id; }).map(function (i) { return byId(db.users, i.interviewerId); }).filter(Boolean);
+  var invitedOnly = [];
+  db.invites.forEach(function (i) {
+    var p = byId(db.users, i.interviewerId);
+    if (p && interested.indexOf(p) < 0 && invitedOnly.indexOf(p) < 0) invitedOnly.push(p);
+  });
+  var all = db.users.filter(function (x) { return x.role === 'interviewer' && interested.indexOf(x) < 0 && invitedOnly.indexOf(x) < 0; });
+  var panel = ui.invite && byId(db.users, ui.invite) ? '<div id="invite-anchor">' + invitePanel(j, byId(db.users, ui.invite)) + '</div>' : '';
+  show('<div class="page"><a class="back" href="#jobs">Back to jobs</a>' +
+    '<div class="page-head"><div><span class="eyebrow">' + esc(jobMeta(j)) + '</span><h1>' + esc(j.title) + '</h1></div>' +
+    '<div class="acts">' + chip(j.status === 'open' ? 'Open' : 'Closed', j.status === 'open' ? 'solid' : 'muted') +
+    '<button class="btn ghost small" type="button" data-act="job-toggle" data-id="' + j.id + '">' + (j.status === 'open' ? 'Close job' : 'Reopen job') + '</button>' +
+    '<button class="btn danger small" type="button" data-act="job-delete" data-id="' + j.id + '">Delete job</button></div></div>' + panel +
+    '<section class="sec"><h2>Interested in this role (' + interested.length + ')</h2>' +
+    (interested.length ? '<ul class="list">' + interested.map(function (p) { return candidateRow(p, j); }).join('') + '</ul>' : '<div class="empty"><h3>No one yet</h3><p>Interviewers who tap "I\'m interested" on this job appear here. You can also invite anyone below.</p></div>') + '</section>' +
+    (invitedOnly.length ? '<section class="sec"><h2>Invited without a request (' + invitedOnly.length + ')</h2><ul class="list">' + invitedOnly.map(function (p) { return candidateRow(p, j); }).join('') + '</ul></section>' : '') +
+    '<section class="box tint"><h3>Invite another interviewer</h3>' + (all.length ?
+      '<div class="acts"><select id="pick-int" aria-label="Interviewer" style="width:auto;max-width:100%"><option value="">Choose an interviewer</option>' + all.map(function (p) { return '<option value="' + p.id + '">' + esc(p.name) + (p.headline ? ' – ' + esc(cut(p.headline, 40)) : '') + '</option>'; }).join('') + '</select><button class="btn small" type="button" data-act="invite-pick">Invite</button></div>' :
+      '<p class="sub">Everyone on Interviewed has already been listed for this job.</p>') + '</section>' +
+    '<details class="box"' + (j.questions.length ? '' : ' open') + '><summary><b>Job details and your questions</b></summary><div style="margin-top:16px">' + jobForm(j) + '</div></details></div>');
+}
+acts['job-toggle'] = function (el) { var j = byId(db.jobs, el.dataset.id); j.status = j.status === 'open' ? 'closed' : 'open'; save(); refresh(); };
+acts['job-delete'] = function (el) {
+  confirmTwice(el, 'Click again to delete', function () {
+    var id = el.dataset.id;
+    db.jobs = db.jobs.filter(function (j) { return j.id !== id; });
+    db.interests = db.interests.filter(function (i) { return i.jobId !== id; });
+    db.invites = db.invites.filter(function (i) { return i.jobId !== id; });
+    save(); toast('Job deleted.'); go('jobs');
+  });
+};
+
+/* Interviewer invitations */
+function inviteRow(i, u) {
+  var j = byId(db.jobs, i.jobId) || { title: 'Removed job' }, emp = byId(db.users, i.employerId) || {};
+  var n = Object.keys(i.answers || {}).length, actions = '';
+  if (i.status === 'invited') actions = '<button class="btn small" type="button" data-act="inv-accept" data-id="' + i.id + '">Accept</button><button class="btn ghost small" type="button" data-act="inv-decline" data-id="' + i.id + '">Decline</button>';
+  else if (i.status === 'accepted' && i.kind === 'prerecorded') actions = '<a class="btn small" href="#studio-' + i.id + '">' + (n ? 'Continue answers' : 'Record answers') + '</a>';
+  else if (i.status === 'accepted' && i.kind === 'live') actions = '<a class="btn small" href="#live-' + i.id + '">Join live room</a>';
+  else if (i.status === 'completed') actions = (i.videoIds || []).map(function (v, k) { return '<a class="btn ghost small" href="#watch-' + v + '">Watch ' + (k + 1) + '</a>'; }).join('');
+  return '<li class="row"><div class="grow"><span class="name">' + esc(j.title) + ' at ' + esc(companyOf(emp)) + '</span>' +
+    '<div class="chips">' + chip('Round ' + i.round) + chip(i.kind === 'live' ? 'Live interview' : 'Pre-recorded', 'muted') + chip(i.status, i.status === 'completed' ? 'solid' : (i.status === 'declined' ? 'warn' : '')) + '</div>' +
+    '<span class="meta">' + (i.kind === 'live' ? 'Scheduled for ' + esc(fmtDateTime(i.scheduledAt)) : n + ' of ' + i.questions.length + ' questions answered') + '</span>' +
+    (i.note ? '<p class="excerpt">' + esc(i.note) + '</p>' : '') + '</div><div class="acts">' + actions + '</div></li>';
+}
+function viewInvites() {
+  var u = me(), mine = db.invites.filter(function (i) { return i.interviewerId === u.id; }).sort(function (a, b) { return b.createdAt - a.createdAt; });
+  show('<div class="page"><div class="page-head"><div><span class="eyebrow">Interview rounds</span><h1>Invitations</h1></div></div>' +
+    (mine.length ? '<ul class="list">' + mine.map(function (i) { return inviteRow(i, u); }).join('') + '</ul>' :
+      '<div class="empty"><h3>No invitations yet</h3><p>When an employer invites you to a round, it shows up here. Tell employers you are interested on the job board.</p><a class="btn" href="#jobs">Browse jobs</a></div>') + '</div>');
+}
+acts['inv-accept'] = function (el) { var i = byId(db.invites, el.dataset.id); i.status = 'accepted'; save(); toast('Invitation accepted.'); refresh(); };
+acts['inv-decline'] = function (el) { var i = byId(db.invites, el.dataset.id); i.status = 'declined'; save(); toast('Invitation declined.'); refresh(); };
+
+/* ================= Videos, watch page, comments ================= */
+var PLAY = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>';
+function visChip(v) {
+  if (v.inviteId) return chip('Interview', 'muted');
+  if (v.visibility === 'public') return chip('Public', 'solid');
+  if (v.visibility === 'private') return chip('Only employers', 'muted');
+  return chip('Link only', 'muted');
+}
+function videoCard(v, own) {
+  var o = byId(db.users, v.ownerId) || {};
+  return '<article class="vcard"><a class="vthumb" href="#watch-' + v.id + '" aria-label="Open ' + esc(v.title) + '">' + PLAY + '<span class="dur">' + fmtDur(v.duration) + '</span></a>' +
+    '<div class="vbody"><h3><a href="#watch-' + v.id + '">' + esc(v.title) + '</a></h3>' +
+    '<p class="meta">' + (own ? '' : esc(o.name || '') + ' · ') + esc(fmtDate(v.createdAt)) + '</p><div class="chips">' + visChip(v) + '</div>' +
+    '<div class="acts"><button class="btn ghost small" type="button" data-act="download" data-id="' + v.id + '">Download</button>' +
+    '<button class="btn ghost small" type="button" data-act="share" data-kind="watch" data-id="' + v.id + '">Get link</button>' +
+    (own ? '<button class="btn danger small" type="button" data-act="vid-delete" data-id="' + v.id + '">Delete</button>' : '') + '</div></div></article>';
+}
+function viewVideos() {
+  var u = me(), mine = db.videos.filter(function (v) { return v.ownerId === u.id; }).sort(function (a, b) { return b.createdAt - a.createdAt; });
+  show('<div class="page"><div class="page-head"><div><span class="eyebrow">Saved in the site</span><h1>My videos</h1></div><a class="btn" href="#studio">Record a video</a></div>' +
+    (mine.length ? '<div class="cards">' + mine.map(function (v) { return videoCard(v, true); }).join('') + '</div>' :
+      '<div class="empty"><h3>No videos yet</h3><p>Videos you record are saved here. They are not downloaded unless you press Download.</p><a class="btn" href="#studio">Open the studio</a></div>') + '</div>');
+}
+acts['vid-delete'] = function (el) {
+  confirmTwice(el, 'Click again to delete', function () {
+    removeVideo(el.dataset.id).then(function () { save(); toast('Video deleted.'); if (R.name === 'watch') go('videos'); else refresh(); });
+  });
+};
+function viewExplore() {
+  var u = me(), emp = u.role === 'employer';
+  var vids = db.videos.filter(function (v) {
+    if (v.inviteId) return false;
+    var o = byId(db.users, v.ownerId);
+    if (u.role === 'admin') return true;
+    if (v.hidden || (o && o.suspended)) return false;
+    return v.visibility === 'public' || (emp && v.visibility === 'private' && o && o.role === 'interviewer');
+  }).sort(function (a, b) { return b.createdAt - a.createdAt; });
+  var people = emp ? db.users.filter(function (x) { return x.role === 'interviewer'; }) : [];
+  show('<div class="page"><div class="page-head"><div><span class="eyebrow">' + (emp ? 'All interviewer videos' : 'Public videos') + '</span><h1>Explore</h1></div></div>' +
+    (emp ? '<section class="sec"><h2>Interviewers</h2><ul class="list">' + people.map(function (p) {
+      return '<li class="row">' + avatar(p) + '<div class="grow"><a class="name" href="#person-' + p.id + '">' + esc(p.name) + '</a><span class="meta">' + esc(p.headline || '') + '</span></div><a class="btn ghost small" href="#person-' + p.id + '">View profile</a></li>';
+    }).join('') + '</ul></section>' : '') +
+    '<section class="sec"><h2>Videos</h2>' + (vids.length ? '<div class="cards">' + vids.map(function (v) { return videoCard(v, v.ownerId === u.id); }).join('') + '</div>' :
+      '<div class="empty"><h3>Nothing to watch yet</h3><p>' + (emp ? 'Videos from interviewers appear here.' : 'When interviewers make a video public, it appears here.') + '</p></div>') + '</section></div>');
+}
+
+function viewWatch(id) {
+  var v = byId(db.videos, id), u = me();
+  if (!v) { show('<div class="page"><div class="empty"><h3>Video not found</h3><p>It may have been deleted, or the link was made on another device. Videos in this prototype live in the browser that recorded them.</p><a class="btn" href="#">Go home</a></div></div>'); return; }
+  if (!canView(v, u)) {
+    show('<div class="page"><div class="empty"><h3>This video is private</h3><p>' + (u ? 'Only employers and the owner can watch it.' : 'Log in as an employer to watch it.') + '</p>' +
+      (u ? '<a class="btn" href="#jobs">Back to the site</a>' : '<a class="btn" href="#login">Log in</a>') + '</div></div>');
+    return;
+  }
+  show('<div class="watch"><div class="vstage"><video id="w-video" controls playsinline></video></div><div id="w-meta" class="sec"></div><section id="w-comments" class="sec"></section></div>', function () {
+    attachVideo($('w-video'), v.id); renderWatchMeta(); renderWatchComments();
+  });
+}
+function curVideo() { return byId(db.videos, R.arg); }
+function renderWatchMeta() {
+  var v = curVideo(), u = me(); if (!v) return;
+  var o = byId(db.users, v.ownerId) || {}, own = u && u.id === v.ownerId, pls = u ? db.playlists.filter(function (p) { return p.ownerId === u.id; }) : [];
+  var ownerCtl = '';
+  if (own && !v.inviteId && u.role === 'interviewer') {
+    ownerCtl = '<div class="box tint"><div class="ctl"><span class="label">Who can watch</span><span class="seg" role="group" aria-label="Who can watch">' +
+      '<button type="button" data-act="vis" data-v="private" aria-pressed="' + (v.visibility === 'private') + '">Only employers</button>' +
+      '<button type="button" data-act="vis" data-v="public" aria-pressed="' + (v.visibility === 'public') + '">Everyone</button></span></div>' +
+      '<div class="ctl"><span class="label">Comments</span><span class="seg" role="group" aria-label="Who can read comments">' +
+      '<button type="button" data-act="cmode" data-v="public" aria-pressed="' + (v.commentsMode === 'public') + '">Everyone can read</button>' +
+      '<button type="button" data-act="cmode" data-v="private" aria-pressed="' + (v.commentsMode === 'private') + '">Only me</button></span></div></div>';
+  }
+  $('w-meta').innerHTML = '<h1 class="title-line">' + esc(v.title) + '</h1>' +
+    '<div class="byline">' + avatar(o) + '<a href="#person-' + o.id + '">' + esc(o.name || 'Unknown') + '</a><span>' + esc(fmtDate(v.createdAt)) + '</span><span>' + fmtDur(v.duration) + '</span>' + visChip(v) + '</div>' +
+    (v.question ? '<p class="quote">' + esc(v.question) + '</p>' : '') +
+    '<div class="acts"><button class="btn" type="button" data-act="download" data-id="' + v.id + '">Download</button>' +
+    '<button class="btn ghost" type="button" data-act="share" data-kind="watch" data-id="' + v.id + '">Get shareable link</button>' +
+    (own ? '<button class="btn danger" type="button" data-act="vid-delete" data-id="' + v.id + '">Delete video</button>' : '') + '</div>' +
+    (u ? '<div class="acts">' + (pls.length ? '<select id="w-pl" aria-label="Playlist" style="width:auto;max-width:100%">' + pls.map(function (p) { return '<option value="' + p.id + '">' + esc(p.title) + '</option>'; }).join('') + '</select><button class="btn ghost small" type="button" data-act="pl-add">Add to playlist</button>' :
+      '<span class="sub">Want to organise videos?</span><a class="btn ghost small" href="#playlists">Create a playlist</a>') + '</div>' : '') + ownerCtl;
+}
+acts.vis = function (el) { var v = curVideo(); v.visibility = el.dataset.v; save(); toast(v.visibility === 'public' ? 'This video is now public.' : 'Only employers can watch this video.'); renderWatchMeta(); };
+acts.cmode = function (el) { var v = curVideo(); v.commentsMode = el.dataset.v; save(); toast(v.commentsMode === 'public' ? 'Everyone can read comments.' : 'Only you can read comments.'); renderWatchMeta(); renderWatchComments(); };
+acts['pl-add'] = function () {
+  var p = byId(db.playlists, $('w-pl').value), v = curVideo(); if (!p) return;
+  if (p.videoIds.indexOf(v.id) > -1) { toast('Already in "' + p.title + '".'); return; }
+  p.videoIds.push(v.id); save(); toast('Added to "' + p.title + '".');
+};
+
+function renderWatchComments() {
+  var v = curVideo(), u = me(); if (!v) return;
+  var own = u && u.id === v.ownerId, priv = v.commentsMode === 'private';
+  var all = db.comments.filter(function (c) { return c.videoId === v.id; }).sort(function (a, b) { return a.createdAt - b.createdAt; });
+  var list = priv && !own ? [] : all;
+  var h = '<h2>Comments' + (list.length ? ' (' + list.length + ')' : '') + '</h2>';
+  if (priv && !own) h += '<p class="sub">The owner keeps comments on this video private. You can still leave one and only they will see it.</p>';
+  else if (priv && own) h += '<p class="sub">Comments are private. Only you can read them.</p>';
+  h += list.length ? '<ul class="list">' + list.map(function (c) {
+    var a = c.authorId ? byId(db.users, c.authorId) : null;
+    return '<li class="comment">' + avatar(a || { name: c.name }) + '<div class="body"><span class="who2">' + esc(a ? a.name : c.name) + ' <span class="meta">' + esc(fmtDate(c.createdAt)) + '</span></span><span class="txt">' + esc(c.text) + '</span></div>' +
+      (own || (u && (c.authorId === u.id || u.role === 'admin')) ? '<button class="btn ghost small" type="button" data-act="c-del" data-id="' + c.id + '" aria-label="Delete comment">Delete</button>' : '') + '</li>';
+  }).join('') + '</ul>' : (priv && !own ? '' : '<p class="sub">No comments yet.</p>');
+  h += '<form data-form="comment" novalidate>' + (u ? '' : '<div class="field"><label for="c-name">Your name</label><input type="text" id="c-name" name="cname" maxlength="40" value="' + esc(ui.guest || '') + '"><p class="err" data-err="cname" aria-live="polite"></p></div>') +
+    '<div class="field"><label for="c-text">Add a comment</label><textarea id="c-text" name="text" maxlength="1000" style="min-height:80px"></textarea><p class="err" data-err="text" aria-live="polite"></p></div>' +
+    '<div><button class="btn" type="submit">Post comment</button></div></form>';
+  if (u && u.noComment) h = h.replace(/<form data-form="comment"[\s\S]*<\/form>$/, '<p class="notice">An administrator has turned off commenting for your account.</p>');
+  $('w-comments').innerHTML = h;
+}
+forms.comment = function (f) {
+  var v = curVideo(), u = me();
+  if (u && u.noComment) { toast('Commenting is turned off for your account.'); return; }
+  var text = f.elements.text.value.trim(), errs = {}, name = u ? u.name : (f.elements.cname ? f.elements.cname.value.trim() : '');
+  if (!u && !name) errs.cname = 'Enter your name.';
+  if (!text) errs.text = 'Write a comment first.';
+  if (showErrors(f, errs)) return;
+  if (!u) ui.guest = name;
+  db.comments.push({ id: uid(), videoId: v.id, authorId: u ? u.id : null, name: name, text: text, createdAt: Date.now() });
+  save(); toast('Comment posted.'); renderWatchComments();
+};
+acts['c-del'] = function (el) { db.comments = db.comments.filter(function (c) { return c.id !== el.dataset.id; }); save(); toast('Comment deleted.'); renderWatchComments(); };
+
+/* ================= Playlists ================= */
+function viewPlaylists() {
+  var u = me(), mine = db.playlists.filter(function (p) { return p.ownerId === u.id; }).sort(function (a, b) { return b.createdAt - a.createdAt; });
+  show('<div class="page" style="max-width:820px"><div class="page-head"><div><span class="eyebrow">Organise your videos</span><h1>Playlists</h1></div></div>' +
+    '<form data-form="newlist" class="box tint" novalidate><div class="field"><label for="pl-title">New playlist</label><div class="acts"><input type="text" id="pl-title" name="title" maxlength="60" placeholder="Second-round answers" style="flex:1 1 220px;width:auto"><button class="btn" type="submit">Create</button></div><p class="err" data-err="title" aria-live="polite"></p></div></form>' +
+    (mine.length ? '<ul class="list">' + mine.map(function (p) {
+      return '<li class="row"><div class="grow"><a class="name" href="#list-' + p.id + '">' + esc(p.title) + '</a><span class="meta">' + p.videoIds.length + ' video' + (p.videoIds.length === 1 ? '' : 's') + '</span></div>' +
+        '<div class="acts"><a class="btn ghost small" href="#list-' + p.id + '">Open</a><button class="btn ghost small" type="button" data-act="share" data-kind="list" data-id="' + p.id + '">Get link</button></div></li>';
+    }).join('') + '</ul>' : '<div class="empty"><h3>No playlists yet</h3><p>Create one above, then add videos from any video page or from the playlist itself.</p></div>') + '</div>');
+}
+forms.newlist = function (f) {
+  var t = f.elements.title.value.trim();
+  if (showErrors(f, t ? {} : { title: 'Give the playlist a name.' })) return;
+  var p = { id: uid(), ownerId: me().id, title: t, videoIds: [], createdAt: Date.now() };
+  db.playlists.push(p); save(); toast('Playlist created.'); go('list-' + p.id);
+};
+
+function viewList(id) {
+  var p = byId(db.playlists, id), u = me();
+  if (!p) { show('<div class="page"><div class="empty"><h3>Playlist not found</h3><p>It may have been deleted, or the link was made on another device.</p><a class="btn" href="#">Go home</a></div></div>'); return; }
+  var own = u && u.id === p.ownerId, o = byId(db.users, p.ownerId) || {};
+  var items = p.videoIds.map(function (vid) { return byId(db.videos, vid); }).filter(Boolean);
+  var playable = items.filter(function (v) { return canView(v, u); });
+  if (ui.idx == null || ui.idx >= items.length) ui.idx = Math.max(0, items.indexOf(playable[0]));
+  var cur = items[ui.idx];
+  var addable = own ? db.videos.filter(function (v) { return v.ownerId === u.id && p.videoIds.indexOf(v.id) < 0; }) : [];
+  show('<div class="page" style="max-width:880px"><a class="back" href="#' + (u ? 'playlists' : '') + '">Back</a><div class="page-head"><div><span class="eyebrow">Playlist by ' + esc(o.name || '') + '</span><h1>' + esc(p.title) + '</h1></div>' +
+    '<div class="acts"><button class="btn" type="button" data-act="share" data-kind="list" data-id="' + p.id + '">Get shareable link</button>' +
+    (own ? '<button class="btn danger" type="button" data-act="pl-delete" data-id="' + p.id + '">Delete playlist</button>' : '') + '</div></div>' +
+    (cur && canView(cur, u) ? '<div class="vstage"><video id="pl-video" controls playsinline></video></div><p class="title-line" style="font-size:1.6rem">' + esc(cur.title) + '</p>' : (items.length ? '<div class="empty"><h3>Nothing you can watch here</h3><p>The videos in this playlist are private.</p></div>' : '')) +
+    (items.length ? '<ol class="list">' + items.map(function (v, k) {
+      var ok = canView(v, u), ow = byId(db.users, v.ownerId) || {};
+      return '<li class="row"><div class="grow"><span class="name">' + (k + 1) + '. ' + esc(v.title) + '</span><span class="meta">' + esc(ow.name || '') + ' · ' + fmtDur(v.duration) + '</span><div class="chips">' + (ok ? '' : chip('Private', 'warn')) + (k === ui.idx && ok ? chip('Now playing', 'solid') : '') + '</div></div>' +
+        '<div class="acts">' + (ok ? '<button class="btn small" type="button" data-act="pl-play" data-i="' + k + '">Play</button><a class="btn ghost small" href="#watch-' + v.id + '">Open</a>' : '') +
+        (own ? '<button class="btn ghost small" type="button" data-act="pl-remove" data-id="' + v.id + '">Remove</button>' : '') + '</div></li>';
+    }).join('') + '</ol>' : '<div class="empty"><h3>This playlist is empty</h3><p>' + (own ? 'Add videos below.' : 'No videos yet.') + '</p></div>') +
+    (own ? '<section class="box tint"><h3>Add your videos</h3>' + (addable.length ? '<ul class="list">' + addable.map(function (v) {
+      return '<li class="row" style="align-items:center"><div class="grow"><span class="name">' + esc(v.title) + '</span></div><button class="btn small" type="button" data-act="pl-put" data-id="' + v.id + '">Add</button></li>';
+    }).join('') + '</ul>' : '<p class="sub">All of your videos are already here. Record more in the studio.</p>') + '</section>' : '') + '</div>',
+    function () {
+      var el = $('pl-video'); if (!el || !cur) return;
+      attachVideo(el, cur.id);
+      el.addEventListener('ended', function () {
+        for (var k = ui.idx + 1; k < items.length; k++) if (canView(items[k], u)) { ui.idx = k; refresh(); setTimeout(function () { var e2 = $('pl-video'); if (e2) e2.play().catch(function () {}); }, 150); return; }
+      });
+    });
+}
+acts['pl-play'] = function (el) { ui.idx = +el.dataset.i; refresh(); };
+acts['pl-put'] = function (el) { var p = byId(db.playlists, R.arg); p.videoIds.push(el.dataset.id); save(); toast('Added.'); refresh(); };
+acts['pl-remove'] = function (el) { var p = byId(db.playlists, R.arg); p.videoIds = p.videoIds.filter(function (x) { return x !== el.dataset.id; }); save(); refresh(); };
+acts['pl-delete'] = function (el) {
+  confirmTwice(el, 'Click again to delete', function () { db.playlists = db.playlists.filter(function (p) { return p.id !== el.dataset.id; }); save(); toast('Playlist deleted.'); go('playlists'); });
+};
+
+/* ================= Administrator ================= */
+function adminExists() { return db.users.some(function (x) { return x.role === 'admin'; }); }
+function audit(text) {
+  db.audit = db.audit || [];
+  db.audit.unshift({ id: uid(), ts: Date.now(), by: me().id, text: text });
+  db.audit = db.audit.slice(0, 200);
+}
+
+function viewAdmin(arg) {
+  if (arg === 'setup') { viewAdminSetup(); return; }
+  ui.tab = ui.tab || 'users'; ui.q = ui.q || '';
+  show('<div class="page"><div class="page-head"><div><span class="eyebrow">Administrator</span><h1>Administration</h1></div></div>' +
+    '<p class="notice">Prototype: these controls change the data stored in this browser only. Moderating real visitors needs a server.</p>' +
+    '<div id="ad-stats" class="cards"></div><div id="ad-tabs"></div>' +
+    '<div class="field" id="ad-search"><label for="ad-q">Search</label><input type="text" id="ad-q" value="' + esc(ui.q) + '" placeholder="Name, email or title"></div>' +
+    '<div id="ad-list" class="sec"></div></div>', renderAdminParts);
+}
+document.addEventListener('input', function (e) { if (e.target && e.target.id === 'ad-q') { ui.q = e.target.value; renderAdminParts(); } });
+
+function statBox(label, n) { return '<div class="box tint"><span class="eyebrow">' + label + '</span><b style="font-family:var(--font-display);font-stretch:75%;font-size:2.2rem;line-height:1">' + n + '</b></div>'; }
+function renderAdminParts() {
+  var people = db.users.filter(function (x) { return x.role !== 'admin'; });
+  $('ad-stats').innerHTML = statBox('Accounts', people.length) + statBox('Employers', people.filter(function (x) { return x.role === 'employer'; }).length) +
+    statBox('Interviewers', people.filter(function (x) { return x.role === 'interviewer'; }).length) + statBox('Jobs', db.jobs.length) +
+    statBox('Videos', db.videos.length) + statBox('Comments', db.comments.length) + statBox('Suspended', people.filter(function (x) { return x.suspended; }).length);
+  var tabs = [['users', 'Accounts'], ['videos', 'Videos'], ['comments', 'Comments'], ['jobs', 'Jobs'], ['log', 'Activity']];
+  $('ad-tabs').innerHTML = '<span class="seg" role="group" aria-label="Admin sections" style="flex-wrap:wrap">' + tabs.map(function (t) {
+    return '<button type="button" data-act="ad-tab" data-v="' + t[0] + '" aria-pressed="' + (ui.tab === t[0]) + '">' + t[1] + '</button>';
+  }).join('') + '</span>';
+  $('ad-search').hidden = ui.tab === 'log';
+  var q = (ui.q || '').toLowerCase(), has = function (s) { return !q || String(s || '').toLowerCase().indexOf(q) > -1; };
+  var rows = [], empty = '<p class="sub">Nothing matches.</p>';
+  if (ui.tab === 'users') {
+    rows = people.filter(function (x) { return has(x.name) || has(x.email) || has(x.company); }).map(function (x) {
+      return '<li class="row">' + avatar(x) + '<div class="grow"><a class="name" href="#person-' + x.id + '">' + esc(x.name) + '</a><span class="meta">' + esc(x.email) + (x.company ? ' · ' + esc(x.company) : '') + '</span>' +
+        '<div class="chips">' + chip(x.role === 'employer' ? 'Employer' : 'Interviewer', 'muted') + (x.role === 'employer' ? chip(x.verified ? 'Verified' : 'Not verified', x.verified ? 'solid' : 'warn') : '') +
+        (x.suspended ? chip('Suspended', 'warn') : '') + (x.noComment ? chip('Cannot comment', 'warn') : '') + (x.demo ? chip('Example', 'muted') : '') + '</div></div>' +
+        '<div class="acts"><button class="btn ghost small" type="button" data-act="ad-suspend" data-id="' + x.id + '">' + (x.suspended ? 'Unsuspend' : 'Suspend') + '</button>' +
+        '<button class="btn ghost small" type="button" data-act="ad-nocomment" data-id="' + x.id + '">' + (x.noComment ? 'Allow commenting' : 'Stop commenting') + '</button>' +
+        (x.role === 'employer' ? '<button class="btn ghost small" type="button" data-act="ad-verify" data-id="' + x.id + '">' + (x.verified ? 'Remove verification' : 'Verify') + '</button>' : '') +
+        '<button class="btn danger small" type="button" data-act="ad-user-del" data-id="' + x.id + '">Delete</button></div></li>';
+    });
+  } else if (ui.tab === 'videos') {
+    rows = db.videos.filter(function (v) { return has(v.title) || has(userName(v.ownerId)); }).sort(function (a, b) { return b.createdAt - a.createdAt; }).map(function (v) {
+      return '<li class="row"><div class="grow"><a class="name" href="#watch-' + v.id + '">' + esc(v.title) + '</a><span class="meta">' + esc(userName(v.ownerId)) + ' · ' + esc(fmtDate(v.createdAt)) + '</span>' +
+        '<div class="chips">' + visChip(v) + (v.hidden ? chip('Hidden', 'warn') : '') + '</div></div>' +
+        '<div class="acts"><button class="btn ghost small" type="button" data-act="ad-vid-hide" data-id="' + v.id + '">' + (v.hidden ? 'Unhide' : 'Hide') + '</button>' +
+        '<button class="btn danger small" type="button" data-act="ad-vid-del" data-id="' + v.id + '">Delete</button></div></li>';
+    });
+  } else if (ui.tab === 'comments') {
+    rows = db.comments.filter(function (c) { var a = c.authorId ? userName(c.authorId) : c.name; return has(c.text) || has(a); }).sort(function (a, b) { return b.createdAt - a.createdAt; }).map(function (c) {
+      var v = byId(db.videos, c.videoId) || { title: 'Removed video' }, a = c.authorId ? userName(c.authorId) : c.name + ' (guest)';
+      return '<li class="row"><div class="grow"><span class="name">' + esc(a) + '</span><span class="meta">on ' + esc(v.title) + ' · ' + esc(fmtDate(c.createdAt)) + '</span><p class="excerpt">' + esc(cut(c.text, 240)) + '</p></div>' +
+        '<div class="acts"><button class="btn danger small" type="button" data-act="ad-com-del" data-id="' + c.id + '">Delete</button></div></li>';
+    });
+  } else if (ui.tab === 'jobs') {
+    rows = db.jobs.filter(function (j) { return has(j.title) || has(companyOf(byId(db.users, j.employerId))); }).sort(function (a, b) { return b.createdAt - a.createdAt; }).map(function (j) {
+      return '<li class="row"><div class="grow"><span class="name">' + esc(j.title) + '</span><span class="meta">' + esc(companyOf(byId(db.users, j.employerId))) + ' · ' + esc(jobMeta(j)) + '</span>' +
+        '<div class="chips">' + chip(j.status === 'open' ? 'Open' : 'Closed', j.status === 'open' ? 'solid' : 'muted') + '</div></div>' +
+        '<div class="acts"><button class="btn ghost small" type="button" data-act="ad-job-toggle" data-id="' + j.id + '">' + (j.status === 'open' ? 'Close' : 'Reopen') + '</button>' +
+        '<button class="btn danger small" type="button" data-act="ad-job-del" data-id="' + j.id + '">Delete</button></div></li>';
+    });
+  } else {
+    rows = (db.audit || []).map(function (a) { return '<li class="row"><div class="grow"><span>' + esc(a.text) + '</span><span class="meta">' + esc(userName(a.by)) + ' · ' + esc(new Date(a.ts).toLocaleString()) + '</span></div></li>'; });
+    empty = '<p class="sub">No administrator actions yet.</p>';
+  }
+  $('ad-list').innerHTML = rows.length ? '<ul class="list">' + rows.join('') + '</ul>' : empty;
+}
+acts['ad-tab'] = function (el) { ui.tab = el.dataset.v; renderAdminParts(); };
+function adminDone(text, msg) { audit(text); save(); toast(msg || text); renderAdminParts(); }
+acts['ad-suspend'] = function (el) { var x = byId(db.users, el.dataset.id); x.suspended = !x.suspended; adminDone((x.suspended ? 'Suspended ' : 'Unsuspended ') + x.name); };
+acts['ad-nocomment'] = function (el) { var x = byId(db.users, el.dataset.id); x.noComment = !x.noComment; adminDone((x.noComment ? 'Stopped commenting for ' : 'Allowed commenting for ') + x.name); };
+acts['ad-verify'] = function (el) { var x = byId(db.users, el.dataset.id); x.verified = !x.verified; adminDone((x.verified ? 'Verified ' : 'Removed verification from ') + x.name); };
+acts['ad-user-del'] = function (el) {
+  confirmTwice(el, 'Click again to delete', function () {
+    var id = el.dataset.id, x = byId(db.users, id), name = x ? x.name : 'account';
+    var vids = db.videos.filter(function (v) { return v.ownerId === id; }).map(function (v) { return v.id; });
+    var jobIds = db.jobs.filter(function (j) { return j.employerId === id; }).map(function (j) { return j.id; });
+    Promise.all(vids.map(removeVideo)).then(function () {
+      db.jobs = db.jobs.filter(function (j) { return jobIds.indexOf(j.id) < 0; });
+      db.interests = db.interests.filter(function (i) { return i.interviewerId !== id && jobIds.indexOf(i.jobId) < 0; });
+      db.invites = db.invites.filter(function (i) { return i.interviewerId !== id && i.employerId !== id && jobIds.indexOf(i.jobId) < 0; });
+      db.comments = db.comments.filter(function (c) { return c.authorId !== id; });
+      db.playlists = db.playlists.filter(function (p) { return p.ownerId !== id; });
+      db.users = db.users.filter(function (u2) { return u2.id !== id; });
+      adminDone('Deleted account for ' + name + ' and everything they posted');
+    });
+  });
+};
+acts['ad-vid-hide'] = function (el) { var v = byId(db.videos, el.dataset.id); v.hidden = !v.hidden; adminDone((v.hidden ? 'Hid video ' : 'Unhid video ') + '"' + v.title + '"'); };
+acts['ad-vid-del'] = function (el) {
+  confirmTwice(el, 'Click again to delete', function () {
+    var v = byId(db.videos, el.dataset.id), t = v ? v.title : 'video';
+    removeVideo(el.dataset.id).then(function () { adminDone('Deleted video "' + t + '"'); });
+  });
+};
+acts['ad-com-del'] = function (el) { db.comments = db.comments.filter(function (c) { return c.id !== el.dataset.id; }); adminDone('Deleted a comment'); };
+acts['ad-job-toggle'] = function (el) { var j = byId(db.jobs, el.dataset.id); j.status = j.status === 'open' ? 'closed' : 'open'; adminDone((j.status === 'open' ? 'Reopened job ' : 'Closed job ') + '"' + j.title + '"'); };
+acts['ad-job-del'] = function (el) {
+  confirmTwice(el, 'Click again to delete', function () {
+    var id = el.dataset.id, j = byId(db.jobs, id), t = j ? j.title : 'job';
+    db.jobs = db.jobs.filter(function (x) { return x.id !== id; });
+    db.interests = db.interests.filter(function (i) { return i.jobId !== id; });
+    db.invites = db.invites.filter(function (i) { return i.jobId !== id; });
+    adminDone('Deleted job "' + t + '"');
+  });
+};
+
+function viewAdminSetup() {
+  if (adminExists()) {
+    show('<div class="auth"><div class="box strong"><h1>Administrator</h1><p class="sub">An administrator account already exists in this browser. Log in with it to open the admin area.</p><a class="btn" href="#login">Log in</a></div></div>');
+    return;
+  }
+  show('<div class="auth"><div class="box strong"><h1>Create the administrator</h1><p class="sub">The first administrator account for this site. Choose your own email and a strong password.</p>' +
+    '<form data-form="adminsetup" novalidate>' +
+    '<div class="field"><label for="name">Your name</label><input type="text" id="name" name="name" autocomplete="name"><p class="err" data-err="name" aria-live="polite"></p></div>' +
+    '<div class="field"><label for="email">Email</label><input type="email" id="email" name="email" autocomplete="email" inputmode="email"><p class="err" data-err="email" aria-live="polite"></p></div>' +
+    pwField('password', 'Password', 'new-password', '<p class="hint" id="password-hint">Use at least 10 characters.</p>') +
+    '<button class="btn full" type="submit">Create administrator</button></form></div>' +
+    '<aside class="pitch"><span class="eyebrow">What administrators can do</span><h2>Keep the site safe</h2><ul>' +
+    '<li><span class="tag">Accounts</span><span>Suspend or delete accounts, and verify employers.</span></li>' +
+    '<li><span class="tag">Comments</span><span>Stop an account from commenting and delete any comment.</span></li>' +
+    '<li><span class="tag">Content</span><span>Hide or delete videos and jobs, with a log of every action.</span></li></ul></aside></div>');
+}
+forms.adminsetup = function (f) {
+  var name = f.elements.name.value.trim(), email = f.elements.email.value.trim().toLowerCase(), pw = f.elements.password.value, errs = {};
+  if (adminExists()) { go('admin-setup'); return; }
+  if (!name) errs.name = 'Enter your name.';
+  if (!validEmail(email)) errs.email = 'Enter a valid email.';
+  else if (db.users.some(function (x) { return x.email.toLowerCase() === email; })) errs.email = 'An account with this email already exists.';
+  if (pw.length < 10) errs.password = 'Use at least 10 characters.';
+  if (showErrors(f, errs)) return;
+  hashPw(pw).then(function (h) {
+    var u = { id: uid(), role: 'admin', name: name, email: email, company: '', verified: false, headline: 'Administrator', location: '', about: '', photo: null, passHash: h, createdAt: Date.now() };
+    db.users.push(u); save(); setSession(u.id); ui = {}; R.key = '';
+    toast('Administrator account created.'); go('admin');
+  });
+};
+
+/* ================= Studio ================= */
+var QUESTIONS = [
+  'Given the choice of anyone in the world, whom would you want as a dinner guest?',
+  'Would you like to be famous? In what way?',
+  'Before making a telephone call, do you ever rehearse what you are going to say? Why?',
+  'What would constitute a “perfect” day for you?',
+  'When did you last sing to yourself? To someone else?',
+  'If you were able to live to the age of 90 and retain either the mind or body of a 30-year-old for the last 60 years of your life, which would you want?',
+  'Do you have a secret hunch about how you will die?',
+  'Name three things you and your partner appear to have in common.',
+  'For what in your life do you feel most grateful?',
+  'If you could change anything about the way you were raised, what would it be?',
+  'Take four minutes and tell your partner your life story in as much detail as possible.',
+  'If you could wake up tomorrow having gained any one quality or ability, what would it be?',
+  'If a crystal ball could tell you the truth about yourself, your life, the future, or anything else, what would you want to know?',
+  'Is there something that you’ve dreamed of doing for a long time? Why haven’t you done it?',
+  'What is the greatest accomplishment of your life?',
+  'What do you value most in a friendship?',
+  'What is your most treasured memory?',
+  'What is your most terrible memory?',
+  'If you knew that in one year you would die suddenly, would you change anything about the way you are now living? Why?',
+  'What does friendship mean to you?',
+  'What roles do love and affection play in your life?',
+  'Alternate sharing something you consider a positive characteristic of your partner. Share a total of five items.',
+  'How close and warm is your family? Do you feel your childhood was happier than most other people’s?',
+  'How do you feel about your relationship with your mother?',
+  'Make three true “we” statements each. For instance, “We are both in this room feeling…”',
+  'Complete this sentence: “I wish I had someone with whom I could share…”',
+  'If you were going to become a close friend with your partner, please share what would be important for them to know.',
+  'Tell your partner what you like about them; be very honest this time, saying things that you might not say to someone you’ve just met.',
+  'Share with your partner an embarrassing moment in your life.',
+  'When did you last cry in front of another person? By yourself?',
+  'Tell your partner something that you like about them [already].',
+  'What, if anything, is too serious to be joked about?',
+  'If you were to die this evening with no opportunity to communicate with anyone, what would you most regret not having told someone? Why haven’t you told them yet?',
+  'Your house, containing everything you own, catches fire. After saving your loved ones and pets, you have time to safely make a final dash to save any one item. What would it be? Why?',
+  'Of all the people in your family, whose death would you find most disturbing? Why?',
+  'Share a personal problem and ask your partner’s advice on how they might handle it. Also, ask your partner to reflect back to you how you seem to be feeling about the problem you have chosen.'
+];
+var SETS = ['Set I', 'Set II', 'Set III'];
+
+var S = { state: 'off', stream: null, rec: null, take: null, accMs: 0, startedAt: 0, tick: null, redoArmed: false, redoTimer: null,
+  mode: 'free', invite: null, qi: 0, qSource: 'list', qIndex: -1, bag: [], ownQ: '', sessionNo: 0, reviewVid: null };
+
+function inStudio() { return R.name === 'studio' || R.name === 'live'; }
+function nextQuestion() {
+  if (!S.bag.length) {
+    for (var i = 0; i < QUESTIONS.length; i++) if (i !== S.qIndex) S.bag.push(i);
+    for (var j = S.bag.length - 1; j > 0; j--) { var k = Math.floor(Math.random() * (j + 1)), t = S.bag[j]; S.bag[j] = S.bag[k]; S.bag[k] = t; }
+  }
+  return S.bag.pop();
+}
+function isActive() { return S.state === 'recording' || S.state === 'paused'; }
+function currentQuestion() {
+  if (S.mode === 'invite') return S.invite.questions[S.qi] || '';
+  if (S.mode === 'live') return 'Live interview';
+  return S.qSource === 'own' ? S.ownQ.trim() : QUESTIONS[S.qIndex];
+}
+function showError(m) { $('studio-err').textContent = m || ''; }
+function elapsed() { return S.accMs + (S.state === 'recording' ? performance.now() - S.startedAt : 0); }
+function updateTime() { $('badge-time').textContent = fmtDur(elapsed()); }
+function disarmRedo() { S.redoArmed = false; if (S.redoTimer) { clearTimeout(S.redoTimer); S.redoTimer = null; } $('redo-label').textContent = 'Redo'; }
+
+function firstOpen(inv) {
+  for (var i = 0; i < inv.questions.length; i++) if (!inv.answers[i]) return i;
+  return 0;
+}
+function studioEnter(name, arg) {
+  var u = me(), inv = null;
+  S.mode = 'free'; S.invite = null; S.qi = 0; S.qSource = 'list'; S.ownQ = '';
+  if (name === 'studio' && arg) {
+    inv = byId(db.invites, arg);
+    if (!inv || inv.interviewerId !== u.id || inv.kind !== 'prerecorded' || inv.status !== 'accepted') { toast('That interview is not available.'); go(u.role === 'interviewer' ? 'invites' : 'jobs'); return; }
+    S.mode = 'invite'; S.invite = inv; S.qi = firstOpen(inv);
+  } else if (name === 'live') {
+    inv = byId(db.invites, arg);
+    if (!inv || inv.kind !== 'live' || (inv.interviewerId !== u.id && inv.employerId !== u.id) || inv.status === 'declined') { toast('That live interview is not available.'); go('jobs'); return; }
+    S.mode = 'live'; S.invite = inv;
+  } else { S.sessionNo += 1; S.qIndex = nextQuestion(); }
+  S.state = 'off'; S.take = null; S.reviewVid = null; S.accMs = 0; disarmRedo(); showError('');
+  $('v-title').value = ''; $('v-vis').value = 'private';
+  renderStudio();
+}
+function studioLeave() {
+  if (isActive()) {
+    if (S.state === 'recording') S.accMs += performance.now() - S.startedAt;
+    S.take.ms = S.accMs; S.take.silent = true;
+    if (S.tick) { clearInterval(S.tick); S.tick = null; }
+    var r = S.rec; S.rec = null; try { r.stop(); } catch (e) {}
+  } else if (S.state === 'ready') { stopStream(); }
+  S.state = 'off'; S.reviewVid = null; disarmRedo();
+}
+function stopStream() {
+  if (S.stream) { S.stream.getTracks().forEach(function (t) { try { t.stop(); } catch (e) {} }); S.stream = null; }
+  $('cam').srcObject = null;
+}
+
+function qcardHtml() {
+  var lock = isActive() || S.state === 'saving' ? ' disabled' : '';
+  if (S.mode === 'invite') {
+    var inv = S.invite, j = byId(db.jobs, inv.jobId) || {}, answered = !!inv.answers[S.qi];
+    return '<div class="qmeta"><span class="setchip">Round ' + inv.round + '</span><span>Question ' + (S.qi + 1) + ' of ' + inv.questions.length + '</span></div>' +
+      '<ol class="qsteps">' + inv.questions.map(function (q, i) { return '<li><button type="button" class="qstep" data-act="st-pick" data-i="' + i + '" data-done="' + !!inv.answers[i] + '"' + (i === S.qi ? ' aria-current="step"' : '') + lock + '>Q' + (i + 1) + '</button></li>'; }).join('') + '</ol>' +
+      '<p class="qtext">' + esc(inv.questions[S.qi]) + '</p>' + (answered ? '<p class="sub">You already answered this. Recording again replaces your saved answer.</p>' : '');
+  }
+  if (S.mode === 'live') {
+    var lv = S.invite, lj = byId(db.jobs, lv.jobId) || {}, le = byId(db.users, lv.employerId) || {}, li = byId(db.users, lv.interviewerId) || {};
+    return '<div class="qmeta"><span class="setchip">Round ' + lv.round + '</span><span>' + esc(fmtDateTime(lv.scheduledAt)) + '</span></div>' +
+      '<p class="qtext">' + esc(lj.title || 'Live interview') + ' at ' + esc(companyOf(le)) + '</p><p class="sub">Interviewer: ' + esc(li.name || '') + '</p>' +
+      (lv.questions.length ? '<ol class="list" style="padding-left:20px;list-style:decimal;gap:6px">' + lv.questions.map(function (q) { return '<li>' + esc(q) + '</li>'; }).join('') + '</ol>' : '');
+  }
+  if (S.qSource === 'own') {
+    return '<div class="field"><label for="own-q">Your question</label><textarea id="own-q" maxlength="300" placeholder="Type the question you will answer on camera"' + lock + '>' + esc(S.ownQ) + '</textarea></div>' +
+      '<div class="qtools"><button class="btn ghost small" type="button" data-act="st-list"' + lock + '>Use a question from the list</button></div>';
+  }
+  return '<div class="qmeta"><span class="setchip">' + SETS[Math.floor(S.qIndex / 12)] + '</span><span>Question ' + (S.qIndex + 1) + ' of ' + QUESTIONS.length + '</span></div>' +
+    '<p class="qtext">' + esc(QUESTIONS[S.qIndex]) + '</p>' +
+    '<div class="qtools"><button class="btn ghost small" type="button" data-act="st-newq"' + lock + '>New session</button><button class="btn ghost small" type="button" data-act="st-own"' + lock + '>Write my own question</button></div>';
+}
+acts['st-newq'] = function () { S.sessionNo += 1; S.qIndex = nextQuestion(); renderStudio(); };
+acts['st-own'] = function () { S.qSource = 'own'; renderStudio(); var t = $('own-q'); if (t) t.focus(); };
+acts['st-list'] = function () { S.qSource = 'list'; renderStudio(); };
+acts['st-pick'] = function (el) { S.qi = +el.dataset.i; if (S.state === 'review') { S.state = 'off'; } renderStudio(); };
+document.addEventListener('input', function (e) { if (e.target && e.target.id === 'own-q') S.ownQ = e.target.value; });
+
+function renderStudio() {
+  var st = S.state, u = me();
+  if (S.mode === 'invite') { var j = byId(db.jobs, S.invite.jobId) || {}; $('st-eyebrow').textContent = 'Round ' + S.invite.round + ' interview'; $('session-title').textContent = j.title || 'Interview'; }
+  else if (S.mode === 'live') { $('st-eyebrow').textContent = 'Live interview room'; $('session-title').textContent = 'Live interview'; }
+  else { $('st-eyebrow').textContent = 'Recording studio'; $('session-title').textContent = 'Session ' + S.sessionNo; }
+  var qb = $('qcard-body');
+  if (!(S.mode === 'free' && S.qSource === 'own' && document.activeElement && document.activeElement.id === 'own-q' && !isActive())) qb.innerHTML = qcardHtml();
+  $('live-note').hidden = S.mode !== 'live';
+  $('save-opts').hidden = S.mode !== 'free';
+  $('vis-field').hidden = !(u && u.role === 'interviewer');
+
+  var live = st === 'ready' || st === 'recording' || st === 'paused' || st === 'saving';
+  $('cam').hidden = !live; $('playback').hidden = st !== 'review'; $('stage-ph').hidden = st !== 'off';
+  $('btn-camera').hidden = st !== 'off'; $('btn-start').hidden = st !== 'ready'; $('btn-camoff').hidden = st !== 'ready';
+  $('btn-upload').hidden = !(st === 'off' || st === 'ready');
+  $('btn-pause').disabled = !isActive(); $('btn-stop').disabled = !isActive();
+  $('btn-redo').disabled = !(isActive() || st === 'review');
+  $('pause-label').textContent = st === 'paused' ? 'Resume' : 'Pause';
+  $('ico-pause').hidden = st === 'paused'; $('ico-resume').hidden = st !== 'paused';
+  $('btn-pause').setAttribute('aria-label', st === 'paused' ? 'Resume recording' : 'Pause recording');
+  var label = { off: 'Camera off', ready: 'Camera on', recording: 'Recording', paused: 'Paused', saving: 'Saving', review: 'Saved' }[st];
+  $('badge-state-text').textContent = label;
+  $('badge-state').setAttribute('data-live', st === 'recording' ? 'true' : 'false');
+  $('badge-state').setAttribute('data-paused', st === 'paused' ? 'true' : 'false');
+  var rv = st === 'review' && S.mode === 'invite';
+  $('review-actions').hidden = !rv;
+  if (rv) {
+    var done = allAnswered(S.invite);
+    $('review-text').textContent = done ? 'All answers are saved. Your interview is complete.' : 'Your answer was saved to the interview.';
+    $('btn-next').textContent = done ? 'Finish' : 'Next question';
+  }
+  updateTime();
+}
+
+function cameraErrorMessage(e) {
+  var n = e && e.name;
+  if (n === 'NotAllowedError' || n === 'SecurityError') return 'Camera or microphone access was blocked. Allow both in your browser’s address bar and try again. If this page is inside a preview frame, open the standalone file in its own browser tab, or use "Upload a video instead".';
+  if (n === 'NotFoundError' || n === 'OverconstrainedError') return 'No camera or microphone was found. Connect one and try again, or upload a video instead.';
+  if (n === 'NotReadableError') return 'Your camera or microphone is in use by another app. Close that app and try again.';
+  return 'The camera could not start. Reload the page and try again, or upload a video instead.';
+}
+function startCamera() {
+  showError('');
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { showError('This browser cannot record video here. Use a current Chrome, Edge, Firefox or Safari in its own tab, or upload a video instead.'); return; }
+  var btn = $('btn-camera'); btn.disabled = true;
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: true }).then(function (stream) {
+    btn.disabled = false;
+    if (!inStudio()) { stream.getTracks().forEach(function (t) { t.stop(); }); return; }
+    S.stream = stream; var cam = $('cam'); cam.srcObject = stream;
+    var p = cam.play && cam.play(); if (p && p.catch) p.catch(function () {});
+    S.state = 'ready'; renderStudio();
+  }).catch(function (e) { btn.disabled = false; showError(cameraErrorMessage(e)); });
+}
+function pickMime() {
+  if (typeof MediaRecorder === 'undefined') return null;
+  var o = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4'];
+  for (var i = 0; i < o.length; i++) { try { if (MediaRecorder.isTypeSupported(o[i])) return o[i]; } catch (e) {} }
+  return '';
+}
+function makeTake() {
+  var u = me(), q = currentQuestion(), title = '', vis = 'link';
+  if (S.mode === 'free' && !q) { showError('Type your question first, then record.'); return null; }
+  if (S.mode === 'invite') { var j = byId(db.jobs, S.invite.jobId) || {}; title = 'Round ' + S.invite.round + ', Q' + (S.qi + 1) + ': ' + (j.title || 'Interview'); vis = 'private'; }
+  else if (S.mode === 'live') { var lj = byId(db.jobs, S.invite.jobId) || {}; title = 'Live interview, round ' + S.invite.round + ': ' + (lj.title || ''); vis = 'private'; }
+  else { title = $('v-title').value.trim() || cut(q, 70); vis = u.role === 'interviewer' ? $('v-vis').value : 'link'; }
+  return { mode: S.mode, invite: S.invite, qi: S.qi, question: q, title: title, visibility: vis, ownerId: u.id, chunks: [], silent: false, discard: false, ms: 0 };
+}
+function startRecording() {
+  showError(''); if (!S.stream) return;
+  var take = makeTake(); if (!take) return;
+  var mime = pickMime();
+  if (mime === null) { showError('This browser does not support recording video. Try a current Chrome, Edge, Firefox or Safari, or upload a video instead.'); return; }
+  var stream = S.stream, rec;
+  try { rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream); } catch (e) { showError('Recording could not start in this browser.'); return; }
+  take.mime = rec.mimeType || mime || 'video/webm'; S.rec = rec; S.take = take;
+  rec.ondataavailable = function (ev) { if (ev.data && ev.data.size) take.chunks.push(ev.data); };
+  rec.onerror = function () { showError('Recording stopped because of an error. Press Redo and try again.'); };
+  rec.onstop = function () {
+    if (take.discard) return;
+    stream.getTracks().forEach(function (t) { try { t.stop(); } catch (e) {} });
+    if (S.stream === stream) { S.stream = null; $('cam').srcObject = null; }
+    finalizeTake(take, new Blob(take.chunks, { type: take.mime }), take.ms);
+  };
+  rec.start(1000); S.accMs = 0; S.startedAt = performance.now(); S.state = 'recording';
+  if (S.tick) clearInterval(S.tick); S.tick = setInterval(updateTime, 250);
+  renderStudio();
+}
+function pauseResume() {
+  if (!S.rec) return;
+  if (S.state === 'recording') { S.rec.pause(); S.accMs += performance.now() - S.startedAt; S.state = 'paused'; }
+  else if (S.state === 'paused') { S.rec.resume(); S.startedAt = performance.now(); S.state = 'recording'; }
+  renderStudio();
+}
+function stopAndSave() {
+  if (!isActive()) return;
+  if (S.state === 'recording') S.accMs += performance.now() - S.startedAt;
+  S.take.ms = S.accMs;
+  if (S.tick) { clearInterval(S.tick); S.tick = null; }
+  S.state = 'saving'; renderStudio();
+  try { S.rec.stop(); } catch (e) { S.state = 'off'; renderStudio(); }
+}
+function redo() {
+  if (isActive()) {
+    if (!S.redoArmed) { S.redoArmed = true; $('redo-label').textContent = 'Discard this take?'; S.redoTimer = setTimeout(disarmRedo, 3500); return; }
+    disarmRedo(); S.take.discard = true;
+    if (S.tick) { clearInterval(S.tick); S.tick = null; }
+    try { S.rec.stop(); } catch (e) {}
+    S.rec = null; S.take = null; S.accMs = 0; S.state = 'ready'; renderStudio();
+  } else if (S.state === 'review') { S.state = 'off'; S.reviewVid = null; renderStudio(); startCamera(); }
+}
+
+/* Save into the site; nothing is downloaded automatically */
+function saveVideo(take, blob, ms) {
+  var v = { id: uid(), ownerId: take.ownerId, title: take.title, question: take.question, source: take.mode, inviteId: take.invite ? take.invite.id : null, jobId: take.invite ? take.invite.jobId : null, visibility: take.visibility, commentsMode: 'public', createdAt: Date.now(), duration: Math.round(ms), mime: blob.type, size: blob.size };
+  return blobPut(v.id, blob).then(function () {
+    var old = null;
+    if (take.invite) {
+      var inv = byId(db.invites, take.invite.id);
+      if (inv) {
+        if (take.mode === 'invite') { old = inv.answers[take.qi] || null; inv.answers[take.qi] = v.id; }
+        inv.videoIds = (inv.videoIds || []).filter(function (x) { return x !== old; }); inv.videoIds.push(v.id);
+        if (take.mode === 'invite' && allAnswered(inv)) inv.status = 'completed';
+      }
+    }
+    return (old ? removeVideo(old) : Promise.resolve()).then(function () { db.videos.push(v); save(); return v; });
+  });
+}
+function finalizeTake(take, blob, ms) {
+  saveVideo(take, blob, ms).then(function (v) {
+    if (take.silent || !inStudio() || S.take !== take) { toast('Your recording was saved to My videos.'); return; }
+    S.take = null;
+    if (take.mode === 'invite') { S.state = 'review'; S.reviewVid = v.id; renderStudio(); attachVideo($('playback'), v.id); }
+    else { S.state = 'off'; toast('Saved to your videos.'); go('watch-' + v.id); }
+  }, function () { showError('The video could not be saved on this device.'); S.state = 'off'; renderStudio(); });
+}
+function nextOrFinish() {
+  var inv = S.invite;
+  if (allAnswered(inv)) { toast('Interview complete. Thank you.'); go('invites'); return; }
+  var k = S.qi + 1; while (k < inv.questions.length && inv.answers[k]) k++;
+  S.qi = k < inv.questions.length ? k : firstOpen(inv); S.state = 'off'; S.reviewVid = null; renderStudio();
+}
+function uploadFile(file) {
+  showError('');
+  if (!file || !/^video\//.test(file.type)) { showError('Choose a video file.'); return; }
+  var take = makeTake(); if (!take) return;
+  if (S.state === 'ready') stopStream();
+  var url = URL.createObjectURL(file), el = document.createElement('video'), done = false;
+  function go2(ms) {
+    if (done) return; done = true; URL.revokeObjectURL(url);
+    S.state = 'saving'; S.take = take; renderStudio(); take.mime = file.type;
+    finalizeTake(take, file, ms);
+  }
+  el.preload = 'metadata';
+  el.onloadedmetadata = function () { go2(isFinite(el.duration) ? el.duration * 1000 : 0); };
+  el.onerror = function () { go2(0); };
+  el.src = url;
+}
+$('btn-camera').addEventListener('click', startCamera);
+$('btn-camoff').addEventListener('click', function () { stopStream(); S.state = 'off'; renderStudio(); });
+$('btn-start').addEventListener('click', startRecording);
+$('btn-pause').addEventListener('click', pauseResume);
+$('btn-stop').addEventListener('click', stopAndSave);
+$('btn-redo').addEventListener('click', redo);
+$('btn-next').addEventListener('click', nextOrFinish);
+$('btn-upload').addEventListener('click', function () { $('file-up').click(); });
+$('file-up').addEventListener('change', function () { var f = this.files && this.files[0]; this.value = ''; if (f) uploadFile(f); });
+
+renderHeader();
+route();
+})();
+</script>
+
+</html>
