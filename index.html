@@ -2343,10 +2343,9 @@ acts['ev-delete'] = function (el) {
 /* Forgot and reset password. There is no email service, so the link is shown on screen. */
 function viewForgot() {
   var link = ui.resetLink;
-  show('<div class="auth" style="grid-template-columns:minmax(0,520px)"><div class="box strong"><h1>Reset your password</h1><p class="sub">Enter the email you signed up with. We will make a link that lets you choose a new password.</p>' +
-    '<form data-form="forgot" novalidate><div class="field"><label for="fg-email">Email</label><input type="email" id="fg-email" name="email" autocomplete="email" inputmode="email"><p class="err" data-err="email" aria-live="polite"></p></div><button class="btn full" type="submit">Create reset link</button></form>' +
-    (ui.resetDone ? '<div class="box tint"><p class="sub">If an account exists for that email, a reset link is ready.</p>' + (link ? '<p><a class="btn" href="#reset-' + link + '">Choose a new password</a></p>' : '') +
-      '<p class="notice">This prototype cannot send email, so the link appears here instead. Once the site is connected to an email service, the link will arrive in the person’s inbox and will not be shown on screen. The link expires in one hour.</p></div>' : '') +
+  show('<div class="auth" style="grid-template-columns:minmax(0,520px)"><div class="box strong"><h1>Reset your password</h1><p class="sub">Enter the email you signed up with. We will email you a link that lets you choose a new password.</p>' +
+    '<form data-form="forgot" novalidate><div class="field"><label for="fg-email">Email</label><input type="email" id="fg-email" name="email" autocomplete="email" inputmode="email"><p class="err" data-err="email" aria-live="polite"></p></div><button class="btn full" type="submit">Send reset link</button></form>' +
+    (ui.resetDone ? '<div class="box tint"><p class="sub">If an account exists for that email, we sent a link to it. Check your inbox and spam folder.</p>' + (link ? '<p><a class="btn" href="#reset-' + link + '">Choose a new password</a></p><p class="notice">This account is saved only in this browser, so its link is shown here instead of being emailed.</p>' : '') + '</div>' : '') +
     '<p class="swap"><a href="#login">Back to log in</a></p></div></div>');
 }
 forms.forgot = function (f) {
@@ -2957,6 +2956,147 @@ viewNetwork = (function (prev) { return function () {
   pg.insertAdjacentHTML('beforeend', '<section class="box"><h3>Referral ranking</h3><p style="margin:0 0 8px">' + rankLine(u.id, true) + '</p>' +
     (top.length ? '<ol class="bul">' + top.map(function (x) { return '<li>#' + x.rank + ' ' + esc(x.u.name) + ' · ' + x.n + '</li>'; }).join('') + '</ol>' : '') + '<a class="btn ghost small" href="#ranking">See the full ranking</a></section>' + referencesHtml(u));
 }; })(viewNetwork);
+/* ================= Supabase accounts (sign-up, log-in, password reset emails) =================
+   Only the publishable key is here. It is safe to be public. Never put the service_role key in this file. */
+var SB = { url: 'https://hmeoctkfdizbkzzyyzse.supabase.co', key: 'sb_publishable_TY3H4tsH85L6TdABIH76CQ_2jeONh-N', site: 'https://amysos1.github.io/interviewed/' };
+var sbRecovery = null;
+function sbRedirect() { return /github\.io$/.test(location.hostname) ? SB.site : location.href.split('#')[0]; }
+function sbCall(path, method, body, token) {
+  var h = { 'apikey': SB.key, 'Content-Type': 'application/json' };
+  if (token) h.Authorization = 'Bearer ' + token;
+  return fetch(SB.url + path, { method: method, headers: h, body: body ? JSON.stringify(body) : undefined }).then(function (r) {
+    return r.text().then(function (t) { var d = {}; try { d = t ? JSON.parse(t) : {}; } catch (e) { } return { ok: r.ok, status: r.status, data: d }; });
+  });
+}
+function sbMsg(r) { var d = r.data || {}; return String(d.msg || d.message || d.error_description || d.error || ''); }
+
+/* Make (or find) this person's profile record on this device, then sign them in. */
+function sbFinish(user, token) {
+  var meta = (user && user.user_metadata) || {}, email = String(user.email || '').toLowerCase();
+  var u = db.users.filter(function (x) { return x.sbId === user.id || (x.email || '').toLowerCase() === email; })[0];
+  if (!u) {
+    var role = meta.role === 'employer' ? 'employer' : 'interviewer';
+    u = { id: user.id, sbId: user.id, role: role, name: meta.name || email.split('@')[0], email: email, company: role === 'employer' ? (meta.company || '') : '', verified: role === 'employer', headline: '', location: '', about: '', photo: null, linkedin: false, createdAt: Date.now() };
+    db.users.push(u);
+  } else if (!u.sbId) u.sbId = user.id;
+  save();
+  if (u.suspended) return { suspended: true };
+  setSession(u.id); return { user: u, isNew: !u.headline && !u.about };
+}
+function sbCheckEmailView(email) {
+  show('<div class="auth" style="grid-template-columns:minmax(0,520px)"><div class="box strong"><h1>Check your email</h1><p class="sub">We sent a confirmation link to <b>' + esc(email) + '</b>. Open it to finish creating your account, then log in.</p>' +
+    '<p class="notice">It can take a few minutes. Look in your spam folder too.</p><a class="btn" href="#login">Go to log in</a></div></div>');
+}
+function localSignup(role, name, email, company, pw, networkDown) {
+  return hashPw(pw).then(function (h) {
+    var u = { id: uid(), role: role, name: name, email: email, company: role === 'employer' ? company : '', verified: role === 'employer', headline: '', location: '', about: '', photo: null, linkedin: false, passHash: h, createdAt: Date.now() };
+    db.users.push(u); save(); setSession(u.id); ui = {}; R.key = '';
+    toast(networkDown ? 'Could not reach the sign-up service, so this account is saved in this browser only.' : (role === 'employer' ? 'Account created. Your business email is accepted.' : 'Account created.'));
+    go('setup');
+  });
+}
+forms.signup = function (f) {
+  var role = f.elements.role.value, name = f.elements.name.value.trim(), email = f.elements.email.value.trim().toLowerCase();
+  var company = f.elements.company.value.trim(), pw = f.elements.password.value, errs = {};
+  if (!role) errs.role = 'Choose Interviewee or Employer.';
+  if (!name) errs.name = 'Enter your full name.';
+  if (!validEmail(email)) errs.email = 'Enter a valid email, like name@company.com.';
+  else if (role === 'employer' && !isBusinessEmail(email)) errs.email = 'Employers need a business email, like name@yourcompany.com. Personal addresses such as Gmail cannot be verified.';
+  else if (db.users.some(function (x) { return x.email.toLowerCase() === email; })) errs.email = 'An account with this email already exists. Log in instead.';
+  if (role === 'employer' && !company) errs.company = 'Enter your company name.';
+  if (pw.length < 8) errs.password = 'Your password needs at least 8 characters.';
+  if (!f.elements.terms.checked) errs.terms = 'Accept the terms to create your account.';
+  if (showErrors(f, errs)) return;
+  sbCall('/auth/v1/signup?redirect_to=' + encodeURIComponent(sbRedirect()), 'POST', { email: email, password: pw, data: { name: name, role: role, company: role === 'employer' ? company : '' } }).then(function (r) {
+    var d = r.data || {};
+    if (!r.ok) {
+      var m = sbMsg(r);
+      if (/already/i.test(m)) showErrors(f, { email: 'An account with this email already exists. Log in instead.' });
+      else if (/password/i.test(m)) showErrors(f, { password: m });
+      else if (r.status === 429 || /rate|limit/i.test(m)) showErrors(f, { terms: 'Too many sign-up emails were sent recently. Please wait a little and try again.' });
+      else showErrors(f, { terms: 'Sign-up did not work: ' + (m || 'unknown problem') + '.' });
+      return;
+    }
+    if (d.access_token && d.user) {
+      var res = sbFinish(d.user, d.access_token); ui = {}; R.key = '';
+      toast(role === 'employer' ? 'Account created. Your business email is accepted.' : 'Account created.'); go('setup'); return;
+    }
+    if (d.user && d.user.identities && d.user.identities.length === 0) { showErrors(f, { email: 'An account with this email already exists. Log in instead.' }); return; }
+    sbCheckEmailView(email);
+  }, function () { return localSignup(role, name, email, company, pw, true); });
+};
+
+function localLogin(f, email, pw) {
+  return hashPw(pw).then(function (h) {
+    var u = db.users.filter(function (x) { return x.email.toLowerCase() === email; })[0];
+    if (!u || !u.passHash || u.passHash !== h) { showErrors(f, { password: 'That email and password do not match.' }); return; }
+    if (u.suspended) { showErrors(f, { password: 'This account has been suspended by an administrator.' }); return; }
+    setSession(u.id); var n = ui.next; ui = {}; R.key = ''; go(n || homeFor(u));
+  });
+}
+forms.login = function (f) {
+  var email = f.elements.email.value.trim().toLowerCase(), pw = f.elements.password.value, errs = {};
+  if (!validEmail(email)) errs.email = 'Enter the email you signed up with, like name@company.com.';
+  if (!pw) errs.password = 'Enter your password.';
+  if (showErrors(f, errs)) return;
+  sbCall('/auth/v1/token?grant_type=password', 'POST', { email: email, password: pw }).then(function (r) {
+    if (r.ok && r.data.access_token && r.data.user) {
+      var res = sbFinish(r.data.user, r.data.access_token);
+      if (res.suspended) { showErrors(f, { password: 'This account has been suspended by an administrator.' }); return; }
+      var n = ui.next; ui = {}; R.key = ''; go(n || (res.isNew ? 'setup' : homeFor(res.user))); return;
+    }
+    if (/not confirmed/i.test(sbMsg(r))) { showErrors(f, { password: 'Please confirm your email first. Open the link we sent you, then log in.' }); return; }
+    return localLogin(f, email, pw);
+  }, function () { return localLogin(f, email, pw); });
+};
+
+/* Forgot password: Supabase sends the email. Accounts that only exist in this browser still get the on-screen link. */
+forms.forgot = function (f) {
+  var email = f.elements.email.value.trim().toLowerCase();
+  if (!validEmail(email)) { showErrors(f, { email: 'Enter a valid email, like name@company.com.' }); return; }
+  var u = db.users.filter(function (x) { return x.email.toLowerCase() === email && !x.demo && x.passHash; })[0];
+  ui.resetDone = true; ui.resetLink = '';
+  if (u) {
+    var tok = uid() + uid() + Math.random().toString(36).slice(2, 10);
+    db.resets = db.resets.filter(function (r) { return r.userId !== u.id; });
+    db.resets.push({ token: tok, userId: u.id, expires: Date.now() + 3600000 }); save(); ui.resetLink = tok;
+  }
+  var done = function () { refresh(); };
+  sbCall('/auth/v1/recover?redirect_to=' + encodeURIComponent(sbRedirect()), 'POST', { email: email }).then(done, done);
+};
+viewReset = (function (prev) { return function (tok) {
+  if (tok !== 'sb') { prev(tok); return; }
+  if (!sbRecovery) { show('<div class="auth" style="grid-template-columns:minmax(0,520px)"><div class="box strong"><h1>Link expired</h1><p class="sub">This reset link is not valid any more. Ask for a new one.</p><a class="btn" href="#forgot">Make a new link</a></div></div>'); return; }
+  show('<div class="auth" style="grid-template-columns:minmax(0,520px)"><div class="box strong"><h1>Choose a new password</h1><form data-form="sbreset" novalidate>' +
+    pwField('np', 'New password', 'new-password', '<span class="hint" id="np-hint">At least 8 characters.</span>') + pwField('np2', 'Type it again', 'new-password') + '<button class="btn full" type="submit">Save new password</button></form></div></div>');
+}; })(viewReset);
+forms.sbreset = function (f) {
+  var a = f.elements.np.value, b = f.elements.np2.value, errs = {};
+  if (a.length < 8) errs.np = 'Your password needs at least 8 characters.'; else if (a !== b) errs.np2 = 'The two passwords do not match.';
+  if (showErrors(f, errs)) return;
+  sbCall('/auth/v1/user', 'PUT', { password: a }, sbRecovery).then(function (r) {
+    if (!r.ok) { showErrors(f, { np: sbMsg(r) || 'That did not work. Ask for a new reset link.' }); return; }
+    sbRecovery = null; ui = {}; toast('Password changed. Log in with your new password.'); go('login');
+  }, function () { showErrors(f, { np: 'Could not reach the service. Check your connection and try again.' }); });
+};
+
+/* Links in emails come back to the site with the result in the address after the #. Read it once, then tidy the address. */
+function sbBoot() {
+  var h = location.hash || '';
+  if (!/(access_token=|error_code=|[#&]error=)/.test(h)) return;
+  var p = {}; h.replace(/^#/, '').split('&').forEach(function (kv) { var i = kv.indexOf('='); if (i > 0) p[kv.slice(0, i)] = decodeURIComponent(kv.slice(i + 1).replace(/\+/g, ' ')); });
+  var base = location.pathname + location.search;
+  if (p.error || p.error_code) { history.replaceState(null, '', base + '#forgot'); curHash = 'forgot'; setTimeout(function () { toast('That email link has expired. Please ask for a new one.'); }, 400); return; }
+  if (p.type === 'recovery' && p.access_token) { sbRecovery = p.access_token; history.replaceState(null, '', base + '#reset-sb'); curHash = 'reset-sb'; return; }
+  if (p.access_token) {
+    history.replaceState(null, '', base + '#login'); curHash = 'login';
+    sbCall('/auth/v1/user', 'GET', null, p.access_token).then(function (r) {
+      if (!r.ok || !r.data || !r.data.id) { toast('That link did not work. Try logging in.'); return; }
+      var res = sbFinish(r.data, p.access_token); if (res.suspended) { toast('This account has been suspended by an administrator.'); return; }
+      ui = {}; R.key = ''; renderHeader(); toast('Email confirmed. Welcome!'); go(res.isNew ? 'setup' : homeFor(res.user));
+    }, function () { toast('Could not reach the service. Try logging in.'); });
+  }
+}
 
 /* ================= Administrator ================= */
 function adminExists() { return db.users.some(function (x) { return x.role === 'admin'; }); }
@@ -3709,6 +3849,7 @@ function drawAvatar() {
   if (FX.level > 0.25) { ctx.fillStyle = '#e8708a'; ctx.beginPath(); ctx.ellipse(cx, cy + r * 0.52 + mh * 0.45, r * 0.13, mh * 0.35, 0, 0, Math.PI * 2); ctx.fill(); }
 }
 
+sbBoot();
 renderHeader();
 route();
 })();
