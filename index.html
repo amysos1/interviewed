@@ -64,6 +64,9 @@ p { margin: 0; }
 
 /* Avatars */
 .av { width: 36px; height: 36px; border-radius: 50%; background: var(--purple-soft); color: var(--purple-deep); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; object-fit: cover; flex: none; }
+.avw { position: relative; display: inline-flex; flex: none; }
+.vbadge { position: absolute; right: -3px; bottom: -3px; width: 16px; height: 16px; border-radius: 50%; background: var(--purple); color: #fff; font-size: 10px; line-height: 16px; text-align: center; font-weight: 700; border: 2px solid #fff; box-sizing: content-box; width: 14px; height: 14px; line-height: 14px; }
+.avw.lg .vbadge { width: 22px; height: 22px; line-height: 22px; font-size: 14px; right: 0; bottom: 0; border-width: 3px; }
 .av.lg { width: 84px; height: 84px; font-size: 1.6rem; }
 
 /* Buttons */
@@ -338,7 +341,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wr
           <a class="btn ghost" href="#login">Log in</a>
         </div>
       </div>
-      <div class="art" role="img" aria-label="Illustration: a cute bunny wearing a headset, recording a video answer, with a question card, a round tracker and a heart floating around the video frame">
+      <div class="art" role="img" aria-label="Illustration: a smiling person wearing a headset, recording a video answer, with a question card, a round tracker and a heart floating around the video frame">
         <span class="blob b1" aria-hidden="true"></span><span class="blob b2" aria-hidden="true"></span><span class="blob b3" aria-hidden="true"></span>
         <div class="art-frame">
           <svg viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -354,19 +357,21 @@ footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wr
             <use href="#spark" x="338" y="62" fill="#ffc2dc"/><use href="#spark" x="330" y="168" fill="#fff" opacity=".8" transform="translate(330 168) scale(.7) translate(-330 -168)"/>
             <use href="#spark" x="78" y="180" fill="#fff" opacity=".8" transform="translate(78 180) scale(.6) translate(-78 -180)"/>
             <circle cx="92" cy="112" r="6" fill="#ff9ec9"/><circle cx="314" cy="124" r="5" fill="#8fe3c0"/><circle cx="108" cy="30" r="4" fill="#8fe3c0"/>
-            <ellipse cx="200" cy="256" rx="96" ry="62" fill="#fffaf5"/>
-            <path d="M178 204l22 18 22-18-6 28h-32z" fill="#ff9ec9"/><circle cx="200" cy="212" r="7" fill="#ff6fae"/>
-            <ellipse cx="154" cy="46" rx="22" ry="56" transform="rotate(-12 154 46)" fill="#fffaf5"/><ellipse cx="154" cy="52" rx="11" ry="40" transform="rotate(-12 154 52)" fill="#ffc2dc"/>
-            <ellipse cx="246" cy="46" rx="22" ry="56" transform="rotate(12 246 46)" fill="#fffaf5"/><ellipse cx="246" cy="52" rx="11" ry="40" transform="rotate(12 246 52)" fill="#ffc2dc"/>
-            <ellipse cx="200" cy="138" rx="80" ry="68" fill="#fffaf5"/>
-            <path d="M124 134c0-48 30-72 76-72s76 24 76 72" fill="none" stroke="#6a2fd8" stroke-width="9" stroke-linecap="round"/>
-            <rect x="112" y="122" width="20" height="40" rx="10" fill="#6a2fd8"/><rect x="268" y="122" width="20" height="40" rx="10" fill="#6a2fd8"/>
-            <path d="M278 158c0 24-18 32-44 34" fill="none" stroke="#6a2fd8" stroke-width="6" stroke-linecap="round"/><circle cx="230" cy="192" r="8" fill="#ff9ec9"/>
-            <ellipse cx="172" cy="138" rx="14" ry="17" fill="#2b1650"/><ellipse cx="228" cy="138" rx="14" ry="17" fill="#2b1650"/>
-            <circle cx="177" cy="131" r="6" fill="#fff"/><circle cx="233" cy="131" r="6" fill="#fff"/><circle cx="168" cy="145" r="3" fill="#fff"/><circle cx="224" cy="145" r="3" fill="#fff"/>
-            <ellipse cx="148" cy="162" rx="15" ry="10" fill="url(#artcheek)"/><ellipse cx="252" cy="162" rx="15" ry="10" fill="url(#artcheek)"/>
-            <path d="M192 158c0-6 16-6 16 0 0 5-8 9-8 9s-8-4-8-9z" fill="#ff6fae"/>
-            <path d="M200 167v5M188 174c6 7 18 7 24 0" fill="none" stroke="#b5446e" stroke-width="3.5" stroke-linecap="round"/>
+            <ellipse cx="200" cy="256" rx="98" ry="64" fill="url(#artshirt)"/>
+            <rect x="185" y="186" width="30" height="34" rx="12" fill="#eeb08c"/>
+            <path d="M172 214l28 20 28-20" fill="#fff" opacity=".9"/>
+            <ellipse cx="200" cy="124" rx="84" ry="80" fill="#3b2064"/>
+            <ellipse cx="200" cy="146" rx="64" ry="66" fill="#f6c6a5"/>
+            <path d="M134 128c6-38 36-54 66-54s60 16 66 54c-20-16-42-26-66-26s-46 10-66 26z" fill="#3b2064"/>
+            <path d="M128 134c0-50 32-78 72-78s72 28 72 78" fill="none" stroke="#6a2fd8" stroke-width="9" stroke-linecap="round"/>
+            <rect x="114" y="126" width="20" height="40" rx="10" fill="#6a2fd8"/><rect x="266" y="126" width="20" height="40" rx="10" fill="#6a2fd8"/>
+            <path d="M276 162c0 24-18 32-44 34" fill="none" stroke="#6a2fd8" stroke-width="6" stroke-linecap="round"/><circle cx="228" cy="196" r="8" fill="#ff9ec9"/>
+            <path d="M160 128c6-5 16-5 22 0M218 128c6-5 16-5 22 0" fill="none" stroke="#3b2064" stroke-width="4" stroke-linecap="round"/>
+            <ellipse cx="172" cy="148" rx="10" ry="12" fill="#2b1650"/><ellipse cx="228" cy="148" rx="10" ry="12" fill="#2b1650"/>
+            <circle cx="176" cy="143" r="4" fill="#fff"/><circle cx="232" cy="143" r="4" fill="#fff"/>
+            <ellipse cx="150" cy="168" rx="15" ry="10" fill="url(#artcheek)"/><ellipse cx="250" cy="168" rx="15" ry="10" fill="url(#artcheek)"/>
+            <path d="M200 156c-3 6-3 10 2 11" fill="none" stroke="#d98f6c" stroke-width="3" stroke-linecap="round"/>
+            <path d="M182 176c8 11 28 11 36 0" fill="none" stroke="#b5446e" stroke-width="4" stroke-linecap="round"/>
           </svg>
           <span class="art-rec"><span class="rec" aria-hidden="true"></span>REC 01:12</span>
         </div>
@@ -394,7 +399,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wr
       <div class="box tint">
         <span class="eyebrow">For employers</span>
         <h3>Verified, organised hiring</h3>
-        <p class="sub">Sign up with your business email, post jobs, see who is interested, and invite people to as many rounds as you like. Download or share any video with a link.</p>
+        <p class="sub">Sign up, post jobs, see who is interested, and invite people to as many rounds as you like. Download or share any video with a link.</p>
       </div>
     </section>
 
@@ -522,10 +527,13 @@ function initials(n) {
   var p = String(n || '?').trim().split(/\s+/);
   return ((p[0] || '?').charAt(0) + (p.length > 1 ? p[p.length - 1].charAt(0) : '')).toUpperCase();
 }
+function hasCheck(u) { return !!(u && (u.workEmail || u.verified)); }
 function avatar(u, big) {
-  var cls = 'av' + (big ? ' lg' : '');
-  if (u && u.photo) return '<img class="' + cls + '" src="' + esc(u.photo) + '" alt="">';
-  return '<span class="' + cls + '" aria-hidden="true">' + esc(initials(u && u.name)) + '</span>';
+  var cls = 'av' + (big ? ' lg' : ''), inner;
+  if (u && u.photo) inner = '<img class="' + cls + '" src="' + esc(u.photo) + '" alt="">';
+  else inner = '<span class="' + cls + '" aria-hidden="true">' + esc(initials(u && u.name)) + '</span>';
+  if (!hasCheck(u)) return inner;
+  return '<span class="avw' + (big ? ' lg' : '') + '" title="Work email added">' + inner + '<span class="vbadge" role="img" aria-label="Work email added">✓</span></span>';
 }
 function avatarSvg(name) {
   var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256"><rect width="256" height="256" fill="#6a2fd8"/><circle cx="128" cy="100" r="46" fill="#efe7fc"/><path d="M36 256c0-56 40-92 92-92s92 36 92 92z" fill="#efe7fc"/><text x="128" y="118" font-family="Arial,sans-serif" font-size="44" font-weight="700" text-anchor="middle" fill="#4b1fa5">' + esc(initials(name)) + '</text></svg>';
@@ -866,7 +874,7 @@ function route(noScroll) {
     $('app').hidden = false;
     var views = { login: viewLogin, signup: viewSignup, setup: viewSetup, profile: viewProfile, person: viewPerson,
       coffee: viewCoffee, network: viewNetwork, jobs: viewJobs, job: viewJob, invites: viewInvites, videos: viewVideos, watch: viewWatch, playlists: viewPlaylists,
-      list: viewList, explore: viewExplore, admin: viewAdmin, screen: viewScreen, events: viewEvents, event: viewEvent, notifications: viewNotifications, ranking: viewRanking, forgot: viewForgot, reset: viewReset };
+      list: viewList, explore: viewExplore, admin: viewAdmin, screen: viewScreen, events: viewEvents, event: viewEvent, notifications: viewNotifications, ranking: viewRanking, chooserole: viewChooseRole, forgot: viewForgot, reset: viewReset };
     (views[name] || viewNotFound)(arg);
   }
   if (!noScroll) window.scrollTo(0, 0);
@@ -1013,8 +1021,9 @@ function viewSignup() {
     '<label class="rc"><input type="radio" name="role" value="employer" data-change="role"><span class="rc-box"><b>Employer</b><small>Post jobs, write questions, invite people to interview rounds.</small></span></label>' +
     '</div><p class="err" data-err="role" aria-live="polite"></p></fieldset>' +
     '<div class="field"><label for="name">Full name</label><input type="text" id="name" name="name" autocomplete="name"><p class="err" data-err="name" aria-live="polite"></p></div>' +
-    '<div class="field"><label for="email" id="email-label">Email</label><input type="email" id="email" name="email" autocomplete="email" inputmode="email"><p class="hint" id="email-hint" hidden>Use your business email. It is how we verify you as an employer.</p><p class="err" data-err="email" aria-live="polite"></p></div>' +
+    '<div class="field"><label for="email" id="email-label">Email</label><input type="email" id="email" name="email" autocomplete="email" inputmode="email"><p class="hint" id="email-hint" hidden></p><p class="err" data-err="email" aria-live="polite"></p></div>' +
     '<div class="field" id="company-field" hidden><label for="company">Company name</label><input type="text" id="company" name="company" autocomplete="organization" maxlength="80"><p class="err" data-err="company" aria-live="polite"></p></div>' +
+    '<div class="field"><label for="workemail">Work email <span class="opt">(optional)</span></label><input type="email" id="workemail" name="workemail" autocomplete="off" inputmode="email"><p class="hint">Add a work email to get a checkmark on your profile picture that everyone can see. You can also add it later in your profile.</p><p class="err" data-err="workemail" aria-live="polite"></p></div>' +
     pwField('password', 'Password', 'new-password', '<p class="hint" id="password-hint">Use at least 8 characters.</p>') +
     '<div class="field"><label class="check" for="terms"><input type="checkbox" id="terms" name="terms"> <span>I agree to the terms of service and privacy policy.</span></label><p class="err" data-err="terms" aria-live="polite"></p></div>' +
     '<button class="btn full" type="submit">Create account</button></form>' +
@@ -1027,8 +1036,7 @@ function viewSignup() {
 changes.role = function (el) {
   var emp = el.value === 'employer';
   $('company-field').hidden = !emp;
-  $('email-hint').hidden = !emp;
-  $('email-label').textContent = emp ? 'Business email' : 'Email';
+  if ($('email-hint')) $('email-hint').hidden = true;
 };
 forms.signup = function (f) {
   var role = f.elements.role.value, name = f.elements.name.value.trim(), email = f.elements.email.value.trim().toLowerCase();
@@ -1052,7 +1060,7 @@ forms.signup = function (f) {
 
 /* Profile form shared by setup and profile */
 function draftOf(u) {
-  if (!ui.draft) ui.draft = { name: u.name, company: u.company || '', headline: u.headline || '', location: u.location || '', about: u.about || '', photo: u.photo || null };
+  if (!ui.draft) ui.draft = { workemail: u.workEmail || '', name: u.name, company: u.company || '', headline: u.headline || '', location: u.location || '', about: u.about || '', photo: u.photo || null };
   return ui.draft;
 }
 function photoPrev(d, name) { return avatar({ name: name, photo: d.photo }, true); }
@@ -1061,6 +1069,7 @@ function profileForm(u, full) {
   return '<form data-form="profile" data-full="' + (full ? '1' : '') + '" novalidate>' +
     (full ? '<div class="row2"><div class="field"><label for="p-name">Full name</label><input type="text" id="p-name" name="name" value="' + esc(d.name) + '" autocomplete="name"><p class="err" data-err="name" aria-live="polite"></p></div>' +
       (u.role === 'employer' ? '<div class="field"><label for="p-company">Company name</label><input type="text" id="p-company" name="company" value="' + esc(d.company) + '" maxlength="80"><p class="err" data-err="company" aria-live="polite"></p></div>' : '<div></div>') + '</div>' : '') +
+    (full ? '<div class="field"><label for="p-work">Work email <span class="opt">(optional)</span></label><input type="email" id="p-work" name="workemail" value="' + esc(d.workemail || '') + '" autocomplete="off" inputmode="email"><p class="hint">Adding one puts a checkmark on your profile picture that everyone can see. Your address itself is not shown.</p><p class="err" data-err="workemail" aria-live="polite"></p></div>' : '') +
     '<div class="photo-edit"><span id="photo-prev">' + photoPrev(d, d.name || u.name) + '</span>' +
     '<div class="field"><label for="p-photo">Profile picture</label><input type="file" id="p-photo" accept="image/*" data-change="photo"></div>' +
     (d.photo ? '<button type="button" class="btn ghost small" data-act="photo-remove">Remove picture</button>' : '') + '</div>' +
@@ -1072,7 +1081,7 @@ function profileForm(u, full) {
 }
 function syncDraft(f) {
   var d = ui.draft || {};
-  ['name', 'company', 'headline', 'location', 'about'].forEach(function (k) { if (f.elements[k]) d[k] = f.elements[k].value; });
+  ['name', 'company', 'workemail', 'headline', 'location', 'about'].forEach(function (k) { if (f.elements[k]) d[k] = f.elements[k].value; });
   ui.draft = d;
 }
 function liBox() {
@@ -1113,8 +1122,11 @@ forms.profile = function (f) {
   var u = me(), full = f.dataset.full === '1'; syncDraft(f); var d = ui.draft, errs = {};
   if (full && !d.name.trim()) errs.name = 'Enter your name.';
   if (full && u.role === 'employer' && !d.company.trim()) errs.company = 'Enter your company name.';
+  var we = (d.workemail || '').trim().toLowerCase();
+  if (full && we && !validEmail(we)) errs.workemail = 'Enter a valid email, like name@company.com.';
+  else if (full && we && !isBusinessEmail(we)) errs.workemail = 'That looks like a personal address (like Gmail). Use the email from your company or school.';
   if (showErrors(f, errs)) return;
-  if (full) { u.name = d.name.trim(); if (u.role === 'employer') u.company = d.company.trim(); }
+  if (full) { u.name = d.name.trim(); if (u.role === 'employer') u.company = d.company.trim(); if (we) { u.workEmail = we; if (u.role === 'employer') u.verified = true; } else if (u.workEmail) { delete u.workEmail; if (u.role === 'employer' && !u.demo) u.verified = false; } }
   u.headline = d.headline.trim(); u.location = d.location.trim(); u.about = d.about.trim(); u.photo = d.photo || null;
   if (ui.linkedin) u.linkedin = true;
   if (u.role === 'interviewer' && !full) {
@@ -1141,7 +1153,7 @@ function viewSetup() {
 function viewProfile() {
   var u = me();
   show('<div class="page" style="max-width:760px"><div class="page-head"><div><span class="eyebrow">Your account</span><h1>Profile</h1></div>' +
-    '<div class="chips">' + chip(u.role === 'employer' ? 'Employer' : 'Interviewee') + (u.role === 'employer' && u.verified ? chip('Verified business email', 'solid') : '') + (u.linkedin ? chip('LinkedIn (demo)', 'muted') : '') + '</div></div>' +
+    '<div class="chips">' + chip(u.role === 'employer' ? 'Employer' : 'Interviewee') + (hasCheck(u) ? chip('Work email added', 'solid') : '') + (u.linkedin ? chip('LinkedIn (demo)', 'muted') : '') + '</div></div>' +
     '<p class="sub">Signed in as ' + esc(u.email) + '</p>' + liBox() + '<div class="box">' + profileForm(u, true) + '</div></div>');
 }
 
@@ -1165,7 +1177,7 @@ function viewPerson(arg) {
     jobs = '<section class="sec"><h2>Open jobs</h2>' + (pj.length ? '<ul class="list">' + pj.map(function (j) { return '<li class="row"><div class="grow"><a class="name" href="#job-' + j.id + '">' + esc(j.title) + '</a><span class="meta">' + esc(jobMeta(j)) + '</span></div></li>'; }).join('') + '</ul>' : '<p class="sub">No open jobs.</p>') + '</section>';
   }
   show('<div class="page"><div class="page-head"><div style="flex-direction:row;align-items:center;gap:16px">' + avatar(p, true) + '<div style="display:flex;flex-direction:column;gap:6px;min-width:0"><h1>' + esc(p.name) + '</h1><p class="sub">' + esc(prof ? (prof.headline || p.headline || '') : (p.headline || '')) + '</p>' +
-    '<div class="chips">' + chip(p.role === 'employer' ? 'Employer' : 'Interviewee') + (p.role === 'employer' ? chip(p.company) : '') + (p.verified && p.role === 'employer' ? chip('Verified', 'solid') : '') + ((prof && prof.location || p.location) ? chip(prof && prof.location || p.location, 'muted') : '') + '</div></div></div></div>' +
+    '<div class="chips">' + chip(p.role === 'employer' ? 'Employer' : 'Interviewee') + (p.role === 'employer' ? chip(p.company) : '') + (hasCheck(p) ? chip('Work email added', 'solid') : '') + ((prof && prof.location || p.location) ? chip(prof && prof.location || p.location, 'muted') : '') + '</div></div></div></div>' +
     (prof ? profileBlocks(prof, u.id === p.id) + (u.id === p.id ? '' : '') : (p.about ? '<p class="pre" style="max-width:46em">' + esc(p.about) + '</p>' : '')) + inv + jobs +
     '<section class="sec"><h2>Videos</h2>' + (vids.length ? '<div class="cards">' + vids.map(function (v) { return videoCard(v, false); }).join('') + '</div>' : '<p class="sub">No videos you can watch yet.</p>') + '</section></div>');
 }
@@ -2971,14 +2983,23 @@ function sbCall(path, method, body, token) {
 function sbMsg(r) { var d = r.data || {}; return String(d.msg || d.message || d.error_description || d.error || ''); }
 
 /* Make (or find) this person's profile record on this device, then sign them in. */
-function sbFinish(user, token) {
+function sbFinish(user, token, pick) {
   var meta = (user && user.user_metadata) || {}, email = String(user.email || '').toLowerCase();
   var u = db.users.filter(function (x) { return x.sbId === user.id || (x.email || '').toLowerCase() === email; })[0];
   if (!u) {
-    var role = meta.role === 'employer' ? 'employer' : 'interviewer';
-    u = { id: user.id, sbId: user.id, role: role, name: meta.name || email.split('@')[0], email: email, company: role === 'employer' ? (meta.company || '') : '', verified: role === 'employer', headline: '', location: '', about: '', photo: null, linkedin: false, createdAt: Date.now() };
+    var role = meta.role === 'employer' || meta.role === 'interviewer' ? meta.role : (pick && pick.role) || '';
+    if (!role) return { needRole: true };
+    if (pick && pick.company && role === 'employer') meta.company = pick.company;
+    if (!meta.name && pick && pick.name) meta.name = pick.name;
+    if (!meta.name) meta.name = meta.full_name || '';
+    u = { id: String(user.id).replace(/-/g, ''), sbId: user.id, role: role, name: meta.name || email.split('@')[0], email: email, company: role === 'employer' ? (meta.company || '') : '', verified: role === 'employer' && !!meta.workEmail, workEmail: meta.workEmail || undefined, headline: '', location: '', about: '', photo: null, linkedin: false, createdAt: Date.now() };
     db.users.push(u);
   } else if (!u.sbId) u.sbId = user.id;
+  if (u.id.indexOf('-') >= 0) { /* page addresses use "-" as a separator, so ids must not contain one */
+    var oldId = u.id, newId = oldId.replace(/-/g, ''), snap = JSON.parse(JSON.stringify(db).split('"' + oldId + '"').join('"' + newId + '"'));
+    Object.keys(db).forEach(function (k) { delete db[k]; }); Object.keys(snap).forEach(function (k) { db[k] = snap[k]; });
+    u = byId(db.users, newId);
+  }
   save();
   if (u.suspended) return { suspended: true };
   setSession(u.id); return { user: u, isNew: !u.headline && !u.about };
@@ -2987,11 +3008,11 @@ function sbCheckEmailView(email) {
   show('<div class="auth" style="grid-template-columns:minmax(0,520px)"><div class="box strong"><h1>Check your email</h1><p class="sub">We sent a confirmation link to <b>' + esc(email) + '</b>. Open it to finish creating your account, then log in.</p>' +
     '<p class="notice">It can take a few minutes. Look in your spam folder too.</p><a class="btn" href="#login">Go to log in</a></div></div>');
 }
-function localSignup(role, name, email, company, pw, networkDown) {
+function localSignup(role, name, email, company, pw, networkDown, we) {
   return hashPw(pw).then(function (h) {
-    var u = { id: uid(), role: role, name: name, email: email, company: role === 'employer' ? company : '', verified: role === 'employer', headline: '', location: '', about: '', photo: null, linkedin: false, passHash: h, createdAt: Date.now() };
+    var u = { id: uid(), role: role, name: name, email: email, company: role === 'employer' ? company : '', verified: role === 'employer' && !!we, workEmail: we || undefined, headline: '', location: '', about: '', photo: null, linkedin: false, passHash: h, createdAt: Date.now() };
     db.users.push(u); save(); setSession(u.id); ui = {}; R.key = '';
-    toast(networkDown ? 'Could not reach the sign-up service, so this account is saved in this browser only.' : (role === 'employer' ? 'Account created. Your business email is accepted.' : 'Account created.'));
+    toast(networkDown ? 'Could not reach the sign-up service, so this account is saved in this browser only.' : 'Account created.');
     go('setup');
   });
 }
@@ -3001,13 +3022,15 @@ forms.signup = function (f) {
   if (!role) errs.role = 'Choose Interviewee or Employer.';
   if (!name) errs.name = 'Enter your full name.';
   if (!validEmail(email)) errs.email = 'Enter a valid email, like name@company.com.';
-  else if (role === 'employer' && !isBusinessEmail(email)) errs.email = 'Employers need a business email, like name@yourcompany.com. Personal addresses such as Gmail cannot be verified.';
   else if (db.users.some(function (x) { return x.email.toLowerCase() === email; })) errs.email = 'An account with this email already exists. Log in instead.';
+  var we = (f.elements.workemail.value || '').trim().toLowerCase();
+  if (we && !validEmail(we)) errs.workemail = 'Enter a valid email, like name@company.com.';
+  else if (we && !isBusinessEmail(we)) errs.workemail = 'That looks like a personal address (like Gmail). Use the email from your company or school, or leave this empty.';
   if (role === 'employer' && !company) errs.company = 'Enter your company name.';
   if (pw.length < 8) errs.password = 'Your password needs at least 8 characters.';
   if (!f.elements.terms.checked) errs.terms = 'Accept the terms to create your account.';
   if (showErrors(f, errs)) return;
-  sbCall('/auth/v1/signup?redirect_to=' + encodeURIComponent(sbRedirect()), 'POST', { email: email, password: pw, data: { name: name, role: role, company: role === 'employer' ? company : '' } }).then(function (r) {
+  sbCall('/auth/v1/signup?redirect_to=' + encodeURIComponent(sbRedirect()), 'POST', { email: email, password: pw, data: { name: name, role: role, company: role === 'employer' ? company : '', workEmail: we } }).then(function (r) {
     var d = r.data || {};
     if (!r.ok) {
       var m = sbMsg(r);
@@ -3019,11 +3042,11 @@ forms.signup = function (f) {
     }
     if (d.access_token && d.user) {
       var res = sbFinish(d.user, d.access_token); ui = {}; R.key = '';
-      toast(role === 'employer' ? 'Account created. Your business email is accepted.' : 'Account created.'); go('setup'); return;
+      toast('Account created.'); go('setup'); return;
     }
     if (d.user && d.user.identities && d.user.identities.length === 0) { showErrors(f, { email: 'An account with this email already exists. Log in instead.' }); return; }
     sbCheckEmailView(email);
-  }, function () { return localSignup(role, name, email, company, pw, true); });
+  }, function () { return localSignup(role, name, email, company, pw, true, we); });
 };
 
 function localLogin(f, email, pw) {
@@ -3086,17 +3109,68 @@ function sbBoot() {
   if (!/(access_token=|error_code=|[#&]error=)/.test(h)) return;
   var p = {}; h.replace(/^#/, '').split('&').forEach(function (kv) { var i = kv.indexOf('='); if (i > 0) p[kv.slice(0, i)] = decodeURIComponent(kv.slice(i + 1).replace(/\+/g, ' ')); });
   var base = location.pathname + location.search;
-  if (p.error || p.error_code) { history.replaceState(null, '', base + '#forgot'); curHash = 'forgot'; setTimeout(function () { toast('That email link has expired. Please ask for a new one.'); }, 400); return; }
+  if (p.error || p.error_code) {
+    var expired = p.error_code === 'otp_expired', to = expired ? 'forgot' : 'login';
+    history.replaceState(null, '', base + '#' + to); curHash = to;
+    setTimeout(function () { toast(expired ? 'That email link has expired. Please ask for a new one.' : (p.error_description || 'Sign-in did not work.')); }, 400); return;
+  }
   if (p.type === 'recovery' && p.access_token) { sbRecovery = p.access_token; history.replaceState(null, '', base + '#reset-sb'); curHash = 'reset-sb'; return; }
   if (p.access_token) {
     history.replaceState(null, '', base + '#login'); curHash = 'login';
     sbCall('/auth/v1/user', 'GET', null, p.access_token).then(function (r) {
       if (!r.ok || !r.data || !r.data.id) { toast('That link did not work. Try logging in.'); return; }
-      var res = sbFinish(r.data, p.access_token); if (res.suspended) { toast('This account has been suspended by an administrator.'); return; }
+      var res = sbFinish(r.data, p.access_token);
+      if (res.needRole) { sbPending = r.data; ui = {}; go('chooserole'); return; }
+      if (res.suspended) { toast('This account has been suspended by an administrator.'); return; }
       ui = {}; R.key = ''; renderHeader(); toast('Email confirmed. Welcome!'); go(res.isNew ? 'setup' : homeFor(res.user));
     }, function () { toast('Could not reach the service. Try logging in.'); });
   }
 }
+
+/* ---------- Sign in with Google, Microsoft (Outlook) or Yahoo ---------- */
+var sbPending = null, sbSettings = null;
+var SSO = [['google', 'Google', 'Gmail and Google accounts'], ['azure', 'Microsoft', 'Outlook, Hotmail and work accounts'], ['custom:yahoo', 'Yahoo', 'Yahoo Mail']];
+function ssoHtml() {
+  return '<div class="sso"><p class="label" style="margin:0 0 8px">Continue with</p><div class="acts" style="gap:8px">' + SSO.map(function (x) {
+    return '<button class="btn ghost" type="button" data-act="sso" data-p="' + x[0] + '" title="' + esc(x[2]) + '">' + x[1] + '</button>'; }).join('') + '</div>' +
+    '<p class="swap" style="margin:12px 0 0">or use your email</p></div>';
+}
+viewLogin = (function (prev) { return function () { prev(); var f = document.querySelector('#app form[data-form="login"]'); if (f) f.insertAdjacentHTML('beforebegin', ssoHtml()); }; })(viewLogin);
+viewSignup = (function (prev) { return function () { prev(); var f = document.querySelector('#app form[data-form="signup"]'); if (f) f.insertAdjacentHTML('beforebegin', ssoHtml()); }; })(viewSignup);
+acts.sso = function (el) {
+  var p = el.dataset.p, rs = document.querySelector('form[data-form="signup"] input[name="role"]:checked');
+  try { if (rs) localStorage.setItem('interviewed.ssorole', rs.value); } catch (e) { }
+  var go2 = function () { location.href = SB.url + '/auth/v1/authorize?provider=' + encodeURIComponent(p) + (p === 'azure' ? '&scopes=email' : '') + '&redirect_to=' + encodeURIComponent(sbRedirect()); };
+  var check = function (s) {
+    var ext = (s && s.external) || {};
+    if (ext[p] === false) { toast((p === 'azure' ? 'Microsoft' : p === 'google' ? 'Google' : 'Yahoo') + ' sign-in is not switched on for this site yet.'); return; }
+    go2();
+  };
+  if (sbSettings) { check(sbSettings); return; }
+  sbCall('/auth/v1/settings', 'GET').then(function (r) { sbSettings = r.ok ? r.data : {}; check(sbSettings); }, function () { toast('Could not reach the sign-in service. Check your connection.'); });
+};
+function viewChooseRole() {
+  if (!sbPending) { go('login'); return; }
+  var m = sbPending.user_metadata || {}, pre = ''; try { pre = localStorage.getItem('interviewed.ssorole') || ''; } catch (e) { }
+  show('<div class="auth" style="grid-template-columns:minmax(0,560px)"><div class="box strong"><h1>One more step</h1><p class="sub">Welcome, ' + esc(m.full_name || m.name || sbPending.email || '') + '. Choose how you will use Interviewed.</p>' +
+    '<form data-form="chooserole" novalidate><fieldset class="field"><legend>I am joining as</legend><div class="rc-set">' +
+    '<label class="rc"><input type="radio" name="role" value="interviewer" data-change="role"' + (pre === 'interviewer' ? ' checked' : '') + '><span class="rc-box"><b>Interviewee</b><small>Record interviews and share your videos.</small></span></label>' +
+    '<label class="rc"><input type="radio" name="role" value="employer" data-change="role"' + (pre === 'employer' ? ' checked' : '') + '><span class="rc-box"><b>Employer</b><small>Post jobs and invite people to interview.</small></span></label></div><p class="err" data-err="role" aria-live="polite"></p></fieldset>' +
+    '<div class="field" id="company-field"' + (pre === 'employer' ? '' : ' hidden') + '><label for="company">Company name</label><input type="text" id="company" name="company" maxlength="80"><p class="err" data-err="company" aria-live="polite"></p></div>' +
+    '<div class="field"><label class="check" for="terms"><input type="checkbox" id="terms" name="terms"> <span>I agree to the terms of service and privacy policy.</span></label><p class="err" data-err="terms" aria-live="polite"></p></div>' +
+    '<button class="btn full" type="submit">Continue</button></form></div></div>');
+}
+forms.chooserole = function (f) {
+  var role = f.elements.role.value, company = f.elements.company.value.trim(), errs = {};
+  if (!role) errs.role = 'Choose Interviewee or Employer.';
+  if (role === 'employer' && !company) errs.company = 'Enter your company name.';
+  if (!f.elements.terms.checked) errs.terms = 'Accept the terms to create your account.';
+  if (showErrors(f, errs)) return;
+  var m = sbPending.user_metadata || {}, res = sbFinish(sbPending, null, { role: role, company: company, name: m.full_name || m.name });
+  sbPending = null; try { localStorage.removeItem('interviewed.ssorole'); } catch (e) { }
+  if (res.suspended) { toast('This account has been suspended by an administrator.'); go('login'); return; }
+  ui = {}; R.key = ''; renderHeader(); toast('Account created.'); go('setup');
+};
 
 /* ================= Administrator ================= */
 function adminExists() { return db.users.some(function (x) { return x.role === 'admin'; }); }
