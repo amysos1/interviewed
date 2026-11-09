@@ -103,13 +103,19 @@ p { margin: 0; }
 .ad-side .ad-cta { align-self: center; }
 @media (prefers-reduced-motion: no-preference) { .ad { transition: transform .2s; } .ad:hover { transform: translateY(-3px) rotate(-.6deg); } .ad .ad-emoji { animation: adbob 3s ease-in-out infinite; } @keyframes adbob { 50% { transform: translateY(-4px) rotate(5deg); } } }
 @media (max-width: 640px) { .ads { grid-template-columns: 1fr; } }
-@media (min-width: 1360px) and (max-width: 1579px) {
+@media (min-width: 1280px) and (max-width: 1579px) {
+  .shell { max-width: min(1120px, calc(100vw - 348px)); }
   .ads { display: block; }
   .ad-side { position: fixed; top: 150px; width: 150px; max-width: none; min-height: 400px; padding: 24px 12px; }
   .ad-side .ad-emoji { font-size: 3rem; }
-  .ad-side .ad-bear.small { display: none; }
-  .ad-side.ad-left { left: calc(50% - 560px - 160px); }
-  .ad-side.ad-right { right: calc(50% - 560px - 160px); }
+  .ad-side.ad-left { left: max(8px, calc(50% - 560px - 162px)); }
+  .ad-side.ad-right { right: max(8px, calc(50% - 560px - 162px)); }
+  .ad-bear.big { width: 104px; height: 45px; top: -44px; }
+  .ad-bear.small { width: 50px; height: 21.5px; top: -19px; }
+  .ad-bear.o-l { left: -6px; } .ad-bear.i-l { left: 96px; }
+  .ad-bear.i-r { left: 6px; } .ad-bear.o-r { right: -6px; }
+  .ad-heart.h-l { left: 82px; top: -64px; } .ad-heart.h-r { left: 54px; top: -64px; }
+  .ad-paw.p-tl { left: -9px; } .ad-paw.p-tr { right: -9px; }
 }
 @media (min-width: 1580px) {
   .ads { display: block; }
@@ -552,7 +558,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wr
   <div id="ads" class="ads" aria-label="Advertisements"></div>
   <footer>
     <span>Interviewed. Video interviews for interviewees and employers.</span>
-    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.11.0</span> · <a href="#admin-setup">Administrator</a></span>
+    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.12.0</span> · <a href="#admin-setup">Administrator</a></span>
   </footer>
 </div>
 
@@ -1474,6 +1480,12 @@ function viewExplore() {
     (emp ? '<section class="sec"><h2>Interviewees</h2><ul class="list">' + people.map(function (p) {
       return '<li class="row">' + avatar(p) + '<div class="grow"><a class="name" href="#person-' + p.id + '">' + esc(p.name) + '</a><span class="meta">' + esc(p.headline || '') + '</span></div><a class="btn ghost small" href="#person-' + p.id + '">View profile</a></li>';
     }).join('') + '</ul></section>' : '') +
+    (u.role === 'interviewer' ? (function () {
+      var emps = db.users.filter(function (x) { return x.role === 'employer' && !x.suspended && !x.demo; });
+      return '<section class="sec"><h2>Employers</h2>' + (emps.length ? '<ul class="list">' + emps.map(function (p) {
+        return '<li class="row">' + avatar(p) + '<div class="grow"><a class="name" href="#person-' + p.id + '">' + esc(p.company || p.name) + '</a><span class="meta">' + esc((p.company ? p.name + (p.headline ? ' · ' : '') : '') + (p.headline || '')) + '</span></div><a class="btn ghost small" href="#person-' + p.id + '">View profile</a></li>';
+      }).join('') + '</ul>' : '<p class="sub">No employers yet.</p>') + '</section>';
+    })() : '') +
     '<div class="seg" role="group" aria-label="Video type"><button type="button" data-act="ex-tab" data-v="all" aria-pressed="' + (tab === 'all') + '">All videos</button><button type="button" data-act="ex-tab" data-v="skills" aria-pressed="' + (tab === 'skills') + '">Skills</button><button type="button" data-act="ex-tab" data-v="answers" aria-pressed="' + (tab === 'answers') + '">Interview answers</button></div>' +
     '<section class="sec"><h2>' + (tab === 'skills' ? 'Skills' : tab === 'answers' ? 'Interview answers' : 'Videos') + '</h2>' + (vids.length ? '<div class="cards">' + vids.map(function (v) { return videoCard(v, v.ownerId === u.id); }).join('') + '</div>' :
       '<div class="empty"><h3>Nothing to watch yet</h3><p>' + (emp ? 'Videos from interviewees appear here.' : 'When interviewees make a video public, it appears here.') + '</p></div>') + '</section></div>');
@@ -2214,7 +2226,7 @@ acts['scr-pick'] = function () {
 };
 acts['job-delete'] = function (el) {
   confirmTwice(el, 'Click again to delete', function () {
-    var id = el.dataset.id;
+    var id = el.dataset.id; if (typeof jobRemoteDelete === 'function') jobRemoteDelete(id);
     db.jobs = db.jobs.filter(function (j) { return j.id !== id; });
     db.interests = db.interests.filter(function (i) { return i.jobId !== id; });
     db.invites = db.invites.filter(function (i) { return i.jobId !== id; });
@@ -2450,7 +2462,7 @@ forms.reset = function (f) {
 /* Delete my account */
 acts['acct-delete'] = function (el) {
   confirmTwice(el, 'Click again to delete everything', function () {
-    var u = me(); if (!u || u.role === 'admin') return; var id = u.id;
+    var u = me(); if (!u || u.role === 'admin') return; var id = u.id; if (u.sbId) remoteCleanup(id);
     var vids = db.videos.filter(function (v) { return v.ownerId === id; }).map(function (v) { return v.id; });
     Promise.all(vids.map(removeVideo)).then(function () {
       var jobIds = db.jobs.filter(function (j) { return j.employerId === id; }).map(function (j) { return j.id; });
@@ -3429,9 +3441,9 @@ function profPublish(force) {
     .then(function (r) { if (r && r.ok) profLast = s; }, function () { });
 }
 save = (function (prev) { return function () { prev(); clearTimeout(profTimer); profTimer = setTimeout(function () { profPublish(false); }, 1500); }; })(save);
-function profSignedIn(d) { profSetSess(d); setTimeout(function () { profPublish(true); }, 300); }
+function profSignedIn(d) { profSetSess(d); setTimeout(function () { profPublish(true); if (typeof jobsPublish === 'function') jobsPublish(); }, 300); }
 function profLoad() {
-  sbCall('/rest/v1/profiles?select=id,data&limit=1000', 'GET').then(function (r) {
+  return sbCall('/rest/v1/profiles?select=id,data&limit=1000', 'GET').then(function (r) {
     if (!r.ok || !Array.isArray(r.data)) return;
     function s(v, n) { return typeof v === 'string' ? v.slice(0, n) : ''; }
     r.data.forEach(function (row) {
@@ -3443,6 +3455,63 @@ function profLoad() {
     });
     save();
     if (/^(person|network|ranking|explore)$/.test(R.name)) refresh();
+  }, function () { }).then(function () { }, function () { });
+}
+
+/* ---- Share jobs with everyone through Supabase (table jobs) ---- */
+var jobsLast = {}, jobsTimer = 0;
+function sbAuthed(path, method, body, extra) {
+  if (!profSess) return Promise.resolve({ ok: false, status: 0, data: {} });
+  var send = function () { return sbCall(path, method, body, profSess.a, extra); };
+  return send().then(function (r) { if (r.status === 401) return profRefresh().then(function (ok) { return ok ? send() : r; }); return r; });
+}
+function jobPayload(j) {
+  var o = { status: j.status === 'closed' ? 'closed' : 'open', createdAt: j.createdAt || 0 };
+  ['title', 'type', 'mode', 'location', 'description', 'currency', 'salaryMin', 'salaryMax', 'salaryPeriod', 'responsibilities', 'qualifications', 'skills', 'software', 'questions', 'limits', 'screening'].forEach(function (k) { if (j[k] !== undefined) o[k] = j[k]; });
+  return o;
+}
+function jobsPublish() {
+  var u = me(); if (!u || !u.sbId || !profSess || u.role !== 'employer') return;
+  var rows = [], sigs = {};
+  db.jobs.forEach(function (j) {
+    if (j.employerId !== u.id || j.remote) return;
+    var p = jobPayload(j), s = JSON.stringify(p);
+    if (jobsLast[j.id] !== s) { rows.push({ id: j.id, employer_id: u.id, data: p }); sigs[j.id] = s; }
+  });
+  if (!rows.length) return;
+  sbAuthed('/rest/v1/jobs?on_conflict=id', 'POST', rows, { 'Prefer': 'resolution=merge-duplicates,return=minimal' }).then(function (r) {
+    if (r.ok) Object.keys(sigs).forEach(function (k) { jobsLast[k] = sigs[k]; });
+  }, function () { });
+}
+save = (function (prev) { return function () { prev(); clearTimeout(jobsTimer); jobsTimer = setTimeout(jobsPublish, 1800); }; })(save);
+function jobRemoteDelete(id) { delete jobsLast[id]; sbAuthed('/rest/v1/jobs?id=eq.' + encodeURIComponent(id), 'DELETE', null, { 'Prefer': 'return=minimal' }); }
+function remoteCleanup(id) {
+  sbAuthed('/rest/v1/jobs?employer_id=eq.' + encodeURIComponent(id), 'DELETE', null, { 'Prefer': 'return=minimal' });
+  sbAuthed('/rest/v1/profiles?id=eq.' + encodeURIComponent(id), 'DELETE', null, { 'Prefer': 'return=minimal' });
+}
+function jobClean(d) {
+  d = d || {};
+  function s(v, n) { return typeof v === 'string' ? v.slice(0, n) : ''; }
+  function arr(v, n, m) { return Array.isArray(v) ? v.slice(0, m).map(function (x) { return s(x, n); }).filter(Boolean) : []; }
+  var sc = Array.isArray(d.screening) ? d.screening.slice(0, 20).filter(function (x) { return x && typeof x === 'object'; }).map(function (x) { var o = {}; Object.keys(x).slice(0, 8).forEach(function (k) { var v = x[k]; if (typeof v === 'string') o[k] = v.slice(0, 300); else if (typeof v === 'number' || typeof v === 'boolean') o[k] = v; else if (Array.isArray(v)) o[k] = v.slice(0, 12).map(function (z) { return s(z, 100); }); }); return o; }) : [];
+  var num = function (v) { return typeof v === 'number' && isFinite(v) ? v : ''; };
+  return { status: d.status === 'closed' ? 'closed' : 'open', createdAt: Number(d.createdAt) || 0, title: s(d.title, 120) || 'Job', type: s(d.type, 40), mode: s(d.mode, 40), location: s(d.location, 100), description: s(d.description, 6000),
+    currency: s(d.currency, 8), salaryMin: num(d.salaryMin), salaryMax: num(d.salaryMax), salaryPeriod: s(d.salaryPeriod, 20), responsibilities: arr(d.responsibilities, 300, 40), qualifications: arr(d.qualifications, 300, 40),
+    skills: arr(d.skills, 80, 40), software: arr(d.software, 80, 40), questions: arr(d.questions, 400, 30), limits: Array.isArray(d.limits) ? d.limits.slice(0, 30).map(function (x) { return Number(x) || 0; }) : [], screening: sc };
+}
+function jobsLoad() {
+  return sbCall('/rest/v1/jobs?select=id,employer_id,data&limit=1000', 'GET').then(function (r) {
+    if (!r.ok || !Array.isArray(r.data)) return;
+    r.data.forEach(function (row) {
+      if (!row || !/^[A-Za-z0-9]{4,40}$/.test(String(row.id)) || !/^[a-z0-9]{6,40}$/i.test(String(row.employer_id))) return;
+      var j = byId(db.jobs, row.id), pub = jobClean(row.data);
+      if (j) { if (!j.remote) return; Object.keys(pub).forEach(function (k) { j[k] = pub[k]; }); return; }
+      var own = sessionId && row.employer_id === sessionId;
+      db.jobs.push(Object.assign({ id: row.id, employerId: row.employer_id, crossed: [], hired: [], remote: own ? false : true }, pub));
+      if (own) jobsLast[row.id] = JSON.stringify(jobPayload(byId(db.jobs, row.id)));
+    });
+    lsSet(KEY, JSON.stringify(db));
+    if (/^(jobs|job|explore|person|screen)$/.test(R.name)) refresh();
   }, function () { });
 }
 
@@ -3742,7 +3811,7 @@ function qcardHtml() {
       '<p class="qtext">' + esc(lj.title || 'Live interview') + ' at ' + esc(companyOf(le)) + '</p><p class="sub">Interviewee: ' + esc(li.name || '') + '</p>' + meetBox(lv) +
       (lv.questions.length ? '<ol class="list" style="padding-left:20px;list-style:decimal;gap:6px">' + lv.questions.map(function (q, i) { return '<li>' + esc(q) + ((lv.limits || [])[i] ? ' <span class="meta">(' + fmtLim(lv.limits[i]) + ')</span>' : '') + '</li>'; }).join('') + '</ol>' : '');
   }
-  if (me() && me().role !== 'employer') return roleLanding(lock);
+  if (me()) return roleLanding(lock);
   if (S.qSource === 'own') {
     return '<div class="field"><label for="own-q">Your question</label><textarea id="own-q" maxlength="300" placeholder="Type the question you will answer on camera"' + lock + '>' + esc(S.ownQ) + '</textarea></div>' +
       '<div class="qtools"><button class="btn ghost small" type="button" data-act="st-list"' + lock + '>Use a question from the list</button></div>';
@@ -3760,7 +3829,7 @@ function roleLanding(lock) {
     return '<div class="box tint"><h3>Custom questions</h3><p class="sub">Write the questions for a role that is not in the list.</p>' +
       '<div class="field"><label for="cq-title">Role name</label><input type="text" id="cq-title" maxlength="60" placeholder="Hospital operations manager"' + dis + '></div>' +
       '<div class="field"><label>Your questions</label>' + qEditor('cq', [], [], false) + '</div>' +
-      '<div class="field"><label for="cq-vis">Who can use these questions</label><select id="cq-vis"' + dis + '><option value="private">Private: only me</option><option value="public">Public: other interviewees can use them too</option></select></div>' +
+      '<div class="field"><label for="cq-vis">Who can use these questions</label><select id="cq-vis"' + dis + '><option value="private">Private: only me</option><option value="public">Public: other people can use them too</option></select></div>' +
       '<div class="acts"><button class="btn" type="button" data-act="cq-save"' + dis + '>Save and start interviewing</button><button class="btn ghost" type="button" data-act="st-list"' + dis + '>Back to roles</button></div></div>';
   }
   return '<div class="box tint"><h3>Choose a role to interview for</h3><p class="sub">The questions show up after you pick a role.</p><div class="rolegrid">' +
@@ -4197,7 +4266,7 @@ function drawAvatar() {
   if (FX.level > 0.25) { ctx.fillStyle = '#e8708a'; ctx.beginPath(); ctx.ellipse(cx, cy + r * 0.52 + mh * 0.45, r * 0.13, mh * 0.35, 0, 0, Math.PI * 2); ctx.fill(); }
 }
 
-sbBoot(); adsLoad(); profLoad();
+sbBoot(); adsLoad(); profLoad().then(jobsLoad);
 renderHeader();
 route();
 })();
