@@ -552,7 +552,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wr
   <div id="ads" class="ads" aria-label="Advertisements"></div>
   <footer>
     <span>Interviewed. Video interviews for interviewees and employers.</span>
-    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.10.1</span> · <a href="#admin-setup">Administrator</a></span>
+    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.11.0</span> · <a href="#admin-setup">Administrator</a></span>
   </footer>
 </div>
 
@@ -992,7 +992,7 @@ document.addEventListener('click', function (e) {
 
 acts['dlg-close'] = closeDlg;
 acts['dlg-copy'] = copyDlg;
-acts.signout = function () { setSession(''); ui = {}; R.key = ''; go(''); };
+acts.signout = function () { setSession(''); profSetSess(null); ui = {}; R.key = ''; go(''); };
 acts.share = function (el) { showShare(el.dataset.kind, el.dataset.id); };
 acts.download = function (el) { downloadVideo(el.dataset.id); };
 acts['pw-toggle'] = function (el) {
@@ -3124,6 +3124,7 @@ forms.login = function (f) {
   sbCall('/auth/v1/token?grant_type=password', 'POST', { email: email, password: pw }).then(function (r) {
     if (r.ok && r.data.access_token && r.data.user) {
       var res = sbFinish(r.data.user, r.data.access_token);
+      if (!res.suspended) profSignedIn(r.data);
       if (res.user && res.user.role === 'admin') adsSetToken(r.data.access_token);
       if (res.suspended) { showErrors(f, { password: 'This account has been suspended by an administrator.' }); return; }
       var n = ui.next; ui = {}; R.key = ''; go(n || (res.isNew ? 'setup' : homeFor(res.user))); return;
@@ -3180,7 +3181,9 @@ function sbBoot() {
     sbCall('/auth/v1/user', 'GET', null, p.access_token).then(function (r) {
       if (!r.ok || !r.data || !r.data.id) { toast('That link did not work. Try logging in.'); return; }
       var res = sbFinish(r.data, p.access_token);
+      profSetSess({ access_token: p.access_token, refresh_token: p.refresh_token });
       if (res.needRole) { sbPending = r.data; ui = {}; go('chooserole'); return; }
+      setTimeout(function () { profPublish(true); }, 300);
       if (res.suspended) { toast('This account has been suspended by an administrator.'); return; }
       ui = {}; R.key = ''; renderHeader(); toast('Email confirmed. Welcome!'); go(res.isNew ? 'setup' : homeFor(res.user));
     }, function () { toast('Could not reach the service. Try logging in.'); });
@@ -3228,6 +3231,7 @@ forms.chooserole = function (f) {
   if (showErrors(f, errs)) return;
   var m = sbPending.user_metadata || {}, res = sbFinish(sbPending, null, { role: role, company: company, name: m.full_name || m.name });
   sbPending = null; try { localStorage.removeItem('interviewed.ssorole'); } catch (e) { }
+  setTimeout(function () { profPublish(true); }, 300);
   if (res.suspended) { toast('This account has been suspended by an administrator.'); go('login'); return; }
   ui = {}; R.key = ''; renderHeader(); toast('Account created.'); go('setup');
 };
@@ -3387,12 +3391,60 @@ forms.adsconnect = function (f) {
   if (!validEmail(email) || !pw) { showErrors(f, { password: 'Enter the email and password of your Supabase account.' }); return; }
   sbCall('/auth/v1/token?grant_type=password', 'POST', { email: email, password: pw }).then(function (r) {
     if (r.ok && r.data.access_token) { adsSetToken(r.data.access_token); toast('Connected.'); renderAdminParts(); return; }
-    showErrors(f, { password: 'That email and password did not work.' });
+    var m = String((r.data && (r.data.error_code || r.data.msg || r.data.error_description || r.data.message)) || '').toLowerCase(), t;
+    if (m.indexOf('not_confirmed') >= 0 || m.indexOf('not confirmed') >= 0) t = 'Supabase says this email is not confirmed yet. Open the confirmation email it sent you, or in Supabase go to Authentication > Users, open the user and confirm it.';
+    else if (m.indexOf('invalid') >= 0) t = 'Supabase says the email or password is wrong, or no account with this email exists in your Users list. Make sure you signed up on your live site with this email and a password (signing in with Google or GitHub does not create a password). If unsure, use Forgot password on the log-in page.';
+    else if (m.indexOf('rate') >= 0) t = 'Too many tries. Wait a few minutes and try again.';
+    else t = 'Supabase said: ' + (m || ('error ' + r.status)) + '.';
+    showErrors(f, { password: t });
   }, function () { showErrors(f, { password: 'Could not reach Supabase. Check your connection.' }); });
 };
 acts['ad-publish-all'] = function () {
   Promise.all(['left', 'right', 'foot'].map(adsPublish)).then(function (r) { adsSay(r.every(function (x) { return x === 'ok'; }) ? 'ok' : r.filter(function (x) { return x !== 'ok'; })[0], 'Published.'); });
 };
+
+/* ---- Share public profiles with everyone through Supabase (table profiles) ---- */
+var profSess = null; try { profSess = JSON.parse(localStorage.getItem('interviewed.sess') || 'null'); } catch (e) { }
+var profLast = '', profTimer = 0;
+function profSetSess(d) {
+  profSess = d && d.access_token ? { a: d.access_token, r: d.refresh_token || '' } : null;
+  try { if (profSess) localStorage.setItem('interviewed.sess', JSON.stringify(profSess)); else localStorage.removeItem('interviewed.sess'); } catch (e) { }
+}
+function profRefresh() {
+  if (!profSess || !profSess.r) return Promise.resolve(false);
+  return sbCall('/auth/v1/token?grant_type=refresh_token', 'POST', { refresh_token: profSess.r }).then(function (r) {
+    if (r.ok && r.data.access_token) { profSetSess(r.data); return true; }
+    profSetSess(null); return false;
+  }, function () { return false; });
+}
+function profPayload(u) {
+  var ph = typeof u.photo === 'string' && /^data:image\//.test(u.photo) && u.photo.length < 150000 ? u.photo : null;
+  return { name: u.name || '', role: u.role === 'employer' ? 'employer' : 'interviewer', company: u.company || '', headline: u.headline || '', location: u.location || '', about: (u.about || '').slice(0, 2000), photo: ph, chk: hasCheck(u), createdAt: u.createdAt || 0 };
+}
+function profPublish(force) {
+  var u = me(); if (!u || !u.sbId || !profSess || u.remote) return;
+  var p = profPayload(u), s = JSON.stringify(p); if (!force && s === profLast) return;
+  var send = function () { return sbCall('/rest/v1/profiles?on_conflict=id', 'POST', { id: u.id, data: p }, profSess.a, { 'Prefer': 'resolution=merge-duplicates,return=minimal' }); };
+  send().then(function (r) { if (r.status === 401) return profRefresh().then(function (ok) { return ok ? send() : r; }); return r; })
+    .then(function (r) { if (r && r.ok) profLast = s; }, function () { });
+}
+save = (function (prev) { return function () { prev(); clearTimeout(profTimer); profTimer = setTimeout(function () { profPublish(false); }, 1500); }; })(save);
+function profSignedIn(d) { profSetSess(d); setTimeout(function () { profPublish(true); }, 300); }
+function profLoad() {
+  sbCall('/rest/v1/profiles?select=id,data&limit=1000', 'GET').then(function (r) {
+    if (!r.ok || !Array.isArray(r.data)) return;
+    function s(v, n) { return typeof v === 'string' ? v.slice(0, n) : ''; }
+    r.data.forEach(function (row) {
+      if (!row || !/^[a-z0-9]{6,40}$/i.test(String(row.id))) return;
+      var d = row.data || {}, u = byId(db.users, row.id);
+      var pub = { name: s(d.name, 80) || 'Member', role: d.role === 'employer' ? 'employer' : 'interviewer', company: s(d.company, 80), headline: s(d.headline, 120), location: s(d.location, 80), about: s(d.about, 2000), photo: typeof d.photo === 'string' && /^data:image\//.test(d.photo) ? d.photo : null, verified: !!d.chk };
+      if (u) { if (u.id === sessionId || u.passHash || !u.remote) return; Object.keys(pub).forEach(function (k) { u[k] = pub[k]; }); }
+      else { pub.id = row.id; pub.email = ''; pub.remote = true; pub.linkedin = false; pub.createdAt = Number(d.createdAt) || 0; db.users.push(pub); }
+    });
+    save();
+    if (/^(person|network|ranking|explore)$/.test(R.name)) refresh();
+  }, function () { });
+}
 
 /* ================= Administrator ================= */
 function adminExists() { return db.users.some(function (x) { return x.role === 'admin'; }); }
@@ -4145,7 +4197,7 @@ function drawAvatar() {
   if (FX.level > 0.25) { ctx.fillStyle = '#e8708a'; ctx.beginPath(); ctx.ellipse(cx, cy + r * 0.52 + mh * 0.45, r * 0.13, mh * 0.35, 0, 0, Math.PI * 2); ctx.fill(); }
 }
 
-sbBoot(); adsLoad();
+sbBoot(); adsLoad(); profLoad();
 renderHeader();
 route();
 })();
