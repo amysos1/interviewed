@@ -64,6 +64,53 @@ p { margin: 0; }
 
 /* Avatars */
 .av { width: 36px; height: 36px; border-radius: 50%; background: var(--purple-soft); color: var(--purple-deep); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; object-fit: cover; flex: none; }
+.ads { display: grid; grid-template-columns: 1fr 1fr; gap: 92px 14px; padding-top: 98px; }
+.ads .ad-foot { grid-column: 1 / -1; }
+.ad { position: relative; display: flex; align-items: center; gap: 14px; padding: 20px 24px; border-radius: 22px; text-decoration: none; color: #2b1650; border: 4px solid transparent; background: linear-gradient(135deg, var(--ad-a), var(--ad-b)) padding-box, linear-gradient(135deg, #ff9ec9, #ffd166, #8fe3c0, #8fbfff, #b48cff) border-box; box-shadow: 0 8px 20px rgba(106, 47, 216, .14); outline: 2px dashed rgba(255, 255, 255, .95); outline-offset: -11px; }
+.ad::before, .ad::after { position: absolute; font-size: .8rem; line-height: 1; pointer-events: none; }
+.ad::before { content: '\2726'; top: 12px; left: 16px; color: #ff6fae; opacity: .8; }
+.ad::after { content: '\2665'; bottom: 12px; left: 16px; color: #ff6fae; opacity: .7; }
+.ad .ad-emoji { font-size: 2.4rem; line-height: 1; flex: none; }
+.ad .ad-body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.ad b { font-size: 1.05rem; line-height: 1.2; }
+.ad span.ad-text { font-size: .88rem; line-height: 1.35; }
+.ad .ad-cta { align-self: flex-start; margin-top: 6px; background: #fff; color: var(--purple-deep, #4a1fa8); font-weight: 700; font-size: .8rem; padding: 6px 12px; border-radius: 999px; }
+.ad .ad-tag { position: absolute; top: 8px; right: 12px; font-size: .62rem; letter-spacing: .08em; text-transform: uppercase; opacity: .55; }
+.ad .ad-edit { position: absolute; bottom: 8px; right: 10px; font-size: .7rem; padding: 3px 9px; border-radius: 999px; border: 1px solid rgba(43, 22, 80, .3); background: rgba(255, 255, 255, .8); color: #2b1650; cursor: pointer; }
+.ad-bear { position: absolute; top: -48px; left: 50%; margin-left: -60px; width: 120px; height: 52px; overflow: hidden; pointer-events: none; z-index: 2; filter: drop-shadow(0 2px 3px rgba(106, 47, 216, .18)); }
+.ad.ad-foot .ad-bear { margin-left: 0; }
+.ad-bear.c-tl { left: 28px; } .ad-bear.c-tr { left: auto; right: 28px; }
+.ad-side { max-width: 200px; justify-self: center; width: 100%; }
+.ad-side::after { display: none; }
+.ad-side .ad-edit { bottom: auto; top: 30px; right: 10px; z-index: 3; }
+.ad.ad-static { margin-top: 52px; margin-bottom: 84px; }
+@media (prefers-reduced-motion: no-preference) { .ad:hover .ad-bear { animation: bearwave .6s ease-in-out 1; } @keyframes bearwave { 40% { transform: translateY(-4px) rotate(-3deg); } 70% { transform: translateY(0) rotate(2deg); } } }
+.ad-bear.big { width: 156px; height: 67.6px; margin-left: 0; top: -64px; }
+.ad-bear.small { z-index: 1; width: 70px; height: 30px; margin-left: 0; top: -27px; }
+.ad-bear.o-l { left: -8px; } .ad-bear.i-l { left: 118px; }
+.ad-bear.i-r { left: 12px; } .ad-bear.o-r { left: auto; right: -8px; }
+.ad-fbear { position: absolute; bottom: -34px; width: 44px; height: 40px; pointer-events: none; z-index: 1; filter: drop-shadow(0 2px 3px rgba(106, 47, 216, .18)); }
+.ad-fbear.f-l { left: -14px; transform: rotate(18deg); } .ad-fbear.f-r { right: -14px; transform: rotate(-18deg); }
+.ad-paw { position: absolute; top: -13px; width: 34px; height: 24px; pointer-events: none; z-index: 3; filter: drop-shadow(0 2px 3px rgba(106, 47, 216, .2)); }
+.ad-paw.p-tl { left: -11px; transform: rotate(-28deg); } .ad-paw.p-tr { right: -11px; transform: rotate(28deg); }
+.ad-heart { position: absolute; top: -86px; width: 20px; height: 18px; pointer-events: none; z-index: 3; filter: drop-shadow(0 1px 2px rgba(106, 47, 216, .25)); }
+.ad-heart.h-l { left: 112px; } .ad-heart.h-r { left: 70px; }
+@media (prefers-reduced-motion: no-preference) { .ad-heart { animation: heartbob 2.4s ease-in-out infinite; } @keyframes heartbob { 50% { transform: translateY(-4px) scale(1.12); } } }
+.ad.t-lilac { --ad-a: #f1e9fd; --ad-b: #d6c0fa; } .ad.t-pink { --ad-a: #ffe6f1; --ad-b: #ffc2dc; } .ad.t-mint { --ad-a: #e2f8ef; --ad-b: #b6ecd6; } .ad.t-sun { --ad-a: #fff4d1; --ad-b: #ffe08a; } .ad.t-sky { --ad-a: #e4f1ff; --ad-b: #bddcff; }
+.ad-side { display: flex; flex-direction: column; justify-content: center; text-align: center; min-height: 440px; gap: 18px; padding: 28px 20px; }
+.ad-side .ad-emoji { font-size: 4rem; }
+.ad-side .ad-body { align-items: center; }
+.ad-side .ad-cta { align-self: center; }
+@media (prefers-reduced-motion: no-preference) { .ad { transition: transform .2s; } .ad:hover { transform: translateY(-3px) rotate(-.6deg); } .ad .ad-emoji { animation: adbob 3s ease-in-out infinite; } @keyframes adbob { 50% { transform: translateY(-4px) rotate(5deg); } } }
+@media (max-width: 640px) { .ads { grid-template-columns: 1fr; } }
+@media (min-width: 1580px) {
+  .ads { display: block; }
+  .ad-side { position: fixed; top: 160px; width: 200px; max-width: none; }
+  .ad-side.ad-left { left: calc(50% - 560px - 216px); }
+  .ad-side.ad-right { right: calc(50% - 560px - 216px); }
+}
+body.no-ads .ads { display: none; }
+.ad.ad-static { position: static !important; width: auto !important; }
 .avw { position: relative; display: inline-flex; flex: none; }
 .vbadge { position: absolute; right: -3px; bottom: -3px; width: 16px; height: 16px; border-radius: 50%; background: var(--purple); color: #fff; font-size: 10px; line-height: 16px; text-align: center; font-weight: 700; border: 2px solid #fff; box-sizing: content-box; width: 14px; height: 14px; line-height: 14px; }
 .avw.lg .vbadge { width: 22px; height: 22px; line-height: 22px; font-size: 14px; right: 0; bottom: 0; border-width: 3px; }
@@ -341,7 +388,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wr
           <a class="btn ghost" href="#login">Log in</a>
         </div>
       </div>
-      <div class="art" role="img" aria-label="Illustration: a smiling person wearing a headset, recording a video answer, with a question card, a round tracker and a heart floating around the video frame">
+      <div class="art" role="img" aria-label="Illustration: a cute red dragon with spiky hair and a headset, recording a video answer, with a question card, a round tracker and a heart floating around the video frame">
         <span class="blob b1" aria-hidden="true"></span><span class="blob b2" aria-hidden="true"></span><span class="blob b3" aria-hidden="true"></span>
         <div class="art-frame">
           <svg viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -357,21 +404,23 @@ footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wr
             <use href="#spark" x="338" y="62" fill="#ffc2dc"/><use href="#spark" x="330" y="168" fill="#fff" opacity=".8" transform="translate(330 168) scale(.7) translate(-330 -168)"/>
             <use href="#spark" x="78" y="180" fill="#fff" opacity=".8" transform="translate(78 180) scale(.6) translate(-78 -180)"/>
             <circle cx="92" cy="112" r="6" fill="#ff9ec9"/><circle cx="314" cy="124" r="5" fill="#8fe3c0"/><circle cx="108" cy="30" r="4" fill="#8fe3c0"/>
-            <ellipse cx="200" cy="256" rx="98" ry="64" fill="url(#artshirt)"/>
-            <rect x="185" y="186" width="30" height="34" rx="12" fill="#eeb08c"/>
-            <path d="M172 214l28 20 28-20" fill="#fff" opacity=".9"/>
-            <ellipse cx="200" cy="124" rx="84" ry="80" fill="#3b2064"/>
-            <ellipse cx="200" cy="146" rx="64" ry="66" fill="#f6c6a5"/>
-            <path d="M134 128c6-38 36-54 66-54s60 16 66 54c-20-16-42-26-66-26s-46 10-66 26z" fill="#3b2064"/>
+            <path d="M132 220c-44-8-70-44-62-86 24 10 46 26 56 52z" fill="#d63c47"/><path d="M268 220c44-8 70-44 62-86-24 10-46 26-56 52z" fill="#d63c47"/>
+            <path d="M120 200c-24-6-40-26-38-50 14 6 28 16 36 32z" fill="#ff8a8f" opacity=".7"/><path d="M280 200c24-6 40-26 38-50-14 6-28 16-36 32z" fill="#ff8a8f" opacity=".7"/>
+            <ellipse cx="200" cy="256" rx="98" ry="64" fill="#ff5a5f"/>
+            <ellipse cx="200" cy="264" rx="52" ry="46" fill="#ffe9a8"/>
+            <rect x="180" y="190" width="40" height="38" rx="14" fill="#ff5a5f"/>
+            <path d="M134 106L130 64l26 22 4-42 24 32 14-42 16 42 24-34 6 42 26-24-4 46q-66-30-136 0z" fill="#ffd23f"/><path d="M160 86l4-26 14 22M214 74l12-30 8 30M250 82l8-22 4 26" fill="none" stroke="#ff9f1c" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M146 100l-18-42 36 24zM254 100l18-42-36 24z" fill="#fff" stroke="#e6dcf5" stroke-width="2" stroke-linejoin="round"/>
+            <ellipse cx="200" cy="146" rx="70" ry="64" fill="#ff5a5f"/>
+            <ellipse cx="200" cy="174" rx="42" ry="29" fill="#ff9c9c"/>
             <path d="M128 134c0-50 32-78 72-78s72 28 72 78" fill="none" stroke="#6a2fd8" stroke-width="9" stroke-linecap="round"/>
             <rect x="114" y="126" width="20" height="40" rx="10" fill="#6a2fd8"/><rect x="266" y="126" width="20" height="40" rx="10" fill="#6a2fd8"/>
-            <path d="M276 162c0 24-18 32-44 34" fill="none" stroke="#6a2fd8" stroke-width="6" stroke-linecap="round"/><circle cx="228" cy="196" r="8" fill="#ff9ec9"/>
-            <path d="M160 128c6-5 16-5 22 0M218 128c6-5 16-5 22 0" fill="none" stroke="#3b2064" stroke-width="4" stroke-linecap="round"/>
-            <ellipse cx="172" cy="148" rx="10" ry="12" fill="#2b1650"/><ellipse cx="228" cy="148" rx="10" ry="12" fill="#2b1650"/>
-            <circle cx="176" cy="143" r="4" fill="#fff"/><circle cx="232" cy="143" r="4" fill="#fff"/>
-            <ellipse cx="150" cy="168" rx="15" ry="10" fill="url(#artcheek)"/><ellipse cx="250" cy="168" rx="15" ry="10" fill="url(#artcheek)"/>
-            <path d="M200 156c-3 6-3 10 2 11" fill="none" stroke="#d98f6c" stroke-width="3" stroke-linecap="round"/>
-            <path d="M182 176c8 11 28 11 36 0" fill="none" stroke="#b5446e" stroke-width="4" stroke-linecap="round"/>
+            <path d="M276 162c0 24-18 34-46 36" fill="none" stroke="#6a2fd8" stroke-width="6" stroke-linecap="round"/><circle cx="226" cy="198" r="8" fill="#ff9ec9"/>
+            <ellipse cx="170" cy="138" rx="11" ry="14" fill="#2b1650"/><ellipse cx="230" cy="138" rx="11" ry="14" fill="#2b1650"/>
+            <circle cx="174" cy="132" r="4.5" fill="#fff"/><circle cx="234" cy="132" r="4.5" fill="#fff"/>
+            <ellipse cx="148" cy="164" rx="15" ry="10" fill="url(#artcheek)"/><ellipse cx="252" cy="164" rx="15" ry="10" fill="url(#artcheek)"/>
+            <ellipse cx="189" cy="166" rx="3.5" ry="5" fill="#3a8f78"/><ellipse cx="211" cy="166" rx="3.5" ry="5" fill="#3a8f78"/>
+            <path d="M184 183c8 9 24 9 32 0" fill="none" stroke="#2f7a65" stroke-width="4" stroke-linecap="round"/>
           </svg>
           <span class="art-rec"><span class="rec" aria-hidden="true"></span>REC 01:12</span>
         </div>
@@ -492,9 +541,10 @@ footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wr
     <p class="notice">Recordings are saved in the site. They are not downloaded unless you press Download.</p>
   </main>
 
+  <div id="ads" class="ads" aria-label="Advertisements"></div>
   <footer>
     <span>Interviewed. Video interviews for interviewees and employers.</span>
-    <span>&copy; 2026 Mia. All rights reserved. · <a href="#admin-setup">Administrator</a></span>
+    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.10.0</span> · <a href="#admin-setup">Administrator</a></span>
   </footer>
 </div>
 
@@ -2973,8 +3023,9 @@ viewNetwork = (function (prev) { return function () {
 var SB = { url: 'https://hmeoctkfdizbkzzyyzse.supabase.co', key: 'sb_publishable_TY3H4tsH85L6TdABIH76CQ_2jeONh-N', site: 'https://amysos1.github.io/interviewed/' };
 var sbRecovery = null;
 function sbRedirect() { return /github\.io$/.test(location.hostname) ? SB.site : location.href.split('#')[0]; }
-function sbCall(path, method, body, token) {
+function sbCall(path, method, body, token, extra) {
   var h = { 'apikey': SB.key, 'Content-Type': 'application/json' };
+  if (extra) Object.keys(extra).forEach(function (k) { h[k] = extra[k]; });
   if (token) h.Authorization = 'Bearer ' + token;
   return fetch(SB.url + path, { method: method, headers: h, body: body ? JSON.stringify(body) : undefined }).then(function (r) {
     return r.text().then(function (t) { var d = {}; try { d = t ? JSON.parse(t) : {}; } catch (e) { } return { ok: r.ok, status: r.status, data: d }; });
@@ -3065,6 +3116,7 @@ forms.login = function (f) {
   sbCall('/auth/v1/token?grant_type=password', 'POST', { email: email, password: pw }).then(function (r) {
     if (r.ok && r.data.access_token && r.data.user) {
       var res = sbFinish(r.data.user, r.data.access_token);
+      if (res.user && res.user.role === 'admin') adsSetToken(r.data.access_token);
       if (res.suspended) { showErrors(f, { password: 'This account has been suspended by an administrator.' }); return; }
       var n = ui.next; ui = {}; R.key = ''; go(n || (res.isNew ? 'setup' : homeFor(res.user))); return;
     }
@@ -3171,6 +3223,168 @@ forms.chooserole = function (f) {
   if (res.suspended) { toast('This account has been suspended by an administrator.'); go('login'); return; }
   ui = {}; R.key = ''; renderHeader(); toast('Account created.'); go('setup');
 };
+/* ================= Ad banners (left, right, footer) edited by the administrator ================= */
+var AD_THEMES = [['lilac', 'Lilac'], ['pink', 'Pink'], ['mint', 'Mint'], ['sun', 'Sunshine'], ['sky', 'Sky']];
+var AD_ICONS = ['☕', '🚀', '💜', '🌈', '⭐', '🎓', '💼', '🎉', '🍀', '🦄', '🐉', '🐰'];
+var AD_NAMES = { left: 'Left banner', right: 'Right banner', foot: 'Footer banner' };
+function defaultAds() {
+  return {
+    left: { on: true, icon: '☕', title: 'Coffee chat', text: 'Meet someone new over video.', cta: 'Try it', link: '#coffee', theme: 'pink' },
+    right: { on: true, icon: '🚀', title: 'Boost your job post', text: 'Stay at the top of the results.', cta: 'Sponsor a job', link: '#jobs', theme: 'sky' },
+    foot: { on: true, icon: '💜', title: 'Your ad could be here', text: 'Reach interviewees and employers. Ask the site owner about advertising.', cta: '', link: '', theme: 'lilac' }
+  };
+}
+function safeAdLink(l) { l = String(l || '').trim(); return /^(#[a-z0-9-]*|https?:\/\/[^\s"'<>]+)$/i.test(l) ? l : ''; }
+function adsData() {
+  if (!db.ads) db.ads = defaultAds();
+  var d = defaultAds(); ['left', 'right', 'foot'].forEach(function (k) { if (!db.ads[k]) db.ads[k] = d[k]; });
+  return db.ads;
+}
+/* ---- Cute bears. Every bear is a different type. ---- */
+var BEAR_TYPES = {
+  polar: { fur: '#ffffff', ear: '#ffc2dc', muzzle: '#f6efff', nose: '#2b1650', line: '#d9c9f2' },
+  panda: { fur: '#ffffff', ear: '#4b3d63', muzzle: '#f6efff', nose: '#2b1650', line: '#d9c9f2', patch: '#2b1650' },
+  brown: { fur: '#b9794a', ear: '#7a4a2b', muzzle: '#f0d2b0', nose: '#3b2314', line: '#8c5a37' },
+  black: { fur: '#5a5370', ear: '#3a334d', muzzle: '#ecd0a8', nose: '#1b1528', line: '#3a334d' },
+  sun: { fur: '#f2b84b', ear: '#c98a1d', muzzle: '#fff1c9', nose: '#3b2314', line: '#c98a1d' },
+  teddy: { fur: '#f4d2a6', ear: '#e9b98a', muzzle: '#fff4e3', nose: '#7a3b2e', line: '#d9a877', bow: true },
+  pink: { fur: '#ffc7de', ear: '#ff9ec9', muzzle: '#fff0f6', nose: '#b5446e', line: '#ff9ec9' },
+  purple: { fur: '#a47be8', ear: '#7b4fd1', muzzle: '#efe4ff', nose: '#2b1650', line: '#7b4fd1' },
+  lilac: { fur: '#d9c4fa', ear: '#b48cff', muzzle: '#f6efff', nose: '#4a1fa8', line: '#b48cff' }
+};
+function bearFace(t, cx, cy, s) {
+  var e = 15 * s, h = '';
+  if (t.patch) h += '<ellipse cx="' + (cx - e) + '" cy="' + (cy - 3 * s) + '" rx="' + 7 * s + '" ry="' + 8 * s + '" fill="' + t.patch + '"/><ellipse cx="' + (cx + e) + '" cy="' + (cy - 3 * s) + '" rx="' + 7 * s + '" ry="' + 8 * s + '" fill="' + t.patch + '"/>';
+  h += '<ellipse cx="' + (cx - 22 * s) + '" cy="' + (cy + 9 * s) + '" rx="' + 6 * s + '" ry="' + 4 * s + '" fill="#ffb3d4" opacity=".75"/><ellipse cx="' + (cx + 22 * s) + '" cy="' + (cy + 9 * s) + '" rx="' + 6 * s + '" ry="' + 4 * s + '" fill="#ffb3d4" opacity=".75"/>';
+  h += '<circle cx="' + (cx - e) + '" cy="' + (cy - 3 * s) + '" r="' + 4 * s + '" fill="#2b1650"/><circle cx="' + (cx + e) + '" cy="' + (cy - 3 * s) + '" r="' + 4 * s + '" fill="#2b1650"/>';
+  h += '<circle cx="' + (cx - e + 1.4 * s) + '" cy="' + (cy - 4.4 * s) + '" r="' + 1.4 * s + '" fill="#fff"/><circle cx="' + (cx + e + 1.4 * s) + '" cy="' + (cy - 4.4 * s) + '" r="' + 1.4 * s + '" fill="#fff"/>';
+  h += '<ellipse cx="' + cx + '" cy="' + (cy + 8 * s) + '" rx="' + 11 * s + '" ry="' + 8 * s + '" fill="' + t.muzzle + '"/><ellipse cx="' + cx + '" cy="' + (cy + 5 * s) + '" rx="' + 4.5 * s + '" ry="' + 3.2 * s + '" fill="' + t.nose + '"/>';
+  h += '<path d="M' + (cx - 6 * s) + ' ' + (cy + 10 * s) + 'c' + 3 * s + ' ' + 4 * s + ' ' + 9 * s + ' ' + 4 * s + ' ' + 12 * s + ' 0" fill="none" stroke="#b5446e" stroke-width="' + 2 * s + '" stroke-linecap="round"/>';
+  return h;
+}
+function bearSvg(type, mode, cls) {
+  var t = BEAR_TYPES[type], st = ' stroke="' + t.line + '" stroke-width="2.5"', fur = t.patch ? t.patch : t.fur;
+  var ear = function (x, y, r) { return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="' + (t.patch || t.fur) + '"' + st + '/>' + (t.patch ? '' : '<circle cx="' + x + '" cy="' + y + '" r="' + r / 2 + '" fill="' + t.ear + '"/>'); };
+  var paw = function (x, y, rx, ry) { return '<ellipse cx="' + x + '" cy="' + y + '" rx="' + rx + '" ry="' + ry + '" fill="' + (t.patch || t.fur) + '"' + st + '/>' + (t.patch ? '' : '<path d="M' + (x - 5) + ' ' + (y - 2) + 'v3M' + x + ' ' + (y - 2) + 'v3M' + (x + 5) + ' ' + (y - 2) + 'v3" stroke="' + t.ear + '" stroke-width="1.6" stroke-linecap="round" opacity=".7"/>'); };
+  var bow = t.bow ? '<path d="M60 56l-12-7v14zM60 56l12-7v14z" fill="#ff7eb6"/><circle cx="60" cy="56" r="3.5" fill="#ff5c9e"/>' : '';
+  var head = function (cx, cy, rx, ry, s) { return '<ellipse cx="' + cx + '" cy="' + cy + '" rx="' + rx + '" ry="' + ry + '" fill="' + t.fur + '"' + st + '/>' + bearFace(t, cx, cy, s); };
+  if (mode === 'peek' || mode === 'peekhead') return '<svg class="ad-bear ' + (cls || '') + '" viewBox="0 0 120 52" aria-hidden="true">' + ear(31, 13, 11) + ear(89, 13, 11) + head(60, 35, 40, 28, 1) + (mode === 'peek' ? paw(34, 50, 13, 7) + paw(86, 50, 13, 7) : '') + '</svg>';
+  if (mode === 'paw') return '<svg class="ad-paw ' + (cls || '') + '" viewBox="0 0 34 24" aria-hidden="true">' + paw(17, 12, 14, 10) + '</svg>';
+  if (mode === 'hang') return '<svg class="ad-hang ' + (cls || '') + '" viewBox="0 0 120 60" aria-hidden="true">' + ear(31, 17, 10) + ear(89, 17, 10) + head(60, 36, 40, 24, .95) + paw(34, 7, 13, 7) + paw(86, 7, 13, 7) + '</svg>';
+  /* foot: the sole of a bear foot with toe beans, sticking out from behind a corner */
+  return '<svg class="ad-fbear ' + (cls || '') + '" viewBox="0 0 44 40" aria-hidden="true"><ellipse cx="22" cy="24" rx="18" ry="14" fill="' + (t.patch || t.fur) + '"' + st + '/><ellipse cx="22" cy="28" rx="8.5" ry="6.5" fill="' + t.ear + '"/>' +
+    '<circle cx="10" cy="13" r="4.3" fill="' + t.ear + '"/><circle cx="18" cy="8.5" r="4.3" fill="' + t.ear + '"/><circle cx="26" cy="8.5" r="4.3" fill="' + t.ear + '"/><circle cx="34" cy="13" r="4.3" fill="' + t.ear + '"/></svg>';
+}
+function heartSvg(color, cls) { return '<svg class="ad-heart ' + cls + '" viewBox="0 0 24 22" aria-hidden="true"><path d="M12 20.5C5 14.800 1.500 11.500 1.500 7.300 1.500 4.200 3.800 2 6.500 2c2.300 0 4.300 1.300 5.500 3.200C13.200 3.300 15.200 2 17.500 2c2.700 0 5 2.200 5 5.300 0 4.200-3.500 7.500-10.500 13.200z" fill="' + color + '" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>'; }
+var AD_BEARS = {
+  left: bearSvg('pink', 'peekhead', 'big o-l') + bearSvg('polar', 'peek', 'small i-l') + heartSvg('#ffd23f', 'h-l') + bearSvg('pink', 'paw', 'p-tl') + bearSvg('pink', 'paw', 'p-tr'),
+  right: bearSvg('panda', 'peek', 'small i-r') + bearSvg('purple', 'peekhead', 'big o-r') + heartSvg('#5fd3a3', 'h-r') + bearSvg('purple', 'paw', 'p-tl') + bearSvg('purple', 'paw', 'p-tr'),
+  foot: bearSvg('sun', 'peek', 'c-tl') + bearSvg('teddy', 'peek', 'c-tr')
+};
+function adHtml(k, a, admin) {
+  var link = admin ? '' : safeAdLink(a.link), ext = /^https?:/i.test(link), side = k !== 'foot';
+  var inner = '<span class="ad-emoji" aria-hidden="true">' + esc(a.icon) + '</span><span class="ad-body"><b>' + esc(a.title) + '</b><span class="ad-text">' + esc(a.text) + '</span>' +
+    (a.cta && safeAdLink(a.link) ? '<span class="ad-cta">' + esc(a.cta) + '</span>' : '') + '</span><span class="ad-tag">Ad</span>' + AD_BEARS[k];
+  var cls = 'ad t-' + esc(a.theme) + ' ' + (side ? 'ad-side ad-' + k : 'ad-foot');
+  var el = link ? '<a class="' + cls + '" href="' + esc(link) + '"' + (ext ? ' target="_blank" rel="noopener sponsored"' : '') + '>' + inner + '</a>' : '<div class="' + cls + '">' + inner + '</div>';
+  return admin ? el.replace(/<\/(a|div)>$/, '<button type="button" class="ad-edit" data-act="ad-edit" data-id="' + k + '">Edit ad</button></$1>') : el;
+}
+function renderAds() {
+  var box = $('ads'); if (!box) return;
+  var u = me(), admin = u && u.role === 'admin', a = adsData();
+  var hide = R.name === 'studio' || R.name === 'live';
+  document.body.classList.toggle('no-ads', hide);
+  box.innerHTML = ['left', 'right', 'foot'].filter(function (k) { return a[k].on; }).map(function (k) { return adHtml(k, a[k], admin); }).join('');
+}
+renderHeader = (function (prev) { return function () { prev(); renderAds(); }; })(renderHeader);
+acts['ad-edit'] = function (el) { ui.tab = 'ads'; ui.adFocus = el.dataset.id; go('admin'); };
+
+/* Admin tab: one small form per banner */
+function adsAdminHtml() {
+  var a = adsData();
+  return adsConnectHtml() + '<p class="sub">Change a banner and press Save. It updates straight away. Leave the link empty for a banner without a button.</p>' +
+    ['left', 'right', 'foot'].map(function (k) {
+      var x = a[k];
+      return '<form data-form="adsave" data-id="' + k + '" class="box tint" novalidate><h3>' + AD_NAMES[k] + '</h3><div style="max-width:' + (k === 'foot' ? '560' : '220') + 'px;margin-bottom:12px">' + adHtml(k, x, false).replace('ad-side', 'ad-side ad-static') + '</div>' +
+        '<div class="row2"><div class="field"><label>Icon</label><select name="icon">' + AD_ICONS.map(function (i) { return '<option' + (i === x.icon ? ' selected' : '') + '>' + i + '</option>'; }).join('') + '</select></div>' +
+        '<div class="field"><label>Color</label><select name="theme">' + AD_THEMES.map(function (t) { return '<option value="' + t[0] + '"' + (t[0] === x.theme ? ' selected' : '') + '>' + t[1] + '</option>'; }).join('') + '</select></div></div>' +
+        '<div class="field"><label>Headline</label><input type="text" name="title" maxlength="50" value="' + esc(x.title) + '"></div>' +
+        '<div class="field"><label>Text</label><input type="text" name="text" maxlength="110" value="' + esc(x.text) + '"></div>' +
+        '<div class="row2"><div class="field"><label>Button words <span class="opt">(optional)</span></label><input type="text" name="cta" maxlength="22" value="' + esc(x.cta) + '"></div>' +
+        '<div class="field"><label>Link <span class="opt">(https://… or #jobs)</span></label><input type="text" name="link" maxlength="300" value="' + esc(x.link) + '"><p class="err" data-err="link" aria-live="polite"></p></div></div>' +
+        '<label class="check"><input type="checkbox" name="on"' + (x.on ? ' checked' : '') + '> Show this banner</label>' +
+        '<div class="acts" style="margin-top:10px"><button class="btn" type="submit">Save ' + AD_NAMES[k].toLowerCase() + '</button><button class="btn ghost" type="button" data-act="ad-reset" data-id="' + k + '">Reset to default</button></div></form>';
+    }).join('');
+}
+renderAdminParts = (function (prev) { return function () {
+  prev(); if (ui.tab !== 'ads') return;
+  $('ad-list').innerHTML = adsAdminHtml();
+  if (ui.adFocus) { var f = document.querySelector('form[data-form="adsave"][data-id="' + ui.adFocus + '"]'); ui.adFocus = ''; if (f) f.scrollIntoView({ block: 'center' }); }
+}; })(renderAdminParts);
+forms.adsave = function (f) {
+  var u = me(); if (!u || u.role !== 'admin') return;
+  var k = f.dataset.id, a = adsData(), link = f.elements.link.value.trim();
+  if (link && !safeAdLink(link)) { showErrors(f, { link: 'Use a web address starting with https:// or a page like #jobs.' }); return; }
+  a[k] = { on: f.elements.on.checked, icon: f.elements.icon.value, title: f.elements.title.value.trim() || 'Advertisement', text: f.elements.text.value.trim(), cta: f.elements.cta.value.trim(), link: link, theme: f.elements.theme.value };
+  audit('Updated the ' + AD_NAMES[k].toLowerCase()); save(); renderAds(); renderAdminParts(); adsShare(k, AD_NAMES[k] + ' saved.');
+};
+acts['ad-reset'] = function (el) { var k = el.dataset.id; adsData()[k] = defaultAds()[k]; audit('Reset the ' + AD_NAMES[k].toLowerCase()); save(); renderAds(); renderAdminParts(); adsShare(k, 'Reset.'); };
+
+/* ---- Show the ads to everyone through Supabase (table site_ads) ---- */
+var adsToken = ''; try { adsToken = sessionStorage.getItem('interviewed.sbtoken') || ''; } catch (e) { }
+var adsSync = '';
+function adsSetToken(t) { adsToken = t || ''; try { if (t) sessionStorage.setItem('interviewed.sbtoken', t); else sessionStorage.removeItem('interviewed.sbtoken'); } catch (e) { } }
+function adsClean(k, x) {
+  var d = defaultAds()[k], th = AD_THEMES.map(function (t) { return t[0]; }); x = x || {};
+  function s(v, n, f) { return typeof v === 'string' ? v.slice(0, n) : f; }
+  return { on: x.on !== false, icon: s(x.icon, 8, d.icon), title: s(x.title, 50, d.title), text: s(x.text, 110, d.text), cta: s(x.cta, 22, ''), link: safeAdLink(x.link), theme: th.indexOf(x.theme) >= 0 ? x.theme : d.theme };
+}
+function adsLoad() {
+  sbCall('/rest/v1/site_ads?select=slot,data', 'GET').then(function (r) {
+    if (!r.ok || !Array.isArray(r.data)) { adsSync = 'fail'; return; }
+    adsSync = 'ok';
+    if (!r.data.length) return;
+    var a = adsData();
+    r.data.forEach(function (row) { if (['left', 'right', 'foot'].indexOf(row.slot) >= 0) a[row.slot] = adsClean(row.slot, row.data); });
+    save(); renderAds();
+    if (R.name === 'admin' && ui.tab === 'ads') renderAdminParts();
+  }, function () { adsSync = 'fail'; });
+}
+function adsPublish(k) {
+  if (!adsToken) return Promise.resolve('notoken');
+  return sbCall('/rest/v1/site_ads?on_conflict=slot', 'POST', { slot: k, data: adsData()[k] }, adsToken, { 'Prefer': 'resolution=merge-duplicates,return=minimal' }).then(function (r) {
+    if (r.ok) return 'ok';
+    if (r.status === 401) { adsSetToken(''); return 'expired'; }
+    if (r.status === 403) return 'denied';
+    if (r.status === 404) return 'notable';
+    return 'fail';
+  }, function () { return 'fail'; });
+}
+function adsSay(st, msg) {
+  var t = { ok: msg + ' Everyone can see it now.', notoken: msg + ' Saved in this browser only. Connect below to show it to everyone.', expired: msg + ' Your connection ran out, so it is saved in this browser only. Connect again below.', denied: msg + ' This account is not allowed to publish. Check the email in the SQL step.', notable: msg + ' The site_ads table was not found. Run the SQL step first.', fail: msg + ' Saved here, but Supabase could not be reached.' };
+  toast(t[st] || msg);
+  if (R.name === 'admin' && ui.tab === 'ads') renderAdminParts();
+}
+function adsShare(k, msg) { adsPublish(k).then(function (st) { adsSay(st, msg); }); }
+function adsConnectHtml() {
+  return '<div class="box tint"><h3>Show ads to everyone</h3><p class="sub">' + (adsToken ? 'Connected. Saving a banner now updates it for every visitor.' : 'Not connected. Banners you save are only visible in this browser until you connect.') + '</p>' +
+    '<form data-form="adsconnect" novalidate><div class="row2"><div class="field"><label>Your Supabase account email</label><input type="email" name="email" autocomplete="email"></div>' +
+    '<div class="field"><label>Password</label><input type="password" name="password" autocomplete="current-password"><p class="err" data-err="password" aria-live="polite"></p></div></div>' +
+    '<div class="acts"><button class="btn" type="submit">' + (adsToken ? 'Connect again' : 'Connect') + '</button>' +
+    (adsToken ? '<button class="btn ghost" type="button" data-act="ad-publish-all">Publish all three banners now</button>' : '') + '</div></form></div>';
+}
+forms.adsconnect = function (f) {
+  var u = me(); if (!u || u.role !== 'admin') return;
+  var email = f.elements.email.value.trim().toLowerCase(), pw = f.elements.password.value;
+  if (!validEmail(email) || !pw) { showErrors(f, { password: 'Enter the email and password of your Supabase account.' }); return; }
+  sbCall('/auth/v1/token?grant_type=password', 'POST', { email: email, password: pw }).then(function (r) {
+    if (r.ok && r.data.access_token) { adsSetToken(r.data.access_token); toast('Connected.'); renderAdminParts(); return; }
+    showErrors(f, { password: 'That email and password did not work.' });
+  }, function () { showErrors(f, { password: 'Could not reach Supabase. Check your connection.' }); });
+};
+acts['ad-publish-all'] = function () {
+  Promise.all(['left', 'right', 'foot'].map(adsPublish)).then(function (r) { adsSay(r.every(function (x) { return x === 'ok'; }) ? 'ok' : r.filter(function (x) { return x !== 'ok'; })[0], 'Published.'); });
+};
 
 /* ================= Administrator ================= */
 function adminExists() { return db.users.some(function (x) { return x.role === 'admin'; }); }
@@ -3197,11 +3411,11 @@ function renderAdminParts() {
   $('ad-stats').innerHTML = statBox('Accounts', people.length) + statBox('Employers', people.filter(function (x) { return x.role === 'employer'; }).length) +
     statBox('Interviewees', people.filter(function (x) { return x.role === 'interviewer'; }).length) + statBox('Jobs', db.jobs.length) +
     statBox('Videos', db.videos.length) + statBox('Comments', db.comments.length) + statBox('Suspended', people.filter(function (x) { return x.suspended; }).length);
-  var tabs = [['users', 'Accounts'], ['videos', 'Videos'], ['comments', 'Comments'], ['jobs', 'Jobs'], ['log', 'Activity']];
+  var tabs = [['users', 'Accounts'], ['videos', 'Videos'], ['comments', 'Comments'], ['jobs', 'Jobs'], ['ads', 'Ads'], ['log', 'Activity']];
   $('ad-tabs').innerHTML = '<span class="seg" role="group" aria-label="Admin sections" style="flex-wrap:wrap">' + tabs.map(function (t) {
     return '<button type="button" data-act="ad-tab" data-v="' + t[0] + '" aria-pressed="' + (ui.tab === t[0]) + '">' + t[1] + '</button>';
   }).join('') + '</span>';
-  $('ad-search').hidden = ui.tab === 'log';
+  $('ad-search').hidden = ui.tab === 'log' || ui.tab === 'ads';
   var q = (ui.q || '').toLowerCase(), has = function (s) { return !q || String(s || '').toLowerCase().indexOf(q) > -1; };
   var rows = [], empty = '<p class="sub">Nothing matches.</p>';
   if (ui.tab === 'users') {
@@ -3923,7 +4137,7 @@ function drawAvatar() {
   if (FX.level > 0.25) { ctx.fillStyle = '#e8708a'; ctx.beginPath(); ctx.ellipse(cx, cy + r * 0.52 + mh * 0.45, r * 0.13, mh * 0.35, 0, 0, Math.PI * 2); ctx.fill(); }
 }
 
-sbBoot();
+sbBoot(); adsLoad();
 renderHeader();
 route();
 })();
