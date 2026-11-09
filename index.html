@@ -103,6 +103,14 @@ p { margin: 0; }
 .ad-side .ad-cta { align-self: center; }
 @media (prefers-reduced-motion: no-preference) { .ad { transition: transform .2s; } .ad:hover { transform: translateY(-3px) rotate(-.6deg); } .ad .ad-emoji { animation: adbob 3s ease-in-out infinite; } @keyframes adbob { 50% { transform: translateY(-4px) rotate(5deg); } } }
 @media (max-width: 640px) { .ads { grid-template-columns: 1fr; } }
+@media (min-width: 1360px) and (max-width: 1579px) {
+  .ads { display: block; }
+  .ad-side { position: fixed; top: 150px; width: 150px; max-width: none; min-height: 400px; padding: 24px 12px; }
+  .ad-side .ad-emoji { font-size: 3rem; }
+  .ad-side .ad-bear.small { display: none; }
+  .ad-side.ad-left { left: calc(50% - 560px - 160px); }
+  .ad-side.ad-right { right: calc(50% - 560px - 160px); }
+}
 @media (min-width: 1580px) {
   .ads { display: block; }
   .ad-side { position: fixed; top: 160px; width: 200px; max-width: none; }
@@ -544,7 +552,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wr
   <div id="ads" class="ads" aria-label="Advertisements"></div>
   <footer>
     <span>Interviewed. Video interviews for interviewees and employers.</span>
-    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.10.0</span> · <a href="#admin-setup">Administrator</a></span>
+    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.10.1</span> · <a href="#admin-setup">Administrator</a></span>
   </footer>
 </div>
 
