@@ -290,6 +290,10 @@ textarea { resize: vertical; min-height: 96px; }
 .comment { display: flex; gap: 12px; align-items: flex-start; }
 .comment .body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .comment .who2 { font-weight: 700; }
+.comment.top { background: var(--tint); border: 2px solid var(--purple); border-radius: 14px; padding: 12px; }
+.comment .topchip { align-self: flex-start; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.02em; color: #fff; background: var(--purple); border-radius: 999px; padding: 2px 10px; margin-bottom: 4px; }
+.comment .vote { flex: 0 0 auto; font-variant-numeric: tabular-nums; }
+.comment .vote[aria-pressed="true"] { background: var(--purple); color: #fff; border-color: var(--purple); }
 .comment .txt { white-space: pre-wrap; overflow-wrap: anywhere; }
 .pl-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
 
@@ -558,7 +562,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wr
   <div id="ads" class="ads" aria-label="Advertisements"></div>
   <footer>
     <span>Interviewed. Video interviews for interviewees and employers.</span>
-    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.12.0</span> · <a href="#admin-setup">Administrator</a></span>
+    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.15.0</span> · <a href="#admin-setup">Administrator</a></span>
   </footer>
 </div>
 
@@ -1546,13 +1550,17 @@ function renderWatchComments() {
   var v = curVideo(), u = me(); if (!v) return;
   var own = u && u.id === v.ownerId, priv = v.commentsMode === 'private';
   var all = db.comments.filter(function (c) { return c.videoId === v.id; }).sort(function (a, b) { return a.createdAt - b.createdAt; });
-  var list = priv && !own ? [] : all;
+  var list = priv && !own ? [] : all.slice();
+  var topC = null; list.forEach(function (c) { var n = (c.votes || []).length; if (n > 0 && (!topC || n > (topC.votes || []).length)) topC = c; });
+  if (topC) list = [topC].concat(list.filter(function (c) { return c !== topC; }));
   var h = '<h2>Comments' + (list.length ? ' (' + list.length + ')' : '') + '</h2>';
   if (priv && !own) h += '<p class="sub">The owner keeps comments on this video private. You can still leave one and only they will see it.</p>';
   else if (priv && own) h += '<p class="sub">Comments are private. Only you can read them.</p>';
   h += list.length ? '<ul class="list">' + list.map(function (c) {
     var a = c.authorId ? byId(db.users, c.authorId) : null;
-    return '<li class="comment">' + avatar(a || { name: c.name }) + '<div class="body"><span class="who2">' + esc(a ? a.name : c.name) + ' <span class="meta">' + esc(fmtDate(c.createdAt)) + '</span></span><span class="txt">' + esc(c.text) + '</span></div>' +
+    var nv = (c.votes || []).length, mine = u && (c.votes || []).indexOf(u.id) >= 0, isTop = c === topC;
+    return '<li class="comment' + (isTop ? ' top' : '') + '">' + avatar(a || { name: c.name }) + '<div class="body">' + (isTop ? '<span class="topchip">★ Top comment</span>' : '') + '<span class="who2">' + esc(a ? a.name : c.name) + ' <span class="meta">' + esc(fmtDate(c.createdAt)) + '</span></span><span class="txt">' + esc(c.text) + '</span></div>' +
+      '<button class="btn ghost small vote" type="button" data-act="c-vote" data-id="' + c.id + '" aria-pressed="' + (mine ? 'true' : 'false') + '" aria-label="Upvote this comment"' + (!u || (c.authorId && c.authorId === u.id) ? ' disabled' : '') + '>▲ ' + nv + '</button>' +
       (own || (u && (c.authorId === u.id || u.role === 'admin')) ? '<button class="btn ghost small" type="button" data-act="c-del" data-id="' + c.id + '" aria-label="Delete comment">Delete</button>' : '') + '</li>';
   }).join('') + '</ul>' : (priv && !own ? '' : '<p class="sub">No comments yet.</p>');
   h += '<form data-form="comment" novalidate>' + (u ? '' : '<div class="field"><label for="c-name">Your name</label><input type="text" id="c-name" name="cname" maxlength="40" value="' + esc(ui.guest || '') + '"><p class="err" data-err="cname" aria-live="polite"></p></div>') +
@@ -1571,6 +1579,11 @@ forms.comment = function (f) {
   if (!u) ui.guest = name;
   db.comments.push({ id: uid(), videoId: v.id, authorId: u ? u.id : null, name: name, text: text, createdAt: Date.now() });
   save(); toast('Comment posted.'); renderWatchComments();
+};
+acts['c-vote'] = function (el) {
+  var u = me(), c = byId(db.comments, el.dataset.id); if (!u || !c || c.authorId === u.id) return;
+  c.votes = c.votes || []; var k = c.votes.indexOf(u.id); if (k >= 0) c.votes.splice(k, 1); else c.votes.push(u.id);
+  save(); renderWatchComments();
 };
 acts['c-del'] = function (el) { db.comments = db.comments.filter(function (c) { return c.id !== el.dataset.id; }); save(); toast('Comment deleted.'); renderWatchComments(); };
 
@@ -3431,7 +3444,12 @@ function profRefresh() {
 }
 function profPayload(u) {
   var ph = typeof u.photo === 'string' && /^data:image\//.test(u.photo) && u.photo.length < 150000 ? u.photo : null;
-  return { name: u.name || '', role: u.role === 'employer' ? 'employer' : 'interviewer', company: u.company || '', headline: u.headline || '', location: u.location || '', about: (u.about || '').slice(0, 2000), photo: ph, chk: hasCheck(u), createdAt: u.createdAt || 0 };
+  var o = { name: u.name || '', role: u.role === 'employer' ? 'employer' : 'interviewer', company: u.company || '', headline: u.headline || '', location: u.location || '', about: (u.about || '').slice(0, 2000), photo: ph, chk: hasCheck(u), createdAt: u.createdAt || 0 };
+  if (u.role === 'interviewer' && u.profiles && u.profiles.length) {
+    o.profiles = u.profiles.slice(0, 3).map(function (pr) { return { id: String(pr.id).slice(0, 40), name: String(pr.name || '').slice(0, 60), headline: String(pr.headline || '').slice(0, 120), location: String(pr.location || '').slice(0, 80), sections: (pr.sections || []).filter(function (s) { return s.visible; }).slice(0, 10).map(function (s) { return { id: String(s.id).slice(0, 40), title: String(s.title || '').slice(0, 80), body: String(s.body || '').slice(0, 4000), visible: true }; }) }; });
+    o.defProfile = String(u.defaultProfileId || '').slice(0, 40);
+  }
+  return o;
 }
 function profPublish(force) {
   var u = me(); if (!u || !u.sbId || !profSess || u.remote) return;
@@ -3441,7 +3459,7 @@ function profPublish(force) {
     .then(function (r) { if (r && r.ok) profLast = s; }, function () { });
 }
 save = (function (prev) { return function () { prev(); clearTimeout(profTimer); profTimer = setTimeout(function () { profPublish(false); }, 1500); }; })(save);
-function profSignedIn(d) { profSetSess(d); setTimeout(function () { profPublish(true); if (typeof jobsPublish === 'function') jobsPublish(); }, 300); }
+function profSignedIn(d) { profSetSess(d); setTimeout(function () { profPublish(true); if (typeof jobsPublish === 'function') jobsPublish(); if (typeof recSync === 'function') recSync(); if (typeof vidSync === 'function') vidSync(); if (typeof socSync === 'function') setTimeout(socSync, 3000); }, 300); }
 function profLoad() {
   return sbCall('/rest/v1/profiles?select=id,data&limit=1000', 'GET').then(function (r) {
     if (!r.ok || !Array.isArray(r.data)) return;
@@ -3450,6 +3468,10 @@ function profLoad() {
       if (!row || !/^[a-z0-9]{6,40}$/i.test(String(row.id))) return;
       var d = row.data || {}, u = byId(db.users, row.id);
       var pub = { name: s(d.name, 80) || 'Member', role: d.role === 'employer' ? 'employer' : 'interviewer', company: s(d.company, 80), headline: s(d.headline, 120), location: s(d.location, 80), about: s(d.about, 2000), photo: typeof d.photo === 'string' && /^data:image\//.test(d.photo) ? d.photo : null, verified: !!d.chk };
+      if (Array.isArray(d.profiles) && pub.role === 'interviewer') {
+        pub.profiles = d.profiles.slice(0, 3).map(function (pr) { pr = pr || {}; return { id: s(pr.id, 40) || uid(), name: s(pr.name, 60), headline: s(pr.headline, 120), location: s(pr.location, 80), sections: (Array.isArray(pr.sections) ? pr.sections : []).slice(0, 10).map(function (x) { x = x || {}; return { id: s(x.id, 40) || uid(), title: s(x.title, 80), body: s(x.body, 4000), visible: true }; }) }; });
+        if (pub.profiles.length) pub.defaultProfileId = pub.profiles.some(function (x) { return x.id === d.defProfile; }) ? d.defProfile : pub.profiles[0].id; else delete pub.profiles;
+      }
       if (u) { if (u.id === sessionId || u.passHash || !u.remote) return; Object.keys(pub).forEach(function (k) { u[k] = pub[k]; }); }
       else { pub.id = row.id; pub.email = ''; pub.remote = true; pub.linkedin = false; pub.createdAt = Number(d.createdAt) || 0; db.users.push(pub); }
     });
@@ -3502,18 +3524,336 @@ function jobClean(d) {
 function jobsLoad() {
   return sbCall('/rest/v1/jobs?select=id,employer_id,data&limit=1000', 'GET').then(function (r) {
     if (!r.ok || !Array.isArray(r.data)) return;
+    var seen = {};
     r.data.forEach(function (row) {
       if (!row || !/^[A-Za-z0-9]{4,40}$/.test(String(row.id)) || !/^[a-z0-9]{6,40}$/i.test(String(row.employer_id))) return;
+      seen[row.id] = 1;
       var j = byId(db.jobs, row.id), pub = jobClean(row.data);
       if (j) { if (!j.remote) return; Object.keys(pub).forEach(function (k) { j[k] = pub[k]; }); return; }
       var own = sessionId && row.employer_id === sessionId;
       db.jobs.push(Object.assign({ id: row.id, employerId: row.employer_id, crossed: [], hired: [], remote: own ? false : true }, pub));
       if (own) jobsLast[row.id] = JSON.stringify(jobPayload(byId(db.jobs, row.id)));
     });
+    if (r.data.length < 1000) db.jobs = db.jobs.filter(function (j) { return !j.remote || seen[j.id]; });
     lsSet(KEY, JSON.stringify(db));
     if (/^(jobs|job|explore|person|screen)$/.test(R.name)) refresh();
   }, function () { });
 }
+
+/* ---- Interest, invitations and screenings: shared between the two people involved (table records) ---- */
+var RSYNC = { interest: 'interests', invite: 'invites', screening: 'screenings' };
+var recSig = {}; try { recSig = JSON.parse(localStorage.getItem('interviewed.recsig') || '{}') || {}; } catch (e) { recSig = {}; }
+var recBusy = false, recAgain = false, recTimer = 0, recFirst = !localStorage.getItem('interviewed.recdone');
+function recSave() { try { localStorage.setItem('interviewed.recsig', JSON.stringify(recSig)); } catch (e) { } }
+function recJson(r) { return JSON.stringify(r, function (k, v) { return k === '_u' ? undefined : v; }); }
+function recHash(s) { var h = 5381; for (var i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return h + ':' + s.length; }
+function recParty(kind, r) {
+  if (kind === 'interest') { var j = byId(db.jobs, r.jobId); return j && r.interviewerId ? { e: j.employerId, i: r.interviewerId } : null; }
+  return r.employerId && r.interviewerId ? { e: r.employerId, i: r.interviewerId } : null;
+}
+function recOk(id) { return /^[a-z0-9]{6,40}$/i.test(String(id)) && !(byId(db.users, id) || {}).demo; }
+
+function recPublish() {
+  var u = me(); if (!u || !u.sbId || !profSess || u.role === 'admin') return Promise.resolve();
+  var posts = [], patches = [], exists = {};
+  Object.keys(RSYNC).forEach(function (kind) {
+    db[RSYNC[kind]].forEach(function (r) {
+      exists[r.id] = 1;
+      var p = recParty(kind, r); if (!p || (p.e !== u.id && p.i !== u.id) || p.e === p.i || !recOk(p.e) || !recOk(p.i)) return;
+      var body = recJson(r), h = recHash(body), prev = recSig[r.id];
+      if (prev && prev.h === h) return;
+      if (!prev && (kind === 'interest' ? p.i !== u.id : p.e !== u.id)) return;
+      if (body.length > 60000) return;
+      r._u = Date.now();
+      (prev ? patches : posts).push({ row: { id: r.id, kind: kind, employer_id: p.e, interviewer_id: p.i, updated_at: r._u, data: JSON.parse(body) }, h: h, k: kind });
+    });
+  });
+  var dels = Object.keys(recSig).filter(function (id) { return !exists[id] && /^[A-Za-z0-9]{4,40}$/.test(id); });
+  var jobs = [];
+  function patchOne(x) {
+    return sbAuthed('/rest/v1/records?id=eq.' + encodeURIComponent(x.row.id), 'PATCH', { updated_at: x.row.updated_at, data: x.row.data }, { 'Prefer': 'return=minimal' }).then(function (r) { if (r.ok) recSig[x.row.id] = { h: x.h, k: x.k }; });
+  }
+  if (posts.length) jobs.push(sbAuthed('/rest/v1/records', 'POST', posts.map(function (x) { return x.row; }), { 'Prefer': 'return=minimal' }).then(function (r) {
+    if (r.ok) posts.forEach(function (x) { recSig[x.row.id] = { h: x.h, k: x.k }; });
+    else if (r.status === 409) return Promise.all(posts.map(patchOne));
+  }));
+  patches.forEach(function (x) { jobs.push(patchOne(x)); });
+  if (dels.length) jobs.push(sbAuthed('/rest/v1/records?id=in.(' + dels.join(',') + ')', 'DELETE', null, { 'Prefer': 'return=minimal' }).then(function (r) { if (r.ok) dels.forEach(function (id) { delete recSig[id]; }); }));
+  return Promise.all(jobs).then(recSave, function () { });
+}
+
+function recClean(v, d) {
+  if (d > 5) return null;
+  if (typeof v === 'string') return v.slice(0, 4000);
+  if (typeof v === 'number') return isFinite(v) ? v : 0;
+  if (typeof v === 'boolean' || v === null) return v;
+  if (Array.isArray(v)) return v.slice(0, 60).map(function (x) { return recClean(x, d + 1); });
+  if (v && typeof v === 'object') { var o = {}; Object.keys(v).slice(0, 40).forEach(function (k) { if (k !== '__proto__' && k !== 'constructor') o[k] = recClean(v[k], d + 1); }); return o; }
+  return null;
+}
+function recFromRow(row) {
+  var d = recClean(row.data || {}, 0); if (!d || typeof d !== 'object' || Array.isArray(d)) d = {};
+  d.id = row.id; d.interviewerId = row.interviewer_id;
+  if (row.kind === 'interest') { d.jobId = String(d.jobId || ''); d.profileId = String(d.profileId || ''); d.createdAt = Number(d.createdAt) || 0; delete d.employerId; return d; }
+  d.employerId = row.employer_id; d.jobId = String(d.jobId || ''); d.createdAt = Number(d.createdAt) || 0;
+  ['questions', 'limits', 'videoIds'].forEach(function (k) { if (!Array.isArray(d[k])) d[k] = []; });
+  if (!d.answers || typeof d.answers !== 'object' || Array.isArray(d.answers)) { if (row.kind === 'invite') d.answers = {}; }
+  if (row.kind === 'invite') {
+    d.kind = d.kind === 'live' ? 'live' : 'prerecorded'; d.round = Number(d.round) || 1;
+    if (['invited', 'accepted', 'declined', 'completed', 'withdrawn'].indexOf(d.status) < 0) d.status = 'invited';
+    if (typeof d.scheduledAt !== 'string') d.scheduledAt = '';
+    if (d.appt && typeof d.appt === 'object') { if (!Array.isArray(d.appt.slots)) d.appt.slots = []; } else d.appt = null;
+  } else {
+    if (!Array.isArray(d.answers)) d.answers = [];
+    if (['sent', 'submitted'].indexOf(d.status) < 0) d.status = 'sent';
+    if (['', 'pass', 'fail'].indexOf(d.result) < 0) d.result = '';
+  }
+  return d;
+}
+function recLoad() {
+  var u = me(); if (!u || !profSess) return Promise.resolve();
+  return sbAuthed('/rest/v1/records?select=id,kind,employer_id,interviewer_id,updated_at,data&limit=1000', 'GET').then(function (r) {
+    if (!r.ok || !Array.isArray(r.data)) return;
+    var remote = {}, changed = false, notes = [], quiet = recFirst;
+    r.data.forEach(function (row) {
+      if (!row || !RSYNC[row.kind] || !/^[A-Za-z0-9]{4,40}$/.test(String(row.id)) || !/^[a-z0-9]{6,40}$/i.test(String(row.employer_id)) || !/^[a-z0-9]{6,40}$/i.test(String(row.interviewer_id))) return;
+      if (row.employer_id !== u.id && row.interviewer_id !== u.id) return;
+      remote[row.id] = 1;
+      var arr = db[RSYNC[row.kind]], loc = byId(arr, row.id), d = recFromRow(row), up = Number(row.updated_at) || 0;
+      var j = byId(db.jobs, d.jobId), title = j ? j.title : 'a job';
+      if (!loc) {
+        d._u = up; arr.push(d); recSig[row.id] = { h: recHash(recJson(d)), k: row.kind }; changed = true;
+        if (!quiet) {
+          if (row.kind === 'interest' && row.employer_id === u.id) notes.push([u.id, userName(d.interviewerId) + ' is interested in “' + title + '”.', 'job-' + d.jobId]);
+          else if (row.kind === 'invite' && row.interviewer_id === u.id) notes.push([u.id, 'You have a new invitation for “' + title + '” (round ' + d.round + ').', 'invites']);
+          else if (row.kind === 'screening' && row.interviewer_id === u.id) notes.push([u.id, 'You have a screening to complete for “' + title + '”.', 'invites']);
+        }
+        return;
+      }
+      var prev = recSig[row.id], dirty = !prev || prev.h !== recHash(recJson(loc));
+      if (!dirty && up > (loc._u || 0)) {
+        var oldS = loc.status, oldA = loc.appt && loc.appt.status;
+        Object.keys(loc).forEach(function (k) { delete loc[k]; }); Object.keys(d).forEach(function (k) { loc[k] = d[k]; }); loc._u = up;
+        recSig[row.id] = { h: recHash(recJson(loc)), k: row.kind }; changed = true;
+        if (!quiet && (oldS !== loc.status || oldA !== (loc.appt && loc.appt.status)) && row.kind !== 'interest') notes.push([u.id, 'Update on “' + title + '”: ' + (row.kind === 'invite' ? 'round ' + loc.round + ' is now ' + loc.status : 'screening ' + (loc.result || loc.status)) + '.', row.interviewer_id === u.id ? 'invites' : 'job-' + loc.jobId]);
+      }
+    });
+    if (r.data.length < 1000) Object.keys(recSig).forEach(function (id) {
+      if (remote[id]) return;
+      var k = recSig[id].k, arr = db[RSYNC[k]], loc = arr && byId(arr, id);
+      if (loc && recHash(recJson(loc)) === recSig[id].h) { db[RSYNC[k]] = arr.filter(function (x) { return x.id !== id; }); changed = true; }
+      if (!loc || recHash(recJson(loc)) === recSig[id].h) delete recSig[id];
+    });
+    recFirst = false; try { localStorage.setItem('interviewed.recdone', '1'); } catch (e) { } recSave();
+    notes.forEach(function (n) { notify(n[0], n[1], n[2]); });
+    if (changed || notes.length) {
+      lsSet(KEY, JSON.stringify(db)); renderHeader();
+      var ae = document.activeElement;
+      if (/^(jobs|job|invites|screen|notifications|network|person|live|events)$/.test(R.name) && !(ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName))) refresh();
+    }
+  }, function () { });
+}
+function recSync() {
+  if (!me() || !profSess) return Promise.resolve();
+  if (recBusy) { recAgain = true; return Promise.resolve(); }
+  recBusy = true;
+  return recPublish().then(recLoad).then(function () { recBusy = false; if (recAgain) { recAgain = false; setTimeout(recSync, 300); } }, function () { recBusy = false; });
+}
+save = (function (prev) { return function () { prev(); clearTimeout(recTimer); recTimer = setTimeout(recSync, 1200); }; })(save);
+setInterval(function () { if (document.visibilityState === 'visible') recSync(); }, 25000);
+
+/* ---- Share videos with the right people through Supabase (table videos + Storage bucket videos) ---- */
+var VID_MAX = 40 * 1024 * 1024;
+var vidSig = {}, vidBusy = false, vidAgain = false, vidTimer = 0, vidFetching = {};
+function vidKind(v) { return v.inviteId ? 'invite' : (v.visibility === 'public' ? 'public' : 'private'); }
+function vidPayload(v) {
+  var o = {}; ['title', 'question', 'source', 'inviteId', 'jobId', 'visibility', 'commentsMode', 'createdAt', 'duration', 'mime', 'size', 'skill', 'isAnswer', 'label'].forEach(function (k) { if (v[k] !== undefined) o[k] = v[k]; });
+  return o;
+}
+function vidAuthFetch(url, opts) {
+  function send() { var h = { 'apikey': SB.key, 'Authorization': 'Bearer ' + profSess.a }; Object.keys(opts.headers || {}).forEach(function (k) { h[k] = opts.headers[k]; }); return fetch(url, { method: opts.method || 'GET', headers: h, body: opts.body }); }
+  if (!profSess) return Promise.resolve({ ok: false, status: 0 });
+  return send().then(function (r) { if (r.status === 401) return profRefresh().then(function (ok) { return ok ? send() : r; }); return r; });
+}
+function vidPublish() {
+  var u = me(); if (!u || !u.sbId || !profSess || u.role === 'admin') return Promise.resolve();
+  var mine = db.videos.filter(function (v) { return v.ownerId === u.id && /^[A-Za-z0-9]{4,40}$/.test(v.id); });
+  var chain = Promise.resolve();
+  mine.forEach(function (v) {
+    chain = chain.then(function () {
+      var up = v.cloud ? Promise.resolve(true) : (v.cloudSkip ? Promise.resolve(false) : blobGet(v.id).then(function (b) {
+        if (!b) return false;
+        if (b.size > VID_MAX) { v.cloudSkip = 'large'; return false; }
+        return vidAuthFetch(SB.url + '/storage/v1/object/videos/' + u.id + '/' + v.id, { method: 'POST', body: b, headers: { 'Content-Type': b.type || 'video/webm', 'x-upsert': 'true', 'cache-control': '3600' } }).then(function (r) { if (r.ok) { v.cloud = true; return true; } return false; }, function () { return false; });
+      }));
+      return up.then(function (ok) {
+        if (!ok) return;
+        var p = vidPayload(v), s = JSON.stringify(p) + vidKind(v);
+        if (vidSig[v.id] === s) return;
+        return sbAuthed('/rest/v1/videos?on_conflict=id', 'POST', { id: v.id, owner_id: u.id, kind: vidKind(v), invite_id: v.inviteId || null, created_at: v.createdAt || 0, data: p }, { 'Prefer': 'resolution=merge-duplicates,return=minimal' }).then(function (r) { if (r.ok) vidSig[v.id] = s; });
+      });
+    }).catch(function () { });
+  });
+  return chain.then(function () { lsSet(KEY, JSON.stringify(db)); });
+}
+function vidCleanRow(row) {
+  var d = recClean(row.data || {}, 0); if (!d || typeof d !== 'object' || Array.isArray(d)) d = {};
+  function s(x, n) { return typeof x === 'string' ? x.slice(0, n) : ''; }
+  var mime = s(d.mime, 60); if (!/^(video|audio)\//.test(mime)) mime = 'video/webm';
+  return { id: row.id, ownerId: row.owner_id, title: s(d.title, 200), question: s(d.question, 400), source: s(d.source, 20), inviteId: row.invite_id ? String(row.invite_id) : null, jobId: s(d.jobId, 40) || null, setId: null, eventId: null,
+    visibility: row.kind === 'public' ? 'public' : 'private', commentsMode: d.commentsMode === 'private' ? 'private' : 'public', createdAt: Number(row.created_at) || 0, duration: Number(d.duration) || 0, mime: mime, size: Number(d.size) || 0,
+    likes: [], skill: !!d.skill, isAnswer: !!d.isAnswer, label: s(d.label, 80), cloud: true, remote: true };
+}
+function videosLoad() {
+  var req = profSess ? sbAuthed('/rest/v1/videos?select=id,owner_id,kind,invite_id,created_at,data&order=created_at.desc&limit=300', 'GET') : sbCall('/rest/v1/videos?select=id,owner_id,kind,invite_id,created_at,data&order=created_at.desc&limit=300', 'GET');
+  return req.then(function (r) {
+    if (!r.ok || !Array.isArray(r.data)) return;
+    var u = me(), seen = {}, changed = false;
+    r.data.forEach(function (row) {
+      if (!row || !/^[A-Za-z0-9]{4,40}$/.test(String(row.id)) || !/^[a-z0-9]{6,40}$/i.test(String(row.owner_id))) return;
+      seen[row.id] = 1;
+      var loc = byId(db.videos, row.id);
+      if (loc && !loc.remote) return;
+      if (u && row.owner_id === u.id && loc) return;
+      var d = vidCleanRow(row);
+      if (loc) { var keep = { likes: loc.likes, setId: loc.setId, eventId: loc.eventId }; Object.keys(d).forEach(function (k) { loc[k] = d[k]; }); loc.likes = keep.likes || []; }
+      else db.videos.push(d);
+      changed = true;
+    });
+    if (r.data.length < 300) {
+      var before = db.videos.length;
+      db.videos = db.videos.filter(function (v) { return !v.remote || seen[v.id]; });
+      if (db.videos.length !== before) changed = true;
+    }
+    if (changed) {
+      lsSet(KEY, JSON.stringify(db));
+      var ae = document.activeElement;
+      if (/^(explore|videos|watch|person|invites|job|list|events|event)$/.test(R.name) && !(ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName))) refresh();
+    }
+  }, function () { });
+}
+function vidSync() {
+  if (!me() || !profSess) return Promise.resolve();
+  if (vidBusy) { vidAgain = true; return Promise.resolve(); }
+  vidBusy = true;
+  return vidPublish().then(videosLoad).then(function () { vidBusy = false; if (vidAgain) { vidAgain = false; setTimeout(vidSync, 500); } }, function () { vidBusy = false; });
+}
+/* When a video is not on this device, download it once and keep a copy here */
+blobGet = (function (prev) {
+  return function (id) {
+    return prev(id).then(function (b) {
+      if (b) return b;
+      var v = byId(db.videos, id);
+      if (!v || !v.cloud || !profSess) return null;
+      if (vidFetching[id]) return vidFetching[id];
+      vidFetching[id] = vidAuthFetch(SB.url + '/storage/v1/object/authenticated/videos/' + v.ownerId + '/' + id, {}).then(function (r) {
+        if (!r.ok) return null;
+        return r.blob().then(function (bl) { if (!bl || !bl.size) return null; var typed = bl.type && /^(video|audio)\//.test(bl.type) ? bl : new Blob([bl], { type: v.mime || 'video/webm' }); return blobPut(id, typed).then(function () { return typed; }); });
+      }).catch(function () { return null; }).then(function (x) { delete vidFetching[id]; return x; });
+      return vidFetching[id];
+    });
+  };
+})(blobGet);
+blobDel = (function (prev) {
+  return function (id) {
+    var u = me();
+    if (u && u.sbId && profSess && /^[A-Za-z0-9]{4,40}$/.test(String(id))) {
+      delete vidSig[id];
+      vidAuthFetch(SB.url + '/storage/v1/object/videos/' + u.id + '/' + id, { method: 'DELETE' }).catch(function () { });
+      sbAuthed('/rest/v1/videos?id=eq.' + encodeURIComponent(id), 'DELETE', null, { 'Prefer': 'return=minimal' });
+    }
+    return prev(id);
+  };
+})(blobDel);
+save = (function (prev) { return function () { prev(); clearTimeout(vidTimer); vidTimer = setTimeout(vidSync, 2500); }; })(save);
+setInterval(function () { if (document.visibilityState === 'visible') vidSync(); }, 40000);
+
+/* ---- Share likes and comments on videos (tables likes and comments) ---- */
+var socBusy = false, socAgain = false, socTimer = 0;
+var likeSyn = {}, comSyn = {}, voteSyn = {};
+try { likeSyn = JSON.parse(localStorage.getItem('interviewed.likesyn') || '{}') || {}; comSyn = JSON.parse(localStorage.getItem('interviewed.comsyn') || '{}') || {}; voteSyn = JSON.parse(localStorage.getItem('interviewed.votesyn') || '{}') || {}; } catch (e) { likeSyn = {}; comSyn = {}; voteSyn = {}; }
+function socSaveSyn() { try { localStorage.setItem('interviewed.likesyn', JSON.stringify(likeSyn)); localStorage.setItem('interviewed.comsyn', JSON.stringify(comSyn)); localStorage.setItem('interviewed.votesyn', JSON.stringify(voteSyn)); } catch (e) { } }
+function socOnCloud(id) { var v = byId(db.videos, id); return !!(v && (v.cloud || v.remote)); }
+function socPublish() {
+  var u = me(); if (!u || !u.sbId || !profSess || u.role === 'admin') return Promise.resolve();
+  var jobs = [], ID = /^[A-Za-z0-9]{4,40}$/;
+  var liked = {}; db.videos.forEach(function (v) { if (ID.test(v.id) && (v.likes || []).indexOf(u.id) >= 0 && socOnCloud(v.id)) liked[v.id] = 1; });
+  var addL = Object.keys(liked).filter(function (id) { return !likeSyn[id]; });
+  var delL = Object.keys(likeSyn).filter(function (id) { return !liked[id] && ID.test(id); });
+  if (addL.length) jobs.push(sbAuthed('/rest/v1/likes?on_conflict=video_id,user_id', 'POST', addL.map(function (id) { return { video_id: id, user_id: u.id, created_at: Date.now() }; }), { 'Prefer': 'resolution=ignore-duplicates,return=minimal' }).then(function (r) { if (r.ok) addL.forEach(function (id) { likeSyn[id] = 1; }); }));
+  if (delL.length) jobs.push(sbAuthed('/rest/v1/likes?user_id=eq.' + encodeURIComponent(u.id) + '&video_id=in.(' + delL.join(',') + ')', 'DELETE', null, { 'Prefer': 'return=minimal' }).then(function (r) { if (r.ok) delL.forEach(function (id) { delete likeSyn[id]; }); }));
+  var have = {}; db.comments.forEach(function (c) { have[c.id] = 1; });
+  var addC = db.comments.filter(function (c) { return c.authorId === u.id && ID.test(c.id) && !comSyn[c.id] && socOnCloud(c.videoId); });
+  var delC = Object.keys(comSyn).filter(function (id) { return !have[id] && ID.test(id); });
+  if (addC.length) jobs.push(sbAuthed('/rest/v1/comments?on_conflict=id', 'POST', addC.map(function (c) { return { id: c.id, video_id: c.videoId, author_id: u.id, created_at: c.createdAt || 0, data: { name: String(c.name || '').slice(0, 40), text: String(c.text || '').slice(0, 1000) } }; }), { 'Prefer': 'resolution=ignore-duplicates,return=minimal' }).then(function (r) { if (r.ok) addC.forEach(function (c) { comSyn[c.id] = 1; }); }));
+  if (delC.length) jobs.push(sbAuthed('/rest/v1/comments?id=in.(' + delC.join(',') + ')', 'DELETE', null, { 'Prefer': 'return=minimal' }).then(function (r) { if (r.ok) delC.forEach(function (id) { delete comSyn[id]; }); }));
+  var voted = {}; db.comments.forEach(function (c) { if (ID.test(c.id) && (c.votes || []).indexOf(u.id) >= 0 && comSyn[c.id]) voted[c.id] = 1; });
+  var addV = Object.keys(voted).filter(function (id) { return !voteSyn[id]; });
+  var delV = Object.keys(voteSyn).filter(function (id) { return !voted[id] && ID.test(id); });
+  if (addV.length) jobs.push(sbAuthed('/rest/v1/comment_votes?on_conflict=comment_id,user_id', 'POST', addV.map(function (id) { return { comment_id: id, user_id: u.id, created_at: Date.now() }; }), { 'Prefer': 'resolution=ignore-duplicates,return=minimal' }).then(function (r) { if (r.ok) addV.forEach(function (id) { voteSyn[id] = 1; }); }));
+  if (delV.length) jobs.push(sbAuthed('/rest/v1/comment_votes?user_id=eq.' + encodeURIComponent(u.id) + '&comment_id=in.(' + delV.join(',') + ')', 'DELETE', null, { 'Prefer': 'return=minimal' }).then(function (r) { if (r.ok) delV.forEach(function (id) { delete voteSyn[id]; }); }));
+  return Promise.all(jobs).then(socSaveSyn, function () { });
+}
+function socLoad() {
+  var u = me(); if (!u || !profSess) return Promise.resolve();
+  var changed = false;
+  return sbAuthed('/rest/v1/likes?select=video_id,user_id&limit=5000', 'GET').then(function (r) {
+    if (!r.ok || !Array.isArray(r.data) || r.data.length >= 5000) return;
+    var by = {}; r.data.forEach(function (x) { if (x && typeof x.video_id === 'string' && typeof x.user_id === 'string') (by[x.video_id] = by[x.video_id] || []).push(x.user_id); });
+    db.videos.forEach(function (v) {
+      if (!v.cloud && !v.remote) return;
+      var set = (by[v.id] || []).filter(function (x, i, a) { return /^[a-z0-9]{6,40}$/i.test(x) && a.indexOf(x) === i; }), me1 = u.id, mineLocal = (v.likes || []).indexOf(me1) >= 0;
+      set = set.filter(function (x) { return x !== me1; });
+      if (mineLocal) set.push(me1);   // my own like (synced or still waiting to be sent) always shows
+      var old = (v.likes || []).slice().sort().join(','), nu = set.slice().sort().join(',');
+      if (old !== nu) { v.likes = set; changed = true; }
+    });
+  }, function () { }).then(function () {
+    return sbAuthed('/rest/v1/comments?select=id,video_id,author_id,created_at,data&order=created_at.desc&limit=1000', 'GET').then(function (r) {
+      if (!r.ok || !Array.isArray(r.data)) return;
+      var remote = {};
+      r.data.forEach(function (row) {
+        if (!row || !/^[A-Za-z0-9]{4,40}$/.test(String(row.id)) || !/^[A-Za-z0-9]{4,40}$/.test(String(row.video_id)) || !/^[a-z0-9]{6,40}$/i.test(String(row.author_id))) return;
+        remote[row.id] = 1;
+        if (byId(db.comments, row.id)) { comSyn[row.id] = 1; return; }
+        var d = row.data || {};
+        db.comments.push({ id: row.id, videoId: row.video_id, authorId: row.author_id, name: typeof d.name === 'string' ? d.name.slice(0, 40) : '', text: typeof d.text === 'string' ? d.text.slice(0, 1000) : '', createdAt: Number(row.created_at) || 0 });
+        comSyn[row.id] = 1; changed = true;
+      });
+      if (r.data.length < 1000) {
+        var gone = Object.keys(comSyn).filter(function (id) { return !remote[id]; });
+        if (gone.length) { db.comments = db.comments.filter(function (c) { return !(gone.indexOf(c.id) >= 0); }); gone.forEach(function (id) { delete comSyn[id]; }); changed = true; }
+      }
+    }, function () { });
+  }).then(function () {
+    return sbAuthed('/rest/v1/comment_votes?select=comment_id,user_id&limit=5000', 'GET').then(function (r) {
+      if (!r.ok || !Array.isArray(r.data) || r.data.length >= 5000) return;
+      var by = {}; r.data.forEach(function (x) { if (x && typeof x.comment_id === 'string' && typeof x.user_id === 'string') (by[x.comment_id] = by[x.comment_id] || []).push(x.user_id); });
+      db.comments.forEach(function (c) {
+        if (!comSyn[c.id]) return;
+        var set = (by[c.id] || []).filter(function (x, i, a) { return /^[a-z0-9]{6,40}$/i.test(x) && a.indexOf(x) === i && x !== u.id; });
+        if ((c.votes || []).indexOf(u.id) >= 0) set.push(u.id);
+        var old = (c.votes || []).slice().sort().join(','), nu = set.slice().sort().join(',');
+        if (old !== nu) { c.votes = set; changed = true; }
+      });
+    }, function () { });
+  }).then(function () {
+    socSaveSyn();
+    if (!changed) return;
+    lsSet(KEY, JSON.stringify(db));
+    var ae = document.activeElement, typing = ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName), box = document.getElementById('c-text');
+    if (R.name === 'watch') { if (!typing && !(box && box.value)) { if (typeof renderWatchComments === 'function' && document.getElementById('w-comments')) renderWatchComments(); if (typeof renderWatchMeta === 'function' && document.getElementById('w-meta')) renderWatchMeta(); } }
+    else if (/^(explore|videos|person|list)$/.test(R.name) && !typing) refresh();
+  });
+}
+function socSync() {
+  if (!me() || !profSess) return Promise.resolve();
+  if (socBusy) { socAgain = true; return Promise.resolve(); }
+  socBusy = true;
+  return socPublish().then(socLoad).then(function () { socBusy = false; if (socAgain) { socAgain = false; setTimeout(socSync, 500); } }, function () { socBusy = false; });
+}
+save = (function (prev) { return function () { prev(); clearTimeout(socTimer); socTimer = setTimeout(socSync, 2200); }; })(save);
+setInterval(function () { if (document.visibilityState === 'visible') socSync(); }, 40000);
 
 /* ================= Administrator ================= */
 function adminExists() { return db.users.some(function (x) { return x.role === 'admin'; }); }
@@ -4266,7 +4606,7 @@ function drawAvatar() {
   if (FX.level > 0.25) { ctx.fillStyle = '#e8708a'; ctx.beginPath(); ctx.ellipse(cx, cy + r * 0.52 + mh * 0.45, r * 0.13, mh * 0.35, 0, 0, Math.PI * 2); ctx.fill(); }
 }
 
-sbBoot(); adsLoad(); profLoad().then(jobsLoad);
+sbBoot(); adsLoad(); profLoad().then(jobsLoad).then(function () { profPublish(false); jobsPublish(); }).then(recSync).then(vidSync).then(socSync);
 renderHeader();
 route();
 })();
