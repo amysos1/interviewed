@@ -1,15 +1,23 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Interviewed</title>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-MGWZYX9TRX"></script>
+<!-- Google tag (GTM-5BXJTDG2) -->
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-5BXJTDG2"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
-  gtag('config', 'G-MGWZYX9TRX');
 </script>
+<title>Interviewed – video interviews for employers and job seekers</title>
+<meta name="description" content="Employers post jobs and ask questions. Job seekers record video answers on their own time. Free to join.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Interviewed">
+<meta property="og:title" content="Interviewed – video interviews for employers and job seekers">
+<meta property="og:description" content="Employers post jobs and ask questions. Job seekers record video answers on their own time. Free to join.">
+<meta property="og:url" content="https://amysos1.github.io/interviewed/">
+<meta property="og:image" content="https://amysos1.github.io/interviewed/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#6a2fd8">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%236a2fd8'/%3E%3Ccircle cx='32' cy='32' r='12' fill='%23fff'/%3E%3C/svg%3E">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -562,7 +570,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wr
   <div id="ads" class="ads" aria-label="Advertisements"></div>
   <footer>
     <span>Interviewed. Video interviews for interviewees and employers.</span>
-    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.15.0</span> · <a href="#admin-setup">Administrator</a></span>
+    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.17.3</span> · <a href="#terms">Terms</a> · <a href="#privacy">Privacy</a> · <a href="#admin-setup">Administrator</a></span>
   </footer>
 </div>
 
@@ -942,7 +950,7 @@ function route(noScroll) {
     $('app').hidden = false;
     var views = { login: viewLogin, signup: viewSignup, setup: viewSetup, profile: viewProfile, person: viewPerson,
       coffee: viewCoffee, network: viewNetwork, jobs: viewJobs, job: viewJob, invites: viewInvites, videos: viewVideos, watch: viewWatch, playlists: viewPlaylists,
-      list: viewList, explore: viewExplore, admin: viewAdmin, screen: viewScreen, events: viewEvents, event: viewEvent, notifications: viewNotifications, ranking: viewRanking, chooserole: viewChooseRole, forgot: viewForgot, reset: viewReset };
+      list: viewList, explore: viewExplore, admin: viewAdmin, screen: viewScreen, events: viewEvents, event: viewEvent, notifications: viewNotifications, ranking: viewRanking, chooserole: viewChooseRole, forgot: viewForgot, reset: viewReset, terms: viewTerms, privacy: viewPrivacy };
     (views[name] || viewNotFound)(arg);
   }
   if (!noScroll) window.scrollTo(0, 0);
@@ -1093,7 +1101,7 @@ function viewSignup() {
     '<div class="field" id="company-field" hidden><label for="company">Company name</label><input type="text" id="company" name="company" autocomplete="organization" maxlength="80"><p class="err" data-err="company" aria-live="polite"></p></div>' +
     '<div class="field"><label for="workemail">Work email <span class="opt">(optional)</span></label><input type="email" id="workemail" name="workemail" autocomplete="off" inputmode="email"><p class="hint">Add a work email to get a checkmark on your profile picture that everyone can see. You can also add it later in your profile.</p><p class="err" data-err="workemail" aria-live="polite"></p></div>' +
     pwField('password', 'Password', 'new-password', '<p class="hint" id="password-hint">Use at least 8 characters.</p>') +
-    '<div class="field"><label class="check" for="terms"><input type="checkbox" id="terms" name="terms"> <span>I agree to the terms of service and privacy policy.</span></label><p class="err" data-err="terms" aria-live="polite"></p></div>' +
+    '<div class="field"><label class="check" for="terms"><input type="checkbox" id="terms" name="terms"> <span>I agree to the <a href="#terms" target="_blank" rel="noopener">terms of service</a> and <a href="#privacy" target="_blank" rel="noopener">privacy policy</a>.</span></label><p class="err" data-err="terms" aria-live="polite"></p></div>' +
     '<button class="btn full" type="submit">Create account</button></form>' +
     '<p class="swap">Already have an account? <a href="#login">Log in</a></p></div>' +
     '<aside class="pitch"><span class="eyebrow">What you get</span><h2>Video interviews without the scheduling</h2><ul>' +
@@ -3084,6 +3092,7 @@ function sbFinish(user, token, pick) {
     Object.keys(db).forEach(function (k) { delete db[k]; }); Object.keys(snap).forEach(function (k) { db[k] = snap[k]; });
     u = byId(db.users, newId);
   }
+  if (typeof modApplyUser === 'function') modApplyUser(u);
   save();
   if (u.suspended) return { suspended: true };
   setSession(u.id); return { user: u, isNew: !u.headline && !u.about };
@@ -3245,7 +3254,7 @@ function viewChooseRole() {
     '<label class="rc"><input type="radio" name="role" value="interviewer" data-change="role"' + (pre === 'interviewer' ? ' checked' : '') + '><span class="rc-box"><b>Interviewee</b><small>Record interviews and share your videos.</small></span></label>' +
     '<label class="rc"><input type="radio" name="role" value="employer" data-change="role"' + (pre === 'employer' ? ' checked' : '') + '><span class="rc-box"><b>Employer</b><small>Post jobs and invite people to interview.</small></span></label></div><p class="err" data-err="role" aria-live="polite"></p></fieldset>' +
     '<div class="field" id="company-field"' + (pre === 'employer' ? '' : ' hidden') + '><label for="company">Company name</label><input type="text" id="company" name="company" maxlength="80"><p class="err" data-err="company" aria-live="polite"></p></div>' +
-    '<div class="field"><label class="check" for="terms"><input type="checkbox" id="terms" name="terms"> <span>I agree to the terms of service and privacy policy.</span></label><p class="err" data-err="terms" aria-live="polite"></p></div>' +
+    '<div class="field"><label class="check" for="terms"><input type="checkbox" id="terms" name="terms"> <span>I agree to the <a href="#terms" target="_blank" rel="noopener">terms of service</a> and <a href="#privacy" target="_blank" rel="noopener">privacy policy</a>.</span></label><p class="err" data-err="terms" aria-live="polite"></p></div>' +
     '<button class="btn full" type="submit">Continue</button></form></div></div>');
 }
 forms.chooserole = function (f) {
@@ -3464,8 +3473,10 @@ function profLoad() {
   return sbCall('/rest/v1/profiles?select=id,data&limit=1000', 'GET').then(function (r) {
     if (!r.ok || !Array.isArray(r.data)) return;
     function s(v, n) { return typeof v === 'string' ? v.slice(0, n) : ''; }
+    var seenP = {};
     r.data.forEach(function (row) {
       if (!row || !/^[a-z0-9]{6,40}$/i.test(String(row.id))) return;
+      seenP[row.id] = 1;
       var d = row.data || {}, u = byId(db.users, row.id);
       var pub = { name: s(d.name, 80) || 'Member', role: d.role === 'employer' ? 'employer' : 'interviewer', company: s(d.company, 80), headline: s(d.headline, 120), location: s(d.location, 80), about: s(d.about, 2000), photo: typeof d.photo === 'string' && /^data:image\//.test(d.photo) ? d.photo : null, verified: !!d.chk };
       if (Array.isArray(d.profiles) && pub.role === 'interviewer') {
@@ -3475,6 +3486,7 @@ function profLoad() {
       if (u) { if (u.id === sessionId || u.passHash || !u.remote) return; Object.keys(pub).forEach(function (k) { u[k] = pub[k]; }); }
       else { pub.id = row.id; pub.email = ''; pub.remote = true; pub.linkedin = false; pub.createdAt = Number(d.createdAt) || 0; db.users.push(pub); }
     });
+    if (r.data.length < 1000) db.users = db.users.filter(function (x) { return !x.remote || seenP[x.id]; });
     save();
     if (/^(person|network|ranking|explore)$/.test(R.name)) refresh();
   }, function () { }).then(function () { }, function () { });
@@ -3482,10 +3494,11 @@ function profLoad() {
 
 /* ---- Share jobs with everyone through Supabase (table jobs) ---- */
 var jobsLast = {}, jobsTimer = 0;
+function sbToken() { return profSess ? profSess.a : (me() && me().role === 'admin' && adsToken ? adsToken : ''); }
 function sbAuthed(path, method, body, extra) {
-  if (!profSess) return Promise.resolve({ ok: false, status: 0, data: {} });
-  var send = function () { return sbCall(path, method, body, profSess.a, extra); };
-  return send().then(function (r) { if (r.status === 401) return profRefresh().then(function (ok) { return ok ? send() : r; }); return r; });
+  var tok = sbToken(); if (!tok) return Promise.resolve({ ok: false, status: 0, data: {} });
+  var send = function () { return sbCall(path, method, body, sbToken(), extra); };
+  return send().then(function (r) { if (r.status === 401 && profSess) return profRefresh().then(function (ok) { return ok ? send() : r; }); return r; });
 }
 function jobPayload(j) {
   var o = { status: j.status === 'closed' ? 'closed' : 'open', createdAt: j.createdAt || 0 };
@@ -3705,7 +3718,7 @@ function vidCleanRow(row) {
     likes: [], skill: !!d.skill, isAnswer: !!d.isAnswer, label: s(d.label, 80), cloud: true, remote: true };
 }
 function videosLoad() {
-  var req = profSess ? sbAuthed('/rest/v1/videos?select=id,owner_id,kind,invite_id,created_at,data&order=created_at.desc&limit=300', 'GET') : sbCall('/rest/v1/videos?select=id,owner_id,kind,invite_id,created_at,data&order=created_at.desc&limit=300', 'GET');
+  var req = sbToken() ? sbAuthed('/rest/v1/videos?select=id,owner_id,kind,invite_id,created_at,data&order=created_at.desc&limit=300', 'GET') : sbCall('/rest/v1/videos?select=id,owner_id,kind,invite_id,created_at,data&order=created_at.desc&limit=300', 'GET');
   return req.then(function (r) {
     if (!r.ok || !Array.isArray(r.data)) return;
     var u = me(), seen = {}, changed = false;
@@ -3733,7 +3746,7 @@ function videosLoad() {
   }, function () { });
 }
 function vidSync() {
-  if (!me() || !profSess) return Promise.resolve();
+  if (!me() || !sbToken()) return Promise.resolve();
   if (vidBusy) { vidAgain = true; return Promise.resolve(); }
   vidBusy = true;
   return vidPublish().then(videosLoad).then(function () { vidBusy = false; if (vidAgain) { vidAgain = false; setTimeout(vidSync, 500); } }, function () { vidBusy = false; });
@@ -3795,7 +3808,7 @@ function socPublish() {
   return Promise.all(jobs).then(socSaveSyn, function () { });
 }
 function socLoad() {
-  var u = me(); if (!u || !profSess) return Promise.resolve();
+  var u = me(); if (!u || !sbToken()) return Promise.resolve();
   var changed = false;
   return sbAuthed('/rest/v1/likes?select=video_id,user_id&limit=5000', 'GET').then(function (r) {
     if (!r.ok || !Array.isArray(r.data) || r.data.length >= 5000) return;
@@ -3847,7 +3860,7 @@ function socLoad() {
   });
 }
 function socSync() {
-  if (!me() || !profSess) return Promise.resolve();
+  if (!me() || !sbToken()) return Promise.resolve();
   if (socBusy) { socAgain = true; return Promise.resolve(); }
   socBusy = true;
   return socPublish().then(socLoad).then(function () { socBusy = false; if (socAgain) { socAgain = false; setTimeout(socSync, 500); } }, function () { socBusy = false; });
@@ -3867,7 +3880,7 @@ function viewAdmin(arg) {
   if (arg === 'setup') { viewAdminSetup(); return; }
   ui.tab = ui.tab || 'users'; ui.q = ui.q || '';
   show('<div class="page"><div class="page-head"><div><span class="eyebrow">Administrator</span><h1>Administration</h1></div></div>' +
-    '<p class="notice">Prototype: these controls change the data stored in this browser only. Moderating real visitors needs a server.</p>' +
+    '<p class="notice" id="ad-note">' + (adsToken ? 'Connected to Supabase: suspending, hiding, deleting, verifying and Pro now apply to everyone.' : 'Not connected: these controls only change this browser. Connect in the Ads tab (Show ads to everyone box) to apply them to everyone.') + '</p>' +
     '<div id="ad-stats" class="cards"></div><div id="ad-tabs"></div>' +
     '<div class="field" id="ad-search"><label for="ad-q">Search</label><input type="text" id="ad-q" value="' + esc(ui.q) + '" placeholder="Name, email or title"></div>' +
     '<div id="ad-list" class="sec"></div></div>', renderAdminParts);
@@ -3880,11 +3893,11 @@ function renderAdminParts() {
   $('ad-stats').innerHTML = statBox('Accounts', people.length) + statBox('Employers', people.filter(function (x) { return x.role === 'employer'; }).length) +
     statBox('Interviewees', people.filter(function (x) { return x.role === 'interviewer'; }).length) + statBox('Jobs', db.jobs.length) +
     statBox('Videos', db.videos.length) + statBox('Comments', db.comments.length) + statBox('Suspended', people.filter(function (x) { return x.suspended; }).length);
-  var tabs = [['users', 'Accounts'], ['videos', 'Videos'], ['comments', 'Comments'], ['jobs', 'Jobs'], ['ads', 'Ads'], ['log', 'Activity']];
+  var tabs = [['users', 'Accounts'], ['videos', 'Videos'], ['comments', 'Comments'], ['jobs', 'Jobs'], ['ads', 'Ads'], ['setup', 'Setup check'], ['log', 'Activity']];
   $('ad-tabs').innerHTML = '<span class="seg" role="group" aria-label="Admin sections" style="flex-wrap:wrap">' + tabs.map(function (t) {
     return '<button type="button" data-act="ad-tab" data-v="' + t[0] + '" aria-pressed="' + (ui.tab === t[0]) + '">' + t[1] + '</button>';
   }).join('') + '</span>';
-  $('ad-search').hidden = ui.tab === 'log' || ui.tab === 'ads';
+  $('ad-search').hidden = ui.tab === 'log' || ui.tab === 'ads' || ui.tab === 'setup';
   var q = (ui.q || '').toLowerCase(), has = function (s) { return !q || String(s || '').toLowerCase().indexOf(q) > -1; };
   var rows = [], empty = '<p class="sub">Nothing matches.</p>';
   if (ui.tab === 'users') {
@@ -3934,6 +3947,7 @@ acts['ad-user-del'] = function (el) {
   confirmTwice(el, 'Click again to delete', function () {
     var id = el.dataset.id, x = byId(db.users, id), name = x ? x.name : 'account';
     var vids = db.videos.filter(function (v) { return v.ownerId === id; }).map(function (v) { return v.id; });
+    if (typeof modUserDeleted === 'function') modUserDeleted(id, vids);
     var jobIds = db.jobs.filter(function (j) { return j.employerId === id; }).map(function (j) { return j.id; });
     Promise.all(vids.map(removeVideo)).then(function () {
       db.jobs = db.jobs.filter(function (j) { return jobIds.indexOf(j.id) < 0; });
@@ -3950,6 +3964,7 @@ acts['ad-vid-hide'] = function (el) { var v = byId(db.videos, el.dataset.id); v.
 acts['ad-vid-del'] = function (el) {
   confirmTwice(el, 'Click again to delete', function () {
     var v = byId(db.videos, el.dataset.id), t = v ? v.title : 'video';
+    if (typeof modDeleteVideoRemote === 'function') modDeleteVideoRemote(el.dataset.id);
     removeVideo(el.dataset.id).then(function () { adminDone('Deleted video "' + t + '"'); });
   });
 };
@@ -3995,6 +4010,143 @@ forms.adminsetup = function (f) {
     toast('Administrator account created.'); go('admin');
   });
 };
+
+/* ---- Administrator actions that apply to everyone (table moderation, plus admin delete rights) ---- */
+var modFlags = { user: {}, video: {} }, modLoaded = false;
+function modApplyUser(u) {
+  var f = modFlags.user[u.id]; if (!f || u.role === 'admin') return false;
+  var ch = false;
+  function setb(k, val) { if (!!u[k] !== !!val) { u[k] = !!val; ch = true; } }
+  if (f.suspended !== undefined || f.deleted) setb('suspended', f.deleted ? true : f.suspended);
+  if (f.noComment !== undefined) setb('noComment', f.noComment);
+  if (f.verified !== undefined) setb('verified', f.verified);
+  if (f.pro !== undefined && !!(u.pro && u.pro.active) !== !!f.pro) { u.pro = { active: !!f.pro, by: 'admin', ts: Date.now() }; ch = true; }
+  return ch;
+}
+function modApplyAll() {
+  var ch = false;
+  db.users.forEach(function (u) { if (modApplyUser(u)) ch = true; });
+  db.videos.forEach(function (v) { var f = modFlags.video[v.id]; if (f && f.hidden !== undefined && !!v.hidden !== !!f.hidden) { v.hidden = !!f.hidden; ch = true; } });
+  if (ch) {
+    lsSet(KEY, JSON.stringify(db));
+    var u = me();
+    if (u && u.suspended) route();
+    else { var ae = document.activeElement; if (!(ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)) && R.name !== 'admin') refresh(); }
+  }
+  return ch;
+}
+function modLoad() {
+  return sbCall('/rest/v1/moderation?select=kind,target_id,flags&limit=3000', 'GET').then(function (r) {
+    if (!r.ok || !Array.isArray(r.data)) return;
+    var nf = { user: {}, video: {} };
+    r.data.forEach(function (row) { if (row && (row.kind === 'user' || row.kind === 'video') && typeof row.target_id === 'string' && row.flags && typeof row.flags === 'object') nf[row.kind][row.target_id] = row.flags; });
+    modFlags = nf; modLoaded = true; modApplyAll();
+  }, function () { });
+}
+function modPush(kind, id, patch) {
+  var cur = Object.assign({}, modFlags[kind][id] || {}, patch);
+  modFlags[kind][id] = cur;
+  if (!adsToken) { toast('Saved in this browser only. To apply it for everyone, connect in the Ads tab first.'); return Promise.resolve(false); }
+  return sbCall('/rest/v1/moderation?on_conflict=kind,target_id', 'POST', { kind: kind, target_id: id, flags: cur, updated_at: new Date().toISOString() }, adsToken, { 'Prefer': 'resolution=merge-duplicates,return=minimal' }).then(function (r) {
+    toast(r.ok ? 'Applied for everyone.' : 'Saved in this browser only. Supabase refused it (' + r.status + '). Connect again in the Ads tab.'); return r.ok;
+  }, function () { toast('Saved in this browser only. Could not reach Supabase.'); return false; });
+}
+function modAdmin(path, method) { return adsToken ? sbCall(path, method, null, adsToken, { 'Prefer': 'return=minimal' }).catch(function () { }) : Promise.resolve(); }
+function modDeleteVideoRemote(id) {
+  var v = byId(db.videos, id); if (!v || !adsToken) return;
+  modAdmin('/rest/v1/videos?id=eq.' + encodeURIComponent(id), 'DELETE');
+  fetch(SB.url + '/storage/v1/object/videos/' + v.ownerId + '/' + id, { method: 'DELETE', headers: { apikey: SB.key, Authorization: 'Bearer ' + adsToken } }).catch(function () { });
+}
+function modDeleteCommentRemote(id) { modAdmin('/rest/v1/comments?id=eq.' + encodeURIComponent(id), 'DELETE'); }
+function modUserDeleted(id, vids) {
+  vids.forEach(modDeleteVideoRemote);
+  var e = encodeURIComponent(id);
+  ['jobs?employer_id=eq.' + e, 'comments?author_id=eq.' + e, 'records?or=(employer_id.eq.' + e + ',interviewer_id.eq.' + e + ')', 'profiles?id=eq.' + e].forEach(function (q) { modAdmin('/rest/v1/' + q, 'DELETE'); });
+  modPush('user', id, { deleted: true, suspended: true });
+}
+/* admin buttons: do the local change as before, then send it to Supabase */
+['ad-suspend:suspended', 'ad-nocomment:noComment', 'ad-verify:verified'].forEach(function (pair) {
+  var name = pair.split(':')[0], key = pair.split(':')[1];
+  acts[name] = (function (prev) { return function (el) { prev(el); var x = byId(db.users, el.dataset.id); if (x) modPush('user', x.id, (function (o) { o[key] = !!x[key]; return o; })({})); }; })(acts[name]);
+});
+acts['ad-pro'] = (function (prev) { return function (el) { prev(el); var x = byId(db.users, el.dataset.id); if (x) modPush('user', x.id, { pro: !!(x.pro && x.pro.active) }); }; })(acts['ad-pro']);
+acts['ad-vid-hide'] = (function (prev) { return function (el) { prev(el); var v = byId(db.videos, el.dataset.id); if (v) modPush('video', v.id, { hidden: !!v.hidden }); }; })(acts['ad-vid-hide']);
+acts['ad-com-del'] = (function (prev) { return function (el) { var id = el.dataset.id; prev(el); modDeleteCommentRemote(id); }; })(acts['ad-com-del']);
+/* keep everyone's view up to date */
+profLoad = (function (prev) { return function () { return prev().then(function () { modApplyAll(); }); }; })(profLoad);
+videosLoad = (function (prev) { return function () { return prev().then(function () { modApplyAll(); }); }; })(videosLoad);
+setInterval(function () { if (document.visibilityState === 'visible') modLoad(); }, 60000);
+/* Terms of Service + Privacy Policy pages (#terms, #privacy). Plain-language template; not legal advice. */
+function legalShell(title, body) {
+  show('<div class="auth" style="grid-template-columns:minmax(0,760px)"><div class="box strong legal"><h1>' + title + '</h1>' +
+    '<p class="sub">Last updated: November 11, 2026. This is a plain-language template written for a small site; it is not legal advice.</p>' + body +
+    '<p class="swap"><a href="#terms">Terms of Service</a> · <a href="#privacy">Privacy Policy</a> · <a href="#' + (me() ? homeFor(me()) : 'login') + '">Back</a></p></div></div>');
+}
+function viewTerms() {
+  legalShell('Terms of Service',
+    '<h2>1. Who runs this site</h2><p>Interviewed is run by Mia (the "site owner"). By creating an account or using the site you agree to these terms.</p>' +
+    '<h2>2. Who can use it</h2><p>You must be 18 or older. Give accurate information. Keep your password private; you are responsible for what happens under your account.</p>' +
+    '<h2>3. What the site does</h2><p>Employers post jobs and ask interview questions. Interviewees record video answers. Interviewed helps people connect; it does not guarantee any job, interview, hire, or candidate quality, and it does not verify most claims people make about themselves.</p>' +
+    '<h2>4. Your content</h2><p>You keep ownership of your videos, comments, profile and job posts. You give the site permission to store and show them to the people you chose (for example, employers you invited or the public if you set a video to public) so the site can work. You promise you have the right to post what you post.</p>' +
+    '<h2>5. Rules</h2><p>Do not post anything unlawful, hateful, harassing, sexual, misleading or fake (including fake jobs or fake identities). Do not post other people\'s private information or record someone without their consent. Do not try to break, scrape, or overload the site. Do not use the site to discriminate against candidates in violation of the law.</p>' +
+    '<h2>6. Moderation</h2><p>The site owner may hide or remove content, stop commenting, suspend, or delete accounts that break these rules or put others at risk, with or without notice.</p>' +
+    '<h2>7. Deleting your account</h2><p>You can delete your account in your settings. Your profile, jobs, videos and comments are then removed from the site.</p>' +
+    '<h2>8. No warranty, limited liability</h2><p>The site is offered "as is" and may have errors or downtime. To the fullest extent the law allows, the site owner is not liable for losses arising from your use of the site or from what other users post.</p>' +
+    '<h2>9. Changes</h2><p>These terms may change. Continued use after a change means you accept it.</p>' +
+    '<h2>10. Contact</h2><p>Questions or reports: use the contact method listed on the site by the owner.</p>');
+}
+function viewPrivacy() {
+  legalShell('Privacy Policy',
+    '<h2>What we collect</h2><ul><li>Account info: name, email, password (handled by our sign-in provider; we never see it in plain text), role (employer or interviewee).</li>' +
+    '<li>Profile info you add: headline, bio, experience, education, skills, company details, and which sections are visible.</li>' +
+    '<li>Content you create: jobs, interview questions, video answers (and their thumbnails/transcripts if any), likes, comments, invitations, interest and screening records.</li>' +
+    '<li>Basic usage data from Google Analytics (pages viewed, rough device and location).</li></ul>' +
+    '<h2>Where it is stored</h2><p>Account, profile, job, social and video data is stored with Supabase (a hosted database and file storage service). Some data is also kept in your own browser so the site feels fast. Google Analytics receives the usage data above.</p>' +
+    '<h2>Who can see what</h2><ul><li>Your profile and posted jobs are visible to other signed-in users.</li>' +
+    '<li>Each video follows the visibility you set (for example private, only invited employers, or public). Private videos are not shown to others.</li>' +
+    '<li>Comments and likes are visible to people who can watch that video.</li>' +
+    '<li>The site owner and administrators can view accounts and content for moderation and support.</li></ul>' +
+    '<h2>How we use it</h2><p>To run the site, show your content to the right people, send account emails (confirmation, password reset), keep the community safe, and understand how the site is used. We do not sell your personal information.</p>' +
+    '<h2>Cookies and browser storage</h2><p>The site uses your browser\'s local storage to keep you signed in and remember settings. Google Analytics may set cookies.</p>' +
+    '<h2>Your choices</h2><ul><li>Edit your profile and delete your videos, comments and jobs any time.</li><li>Delete your account in settings to remove your data from the site\'s database.</li><li>Ask the site owner for a copy or correction of your data.</li></ul>' +
+    '<h2>Children</h2><p>The site is for people 18 and older and is not meant for children.</p>' +
+    '<h2>Security</h2><p>We use reputable hosted services and access rules, but no system is perfectly secure. Do not share sensitive information (such as ID numbers) in videos, profiles or comments.</p>' +
+    '<h2>Changes and contact</h2><p>We may update this policy and will change the date above. For questions, use the contact method listed on the site by the owner.</p>');
+}
+
+/* Admin "Setup check": asks Supabase whether each table / the video bucket exists. */
+var SETUP_ITEMS = [['site_ads', 'supabase-ads.sql'], ['site_admins', 'supabase-ads.sql'], ['profiles', 'supabase-profiles.sql'], ['jobs', 'supabase-jobs.sql'],
+  ['records', 'supabase-records.sql'], ['videos', 'supabase-videos.sql'], ['likes', 'supabase-social.sql'], ['comments', 'supabase-social.sql'],
+  ['comment_votes', 'supabase-social.sql'], ['moderation', 'supabase-admin.sql']];
+var setupState = null;
+function setupRun() {
+  var tok = sbToken(); setupState = { busy: true, rows: [] };
+  if (!tok) { setupState = { busy: false, rows: [], need: true }; renderAdminParts(); return; }
+  var jobs = SETUP_ITEMS.map(function (it) {
+    return sbCall('/rest/v1/' + it[0] + '?select=*&limit=1', 'GET', null, tok).then(function (r) {
+      return { name: it[0], file: it[1], ok: r.ok, note: r.ok ? '' : (r.status === 401 || r.status === 403 ? 'blocked (permissions)' : 'missing') };
+    }, function () { return { name: it[0], file: it[1], ok: false, note: 'could not reach Supabase' }; });
+  });
+  jobs.push(sbCall('/storage/v1/bucket/videos', 'GET', null, tok).then(function (r) {
+    return { name: 'video storage bucket', file: 'supabase-videos.sql', ok: r.ok, note: r.ok ? '' : 'missing' };
+  }, function () { return { name: 'video storage bucket', file: 'supabase-videos.sql', ok: false, note: 'could not reach Supabase' }; }));
+  Promise.all(jobs).then(function (rows) { setupState = { busy: false, rows: rows }; if (R.name === 'admin' && ui.tab === 'setup') renderAdminParts(); });
+  renderAdminParts();
+}
+acts['setup-run'] = function () { setupRun(); };
+renderAdminParts = (function (prev) { return function () {
+  prev(); if (ui.tab !== 'setup') return;
+  var h = '<div class="box tint"><p class="sub">Checks that every part of the shared database is set up. Connect with your admin email on the Ads tab first.</p>' +
+    '<div class="acts"><button class="btn" type="button" data-act="setup-run">' + (setupState && setupState.busy ? 'Checking…' : 'Run check') + '</button></div></div>';
+  if (setupState && setupState.need) h += '<p class="sub">Not connected yet. Open the Ads tab, connect with your admin email and password, then come back.</p>';
+  if (setupState && setupState.rows.length) {
+    var bad = setupState.rows.filter(function (x) { return !x.ok; });
+    h += '<ul class="list">' + setupState.rows.map(function (x) {
+      return '<li class="row"><div class="grow"><b>' + (x.ok ? '✓ ' : '✗ ') + esc(x.name) + '</b>' + (x.ok ? '' : '<span class="meta">' + esc(x.note) + ' — run ' + esc(x.file) + '</span>') + '</div></li>';
+    }).join('') + '</ul>' + (bad.length ? '<p class="sub">Run the files named above in the Supabase SQL Editor (order: ads, profiles, jobs, records, videos, social, admin), then check again.</p>' : '<p class="sub">Everything is set up.</p>');
+  }
+  $('ad-list').innerHTML = h;
+}; })(renderAdminParts);
 
 /* ================= Studio ================= */
 var QUESTIONS = [
@@ -4606,7 +4758,7 @@ function drawAvatar() {
   if (FX.level > 0.25) { ctx.fillStyle = '#e8708a'; ctx.beginPath(); ctx.ellipse(cx, cy + r * 0.52 + mh * 0.45, r * 0.13, mh * 0.35, 0, 0, Math.PI * 2); ctx.fill(); }
 }
 
-sbBoot(); adsLoad(); profLoad().then(jobsLoad).then(function () { profPublish(false); jobsPublish(); }).then(recSync).then(vidSync).then(socSync);
+sbBoot(); adsLoad(); modLoad(); profLoad().then(jobsLoad).then(function () { profPublish(false); jobsPublish(); }).then(recSync).then(vidSync).then(socSync);
 renderHeader();
 route();
 })();
