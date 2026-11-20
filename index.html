@@ -111,7 +111,7 @@ p { margin: 0; }
 .ad-side .ad-cta { align-self: center; }
 @media (prefers-reduced-motion: no-preference) { .ad { transition: transform .2s; } .ad:hover { transform: translateY(-3px) rotate(-.6deg); } .ad .ad-emoji { animation: adbob 3s ease-in-out infinite; } @keyframes adbob { 50% { transform: translateY(-4px) rotate(5deg); } } }
 @media (max-width: 640px) { .ads { grid-template-columns: 1fr; } }
-@media (min-width: 1280px) and (max-width: 1579px) {
+@media (min-width: 1024px) and (max-width: 1579px) {
   .shell { max-width: min(1120px, calc(100vw - 348px)); }
   .ads { display: block; }
   .ad-side { position: fixed; top: 150px; width: 150px; max-width: none; min-height: 400px; padding: 24px 12px; }
@@ -570,7 +570,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wr
   <div id="ads" class="ads" aria-label="Advertisements"></div>
   <footer>
     <span>Interviewed. Video interviews for interviewees and employers.</span>
-    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.17.3</span> · <a href="#terms">Terms</a> · <a href="#privacy">Privacy</a> · <a href="#admin-setup">Administrator</a></span>
+    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.17.5</span> · <a href="#terms">Terms</a> · <a href="#privacy">Privacy</a> · <a href="#sync">Sync check</a> · <a href="#admin-setup">Administrator</a></span>
   </footer>
 </div>
 
@@ -875,7 +875,7 @@ var R = { name: '', arg: '', key: '' };
 var ui = {};
 var pendingInvite = null;
 var acts = {}, forms = {}, changes = {};
-var NEEDS_LOGIN = { coffee: 1, network: 1, events: 1, event: 1, notifications: 1, screen: 1, setup: 1, jobs: 1, invites: 1, job: 1, studio: 1, live: 1, videos: 1, playlists: 1, explore: 1, person: 1, profile: 1 };
+var NEEDS_LOGIN = { coffee: 1, network: 1, events: 1, event: 1, notifications: 1, screen: 1, setup: 1, jobs: 1, invites: 1, job: 1, studio: 1, live: 1, videos: 1, playlists: 1, explore: 1, person: 1, profile: 1, sync: 1 };
 
 function homeFor(u) { return u && u.role === 'admin' ? 'admin' : 'jobs'; }
 var ADMIN_BLOCKED = { invites: 1, live: 1, setup: 1, profile: 1 };
@@ -950,7 +950,7 @@ function route(noScroll) {
     $('app').hidden = false;
     var views = { login: viewLogin, signup: viewSignup, setup: viewSetup, profile: viewProfile, person: viewPerson,
       coffee: viewCoffee, network: viewNetwork, jobs: viewJobs, job: viewJob, invites: viewInvites, videos: viewVideos, watch: viewWatch, playlists: viewPlaylists,
-      list: viewList, explore: viewExplore, admin: viewAdmin, screen: viewScreen, events: viewEvents, event: viewEvent, notifications: viewNotifications, ranking: viewRanking, chooserole: viewChooseRole, forgot: viewForgot, reset: viewReset, terms: viewTerms, privacy: viewPrivacy };
+      list: viewList, explore: viewExplore, admin: viewAdmin, screen: viewScreen, events: viewEvents, event: viewEvent, notifications: viewNotifications, ranking: viewRanking, chooserole: viewChooseRole, forgot: viewForgot, reset: viewReset, terms: viewTerms, privacy: viewPrivacy, sync: viewSync };
     (views[name] || viewNotFound)(arg);
   }
   if (!noScroll) window.scrollTo(0, 0);
@@ -4147,6 +4147,49 @@ renderAdminParts = (function (prev) { return function () {
   }
   $('ad-list').innerHTML = h;
 }; })(renderAdminParts);
+/* Sync check page (#sync): shows whether this browser is connected to the shared database, what it can see, and the latest errors. */
+var syncErrs = [], syncDiag = null;
+sbCall = (function (prev) { return function (path, method, body, token, extra) {
+  return prev(path, method, body, token, extra).then(function (r) {
+    if (!r.ok && /^\/(rest|storage)\//.test(path)) {
+      var m = (r.data && (r.data.message || r.data.error || r.data.msg)) || '';
+      syncErrs.unshift((method || 'GET') + ' ' + path.split('?')[0].replace('/rest/v1/', '').replace('/storage/v1/', 'storage/') + ' → ' + r.status + (m ? ' ' + String(m).slice(0, 140) : ''));
+      syncErrs = syncErrs.slice(0, 8);
+    }
+    return r;
+  }, function (e) { syncErrs.unshift((method || 'GET') + ' ' + path.split('?')[0] + ' → no connection'); syncErrs = syncErrs.slice(0, 8); throw e; });
+}; })(sbCall);
+function jobsPoll() { if (document.visibilityState === 'visible' && me()) jobsLoad(); }
+setInterval(jobsPoll, 60000);
+function viewSync() {
+  var u = me();
+  var h = '<div class="auth" style="grid-template-columns:minmax(0,720px)"><div class="box strong"><h1>Sync check</h1>' +
+    '<p class="sub">Shows whether this browser is connected to the shared database. Send a screenshot of this page if something is not showing up for other people.</p>';
+  var rows = [['Site version', (document.getElementById('site-version') || {}).textContent || ''], ['Signed in as', u ? esc(u.name) + ' (' + (u.role === 'interviewer' ? 'interviewee' : u.role) + ')' : 'nobody'],
+    ['Connected to shared database', profSess ? 'yes' : '<b>NO — sign out and sign back in</b>'], ['Cloud account id on this device', u && u.sbId ? 'yes' : '<b>NO — sign out and sign back in</b>'],
+    ['Jobs I posted (on this device)', String(db.jobs.filter(function (j) { return u && j.employerId === u.id && !j.remote; }).length)],
+    ['Jobs from others (on this device)', String(db.jobs.filter(function (j) { return j.remote; }).length)]];
+  if (syncDiag) syncDiag.forEach(function (x) { rows.push([x[0], x[1]]); });
+  h += '<ul class="list">' + rows.map(function (r) { return '<li class="row"><div class="grow"><span class="meta">' + r[0] + '</span> <b>' + r[1] + '</b></div></li>'; }).join('') + '</ul>';
+  h += '<h2>Latest problems</h2>' + (syncErrs.length ? '<ul class="list">' + syncErrs.map(function (e) { return '<li class="row"><div class="grow"><code>' + esc(e) + '</code></div></li>'; }).join('') + '</ul>' : '<p class="sub">None since this page was opened.</p>');
+  h += '<div class="acts"><button class="btn" type="button" data-act="sync-now">Sync now</button></div><p class="swap"><a href="#' + (u ? homeFor(u) : 'login') + '">Back</a></p></div></div>';
+  show(h);
+}
+acts['sync-now'] = function () {
+  var u = me(); if (!u) return;
+  jobsLast = {}; recSig = recSig || {};
+  var tok = sbToken(); syncDiag = [];
+  profPublish(true); jobsPublish();
+  var chain = Promise.resolve();
+  chain = chain.then(function () { return recSync(); }).then(function () { return jobsLoad(); });
+  ['profiles', 'jobs', 'records', 'videos'].forEach(function (t) {
+    chain = chain.then(function () {
+      return sbCall('/rest/v1/' + t + '?select=id&limit=1000', 'GET', null, tok).then(function (r) { syncDiag.push(['Rows in cloud "' + t + '" I can see', r.ok && Array.isArray(r.data) ? String(r.data.length) : '<b>error ' + r.status + '</b>']); });
+    });
+  });
+  chain.then(function () { if (R.name === 'sync') viewSync(); }, function () { if (R.name === 'sync') viewSync(); });
+  toast('Checking…');
+};
 
 /* ================= Studio ================= */
 var QUESTIONS = [
