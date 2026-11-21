@@ -402,9 +402,29 @@ footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wr
 .adgate-box { background: #fff; border-radius: 18px; max-width: 560px; width: 100%; padding: 20px; box-shadow: 0 20px 60px rgba(30, 16, 60, .4); max-height: 94vh; overflow: auto; }
 .adgate-tag { margin: 0 0 8px; font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: #7a6a99; }
 .adgate-media iframe, .adgate-media video { width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 12px; background: #000; display: block; }
-.adgate-house { height: 160px; display: flex; align-items: center; justify-content: center; font-size: 4.5rem; border-radius: 12px; background: linear-gradient(135deg, #f1e9fd, #d6c0fa); }
+.adgate-house { height: 190px; display: flex; align-items: center; justify-content: center; font-size: 4.5rem; border-radius: 12px; background: linear-gradient(135deg, #f1e9fd, #d6c0fa); }
 .ext-frame { width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 12px; background: #000; display: block; }
 #link-box { margin-top: 12px; } #link-box .steps { padding-left: 20px; } #link-box .steps li { margin-bottom: 6px; }
+
+.navgrp { position: relative; display: inline-flex; }
+.navbtn { font: inherit; font-weight: 600; padding: 8px 12px; border: 0; border-radius: 6px; color: var(--muted); background: transparent; cursor: pointer; }
+.navbtn:hover { background: var(--tint); color: var(--ink); }
+.navbtn[aria-current="page"] { color: var(--purple-deep); background: var(--purple-soft); }
+.navmenu { position: absolute; top: 100%; left: 0; z-index: 60; min-width: 170px; background: #fff; border: 1px solid var(--line, #e3d9f5); border-radius: 10px; box-shadow: 0 8px 24px rgba(60, 30, 110, .18); padding: 6px; display: flex; flex-direction: column; }
+.navmenu[hidden] { display: none; }
+.navmenu a { display: block; }
+
+.syncbar { position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 400; max-width: 720px; margin: 0 auto; background: #fff4d6; color: #5a3d00; border: 1px solid #e8c874; border-radius: 12px; padding: 10px 14px; box-shadow: 0 6px 20px rgba(60, 40, 0, .2); font-size: .92rem; }
+.syncbar a { color: #5a3d00; font-weight: 700; }
+
+.adgate-house { position: relative; overflow: hidden; }
+.hv-bear { position: absolute; bottom: 14px; font-size: 3.4rem; animation: hvhop 1s ease-in-out infinite; left: 12%; }
+.hv-bear.b2 { left: 44%; animation-delay: .25s; } .hv-bear.b3 { left: 74%; animation-delay: .5s; }
+@keyframes hvhop { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-22px); } }
+.hv-t { position: absolute; top: 18px; left: 0; right: 0; text-align: center; font-size: 1.5rem; font-weight: 800; color: #4b1fa5; opacity: 0; animation: hvtxt 6s infinite; }
+.hv-t.t2 { animation-delay: 2s; } .hv-t.t3 { animation-delay: 4s; font-size: 1.2rem; }
+@keyframes hvtxt { 0% { opacity: 0; transform: translateY(10px); } 6%, 30% { opacity: 1; transform: none; } 36%, 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .hv-bear, .hv-t { animation: none; } .hv-t.t1 { opacity: 1; } }
 </style>
 
 <div class="shell">
@@ -553,7 +573,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wr
 
       <div class="box tint" id="fx-box">
         <div class="field"><label for="fx-mode">Camera effect</label>
-          <select id="fx-mode"><option value="none">No effect</option><option value="blur">Blur my background</option><option value="bg">Virtual background</option><option value="avatar">Avatar (moves as you speak)</option><option value="screen">Share my screen (show software)</option></select></div>
+          <select id="fx-mode"><option value="none">No effect</option><option value="blur">Blur my background</option><option value="bg">Virtual background</option><option value="avatar">Cute avatar (copies your face)</option><option value="screen">Share my screen (show software)</option></select></div>
         <div class="field" id="fx-choice-wrap" hidden><label for="fx-choice" id="fx-choice-label">Background</label><select id="fx-choice"></select></div>
         <div class="field" id="fx-upload-wrap" hidden><label for="fx-upload">Your own background image</label><input type="file" id="fx-upload" accept="image/*"></div>
         <p class="notice" id="fx-note"></p>
@@ -578,7 +598,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wr
   <div id="ads" class="ads" aria-label="Advertisements"></div>
   <footer>
     <span>Interviewed. Video interviews for interviewees and employers.</span>
-    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.18.0</span> · <a href="#terms">Terms</a> · <a href="#privacy">Privacy</a> · <a href="#sync">Sync check</a> · <a href="#admin-setup">Administrator</a></span>
+    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.19.3</span> · <a href="#terms">Terms</a> · <a href="#privacy">Privacy</a> · <a href="#sync">Sync check</a> · <a href="#admin-setup">Administrator</a></span>
   </footer>
 </div>
 
@@ -908,15 +928,22 @@ function navKey() {
 }
 function renderHeader() {
   var u = me(), nav = '';
+  if (typeof ui === 'object' && ui) { }
   if (u) {
-    var items = u.role === 'admin' ? [['admin', 'Admin'], ['jobs', 'Jobs'], ['studio', 'Studio'], ['videos', 'My videos'], ['playlists', 'Playlists'], ['explore', 'Explore'], ['events', 'Events'], ['coffee', 'Coffee chat'], ['network', 'Network'], ['notifications', 'Alerts']] : u.role === 'employer'
-      ? [['jobs', 'Jobs'], ['studio', 'Studio'], ['videos', 'My videos'], ['playlists', 'Playlists'], ['explore', 'Explore'], ['events', 'Events'], ['network', 'Network'], ['coffee', 'Coffee chat'], ['notifications', 'Alerts']]
-      : [['jobs', 'Jobs'], ['invites', 'Invitations'], ['studio', 'Studio'], ['videos', 'My videos'], ['playlists', 'Playlists'], ['explore', 'Explore'], ['events', 'Events'], ['network', 'Network'], ['coffee', 'Coffee chat'], ['notifications', 'Alerts']];
+    var items = u.role === 'admin' ? [['admin', 'Admin'], ['jobs', 'Jobs'], ['studio', 'Studio'], ['@videos', 'Videos'], ['@explore', 'Explore'], ['coffee', 'Coffee chat'], ['network', 'Network'], ['notifications', 'Alerts']] : u.role === 'employer'
+      ? [['jobs', 'Jobs'], ['studio', 'Studio'], ['@videos', 'Videos'], ['@explore', 'Explore'], ['network', 'Network'], ['coffee', 'Coffee chat'], ['notifications', 'Alerts']]
+      : [['jobs', 'Jobs'], ['invites', 'Invitations'], ['studio', 'Studio'], ['@videos', 'Videos'], ['@explore', 'Explore'], ['network', 'Network'], ['coffee', 'Coffee chat'], ['notifications', 'Alerts']];
     var netCount = u.role === 'admin' ? 0 : connectionsOf(u).length;
     var unread = db.notifications.filter(function (n) { return n.userId === u.id && !n.read; }).length;
     var pending = u.role === 'interviewer' ? db.invites.filter(function (i) { return i.interviewerId === u.id && i.status === 'invited'; }).length : 0;
     var key = navKey();
+    var GROUPS = { '@videos': [['videos', 'My videos'], ['playlists', 'My playlists']], '@explore': [['explore', 'Videos'], ['events', 'Events']] };
     nav = '<nav class="mainnav" aria-label="Main">' + items.map(function (it) {
+      if (GROUPS[it[0]]) {
+        var g = GROUPS[it[0]], on = g.some(function (x) { return x[0] === key; }), open = ui.navOpen === it[0];
+        return '<span class="navgrp"><button type="button" class="navbtn" data-act="nav-menu" data-g="' + it[0] + '" aria-haspopup="true" aria-expanded="' + open + '"' + (on ? ' aria-current="page"' : '') + '>' + it[1] + ' <span aria-hidden="true">▾</span></button>' +
+          '<span class="navmenu" role="menu"' + (open ? '' : ' hidden') + '>' + g.map(function (x) { return '<a role="menuitem" href="#' + x[0] + '"' + (key === x[0] ? ' aria-current="page"' : '') + '>' + x[1] + '</a>'; }).join('') + '</span></span>';
+      }
       return '<a href="#' + it[0] + '"' + (key === it[0] ? ' aria-current="page"' : '') + '>' + it[1] +
         (it[0] === 'network' && netCount ? '<span class="count" aria-label="' + netCount + ' connections">' + netCount + '</span>' : '') + (it[0] === 'notifications' && unread ? '<span class="count" aria-label="' + unread + ' unread">' + unread + '</span>' : '') + (it[0] === 'invites' && pending ? '<span class="count" aria-label="' + pending + ' new">' + pending + '</span>' : '') + '</a>';
     }).join('') + '</nav>' +
@@ -3449,16 +3476,27 @@ acts['ad-publish-all'] = function () {
 var profSess = null; try { profSess = JSON.parse(localStorage.getItem('interviewed.sess') || 'null'); } catch (e) { }
 var profLast = '', profTimer = 0;
 function profSetSess(d) {
-  profSess = d && d.access_token ? { a: d.access_token, r: d.refresh_token || '' } : null;
+  profSess = d && d.access_token ? { a: d.access_token, r: d.refresh_token || '' } : null; if (profSess) syncLost = false;
   try { if (profSess) localStorage.setItem('interviewed.sess', JSON.stringify(profSess)); else localStorage.removeItem('interviewed.sess'); } catch (e) { }
 }
+var profRefreshing = null;
+function jwtExp(t) { try { var p = JSON.parse(atob(String(t).split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))); return Number(p.exp) || 0; } catch (e) { return 0; } }
 function profRefresh() {
   if (!profSess || !profSess.r) return Promise.resolve(false);
-  return sbCall('/auth/v1/token?grant_type=refresh_token', 'POST', { refresh_token: profSess.r }).then(function (r) {
+  if (profRefreshing) return profRefreshing;
+  var rt = profSess.r;
+  profRefreshing = sbCall('/auth/v1/token?grant_type=refresh_token', 'POST', { refresh_token: rt }).then(function (r) {
+    profRefreshing = null;
     if (r.ok && r.data.access_token) { profSetSess(r.data); return true; }
-    profSetSess(null); return false;
-  }, function () { return false; });
+    /* another tab may have refreshed already: use its newer session */
+    try { var o = JSON.parse(localStorage.getItem('interviewed.sess') || 'null'); if (o && o.r && o.r !== rt && o.a) { profSess = o; return true; } } catch (e) { }
+    if (profSess && profSess.r !== rt) return true;
+    if (r.status === 400 || r.status === 401 || r.status === 403) { profSetSess(null); syncLost = true; }
+    return false;
+  }, function () { profRefreshing = null; return false; });
+  return profRefreshing;
 }
+var syncLost = false;
 function profPayload(u) {
   var ph = typeof u.photo === 'string' && /^data:image\//.test(u.photo) && u.photo.length < 150000 ? u.photo : null;
   var o = { name: u.name || '', role: u.role === 'employer' ? 'employer' : 'interviewer', company: u.company || '', headline: u.headline || '', location: u.location || '', about: (u.about || '').slice(0, 2000), photo: ph, chk: hasCheck(u), createdAt: u.createdAt || 0 };
@@ -3506,7 +3544,9 @@ function sbToken() { return profSess ? profSess.a : (me() && me().role === 'admi
 function sbAuthed(path, method, body, extra) {
   var tok = sbToken(); if (!tok) return Promise.resolve({ ok: false, status: 0, data: {} });
   var send = function () { return sbCall(path, method, body, sbToken(), extra); };
-  return send().then(function (r) { if (r.status === 401 && profSess) return profRefresh().then(function (ok) { return ok ? send() : r; }); return r; });
+  var exp = profSess && tok === profSess.a ? jwtExp(tok) : 0;
+  var pre = exp && exp * 1000 < Date.now() + 30000 ? profRefresh() : Promise.resolve(true);
+  return pre.then(function () { return send(); }).then(function (r) { if (r.status === 401 && profSess) return profRefresh().then(function (ok) { return ok ? send() : r; }); return r; });
 }
 function jobPayload(j) {
   var o = { status: j.status === 'closed' ? 'closed' : 'open', createdAt: j.createdAt || 0 };
@@ -3765,9 +3805,9 @@ blobGet = (function (prev) {
     return prev(id).then(function (b) {
       if (b) return b;
       var v = byId(db.videos, id);
-      if (!v || !v.cloud || !profSess) return null;
+      if (!v || !v.cloud) return null;
       if (vidFetching[id]) return vidFetching[id];
-      vidFetching[id] = vidAuthFetch(SB.url + '/storage/v1/object/authenticated/videos/' + v.ownerId + '/' + id, {}).then(function (r) {
+      vidFetching[id] = (profSess ? vidAuthFetch(SB.url + '/storage/v1/object/authenticated/videos/' + v.ownerId + '/' + id, {}) : fetch(SB.url + '/storage/v1/object/authenticated/videos/' + v.ownerId + '/' + id, { headers: { 'apikey': SB.key } })).then(function (r) {
         if (!r.ok) return null;
         return r.blob().then(function (bl) { if (!bl || !bl.size) return null; var typed = bl.type && /^(video|audio)\//.test(bl.type) ? bl : new Blob([bl], { type: v.mime || 'video/webm' }); return blobPut(id, typed).then(function () { return typed; }); });
       }).catch(function () { return null; }).then(function (x) { delete vidFetching[id]; return x; });
@@ -4156,12 +4196,12 @@ renderAdminParts = (function (prev) { return function () {
   $('ad-list').innerHTML = h;
 }; })(renderAdminParts);
 /* Sync check page (#sync): shows whether this browser is connected to the shared database, what it can see, and the latest errors. */
-var syncErrs = [], syncDiag = null;
+var syncErrs = [], syncDiag = null, syncWriteFail = 0;
 sbCall = (function (prev) { return function (path, method, body, token, extra) {
   return prev(path, method, body, token, extra).then(function (r) {
     if (!r.ok && /^\/(rest|storage)\//.test(path)) {
       var m = (r.data && (r.data.message || r.data.error || r.data.msg)) || '';
-      syncErrs.unshift((method || 'GET') + ' ' + path.split('?')[0].replace('/rest/v1/', '').replace('/storage/v1/', 'storage/') + ' → ' + r.status + (m ? ' ' + String(m).slice(0, 140) : ''));
+      syncErrs.unshift((method || 'GET') + ' ' + path.split('?')[0].replace('/rest/v1/', '').replace('/storage/v1/', 'storage/') + ' → ' + r.status + (m ? ' ' + String(m).slice(0, 140) : '')); if ((method || 'GET') !== 'GET' && r.status !== 401) syncWriteFail = Date.now();
       syncErrs = syncErrs.slice(0, 8);
     }
     return r;
@@ -4198,6 +4238,22 @@ acts['sync-now'] = function () {
   chain.then(function () { if (R.name === 'sync') viewSync(); }, function () { if (R.name === 'sync') viewSync(); });
   toast('Checking…');
 };
+
+/* A banner that says out loud when this account is not reaching the shared database */
+function syncBannerCheck() {
+  var u = me(), msg = '';
+  if (u && u.role !== 'admin') {
+    if (!u.sbId) msg = 'This account only exists in this browser, so other people cannot see you or anything you post. Sign out, then use Sign up to create a shared account.';
+    else if (!profSess) msg = 'Your connection to the shared database ended, so other people cannot see what you post right now. Please sign out and log back in.';
+    else if (syncWriteFail && Date.now() - syncWriteFail < 180000) msg = 'Something you just saved did not reach the shared database (' + (syncErrs.filter(function (e) { return !/^GET/.test(e); })[0] || 'unknown error') + ').';
+  }
+  var b = document.getElementById('sync-banner');
+  if (!msg) { if (b) b.remove(); return; }
+  if (!b) { b = document.createElement('div'); b.id = 'sync-banner'; b.className = 'syncbar'; b.setAttribute('role', 'status'); document.body.appendChild(b); }
+  var html = esc(msg) + ' <a href="#sync">Sync check</a>';
+  if (b.innerHTML !== html) b.innerHTML = html;
+}
+setInterval(syncBannerCheck, 3000);
 
 /* ================= Studio ================= */
 var QUESTIONS = [
@@ -4648,12 +4704,12 @@ function fxRenderControls() {
     $('fx-choice').innerHTML = list.map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === FX.choice ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('');
   }
   $('fx-upload-wrap').hidden = !(FX.mode === 'bg' && FX.choice === 'custom');
-  $('fx-note').textContent = FX.error || (FX.mode === 'blur' || FX.mode === 'bg' ? 'Runs on your device. The first time can take a few seconds to load.' : FX.mode === 'avatar' ? 'Your avatar moves its mouth as you speak. Your camera stays off.' : FX.mode === 'screen' ? 'You will pick a window or screen to share. Your microphone is recorded too, so you can explain what you are doing.' : '');
+  $('fx-note').textContent = FX.error || (FX.mode === 'blur' || FX.mode === 'bg' ? 'Runs on your device. The first time can take a few seconds to load.' : FX.mode === 'avatar' ? 'Your avatar copies your face and voice. Your camera is only used to watch your expressions. Your real video is never recorded.' : FX.mode === 'screen' ? 'You will pick a window or screen to share. Your microphone is recorded too, so you can explain what you are doing.' : '');
 }
 $('fx-mode').addEventListener('change', function () {
   var prev = FX.mode; FX.mode = this.value; FX.error = '';
-  FX.choice = FX.mode === 'avatar' ? 'fox' : 'purple';
-  var kind = function (m) { return m === 'avatar' ? 'a' : m === 'screen' ? 's' : 'c'; };
+  FX.choice = FX.mode === 'avatar' ? 'fairy' : 'purple';
+  var kind = function (m) { return m === 'screen' ? 's' : 'c'; };
   if (S.state === 'ready' && kind(prev) !== kind(FX.mode)) { stopStream(); S.state = 'off'; renderStudio(); startCamera(); return; }
   if (S.state === 'ready') { renderStudio(); fxApply().then(renderStudio); } else renderStudio();
 });
@@ -4845,12 +4901,12 @@ function extFrame(x, auto) {
 
 /* ---- the ad that plays first (set by the administrator, Ads tab) ---- */
 function preData() {
-  var d = db.preroll || {}; return { on: d.on !== false, url: typeof d.url === 'string' ? d.url : '', seconds: Math.min(30, Math.max(3, Number(d.seconds) || 5)), title: typeof d.title === 'string' ? d.title : 'Your ad could be here', text: typeof d.text === 'string' ? d.text : 'Advertise to interviewees and employers. Ask the site owner.', link: safeAdLink(d.link), cta: typeof d.cta === 'string' ? d.cta : '' };
+  var d = db.preroll || {}; return { on: d.on !== false, url: typeof d.url === 'string' ? d.url.slice(0, 900) : '', seconds: Math.min(30, Math.max(3, Number(d.seconds) || 5)), title: typeof d.title === 'string' ? d.title : 'Your ad could be here', text: typeof d.text === 'string' ? d.text : 'Advertise to interviewees and employers. Ask the site owner.', link: safeAdLink(d.link), cta: typeof d.cta === 'string' ? d.cta : '' };
 }
 function adGateNeeded() { var u = me(); return !(u && u.role === 'admin') && preData().on; }
 function adGate(done, cancel) {
   if (document.getElementById('adgate')) return;
-  var p = preData(), ext = parseExt(p.url), vid = !ext && /^https:\/\/[^\s"'<>]+\.(mp4|webm|m4v)(\?[^\s"'<>]*)?$/i.test(p.url) ? p.url : '';
+  var p = preData(), list = String(p.url || '').split(/\n+/).map(function (x) { return x.trim(); }).filter(Boolean), pick = list.length ? list[Math.floor(Math.random() * list.length)] : '', ext = parseExt(pick), vid = !ext && /^https:\/\/[^\s"'<>]+\.(mp4|webm|m4v)(\?[^\s"'<>]*)?$/i.test(pick) ? pick : '';
   var o = document.createElement('div'); o.id = 'adgate'; o.className = 'adgate'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-modal', 'true'); o.setAttribute('aria-label', 'Advertisement');
   o.innerHTML = '<div class="adgate-box"><p class="adgate-tag">Advertisement</p><div class="adgate-media" id="adgate-media"></div><h3>' + esc(p.title) + '</h3><p class="sub">' + esc(p.text) + '</p>' +
     '<div class="acts"><button class="btn" type="button" id="adgate-go" disabled>Continue in ' + p.seconds + '</button>' +
@@ -4860,7 +4916,7 @@ function adGate(done, cancel) {
   var m = document.getElementById('adgate-media');
   if (ext) m.appendChild(extFrame(ext, true));
   else if (vid) { var v = document.createElement('video'); v.src = vid; v.autoplay = true; v.muted = true; v.playsInline = true; v.controls = false; m.appendChild(v); }
-  else m.innerHTML = '<div class="adgate-house" aria-hidden="true">💜</div>';
+  else m.innerHTML = '<div class="adgate-house" aria-hidden="true"><div class="hv-bear">🐻</div><div class="hv-bear b2">🦊</div><div class="hv-bear b3">🧚</div><div class="hv-t t1">Record once.</div><div class="hv-t t2">Get seen.</div><div class="hv-t t3">Interviewed. Free to join.</div></div>';
   var left = p.seconds, go = document.getElementById('adgate-go');
   function close() { clearInterval(t); o.remove(); }
   var t = setInterval(function () { left--; if (left <= 0) { clearInterval(t); go.disabled = false; go.textContent = 'Continue'; go.focus(); } else go.textContent = 'Continue in ' + left; }, 1000);
@@ -4920,8 +4976,8 @@ function preHtml() {
   return '<form data-form="presave" class="box tint" novalidate><h3>Ad before watching or recording</h3>' +
     '<p class="sub">Every visitor except you sees this for a few seconds before they watch a video or start recording. Paste a YouTube or Vimeo link (or a direct https link ending in .mp4) to play a video ad, or leave the link empty to show the text card.</p>' +
     '<label class="check"><input type="checkbox" name="on"' + (p.on ? ' checked' : '') + '> Show this ad</label>' +
-    '<div class="row2"><div class="field"><label>Video link <span class="opt">(optional)</span></label><input type="text" name="url" maxlength="300" value="' + esc(p.url) + '"><p class="err" data-err="url"></p></div>' +
-    '<div class="field"><label>Seconds before Continue works</label><input type="number" name="seconds" min="3" max="30" value="' + p.seconds + '"></div></div>' +
+    '<div class="field"><label>Video ad links <span class="opt">(optional, one per line; they take turns)</span></label><textarea name="url" rows="3" maxlength="900">' + esc(p.url) + '</textarea><p class="err" data-err="url"></p></div>' +
+    '<div class="row2"><div class="field"><label>Seconds before Continue works</label><input type="number" name="seconds" min="3" max="30" value="' + p.seconds + '"></div></div>' +
     '<div class="field"><label>Headline</label><input type="text" name="title" maxlength="60" value="' + esc(p.title) + '"></div>' +
     '<div class="field"><label>Text</label><input type="text" name="text" maxlength="140" value="' + esc(p.text) + '"></div>' +
     '<div class="row2"><div class="field"><label>Button words <span class="opt">(optional)</span></label><input type="text" name="cta" maxlength="22" value="' + esc(p.cta) + '"></div>' +
@@ -4939,7 +4995,9 @@ function prePublish() {
 forms.presave = function (f) {
   var u = me(); if (!u || u.role !== 'admin') return;
   var url = f.elements.url.value.trim(), link = f.elements.link.value.trim();
-  if (url && !parseExt(url) && !/^https:\/\/[^\s"'<>]+\.(mp4|webm|m4v)(\?[^\s"'<>]*)?$/i.test(url)) { showErrors(f, { url: 'Use a YouTube or Vimeo link, or an https link ending in .mp4.' }); return; }
+  var urls = url.split(/\n+/).map(function (x) { return x.trim(); }).filter(Boolean);
+  if (urls.some(function (x) { return !parseExt(x) && !/^https:\/\/[^\s"'<>]+\.(mp4|webm|m4v)(\?[^\s"'<>]*)?$/i.test(x); })) { showErrors(f, { url: 'Each line must be a YouTube or Vimeo link, or an https link ending in .mp4.' }); return; }
+  url = urls.join('\n');
   if (link && !safeAdLink(link)) { showErrors(f, { link: 'Use a web address starting with https://' }); return; }
   db.preroll = { on: f.elements.on.checked, url: url, seconds: Number(f.elements.seconds.value) || 5, title: f.elements.title.value.trim() || 'Advertisement', text: f.elements.text.value.trim(), cta: f.elements.cta.value.trim(), link: link };
   audit('Updated the ad before videos'); save();
@@ -4951,11 +5009,178 @@ function preLoad() {
   sbCall('/rest/v1/site_ads?slot=eq.preroll&select=data', 'GET').then(function (r) {
     if (!r.ok || !Array.isArray(r.data) || !r.data.length || !r.data[0] || typeof r.data[0].data !== 'object') return;
     var d = r.data[0].data || {};
-    db.preroll = { on: d.on !== false, url: typeof d.url === 'string' ? d.url.slice(0, 300) : '', seconds: Math.min(30, Math.max(3, Number(d.seconds) || 5)), title: String(d.title || '').slice(0, 60), text: String(d.text || '').slice(0, 140), cta: String(d.cta || '').slice(0, 22), link: safeAdLink(d.link) };
+    db.preroll = { on: d.on !== false, url: typeof d.url === 'string' ? d.url.slice(0, 900) : '', seconds: Math.min(30, Math.max(3, Number(d.seconds) || 5)), title: String(d.title || '').slice(0, 60), text: String(d.text || '').slice(0, 140), cta: String(d.cta || '').slice(0, 22), link: safeAdLink(d.link) };
     lsSet(KEY, JSON.stringify(db));
   }, function () { });
 }
 preLoad(); setInterval(preLoad, 300000);
+/* Dropdown groups in the top menu */
+acts['nav-menu'] = function (el) { var g = el.dataset.g; ui.navOpen = ui.navOpen === g ? '' : g; renderHeader(); var b = document.querySelector('.navbtn[data-g="' + g + '"]'); if (b && ui.navOpen) { var m = b.parentNode.querySelector('.navmenu a'); if (m) m.focus(); } };
+document.addEventListener('click', function (e) {
+  if (!ui.navOpen) return;
+  if (e.target.closest && e.target.closest('.navbtn')) return;
+  ui.navOpen = ''; renderHeader();
+});
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && ui.navOpen) { ui.navOpen = ''; renderHeader(); } });
+/* Open a shared video link even when this browser has never seen the video (for example a logged-out visitor) */
+var watchTried = {};
+viewWatch = (function (prev) { return function (id) {
+  if (byId(db.videos, id) || !/^[A-Za-z0-9]{4,40}$/.test(String(id)) || watchTried[id]) { prev(id); return; }
+  watchTried[id] = 1;
+  show('<div class="page"><div class="empty"><h3>Loading video…</h3></div></div>');
+  var q = '/rest/v1/videos?id=eq.' + encodeURIComponent(id) + '&select=id,owner_id,kind,invite_id,created_at,data';
+  (sbToken() ? sbAuthed(q, 'GET') : sbCall(q, 'GET')).then(function (r) {
+    if (r.ok && Array.isArray(r.data) && r.data[0] && /^[a-z0-9]{6,40}$/i.test(String(r.data[0].owner_id))) {
+      if (!byId(db.videos, id)) { db.videos.push(vidCleanRow(r.data[0])); save(); }
+      return profLoad().then(function () { }, function () { });
+    }
+  }).then(function () { if (R.name === 'watch' && R.arg === id) viewWatch(id); }, function () { if (R.name === 'watch' && R.arg === id) prev(id); });
+}; })(viewWatch);
+showShare = (function (prev) { return function (kind, id) {
+  prev(kind, id);
+  if (kind === 'watch') { var v = byId(db.videos, id); if (v && v.visibility !== 'public') $('dlg-sub').textContent = 'Only employers who are logged in can open this link. To let anyone watch it, change the video to Everyone.'; else if (v) $('dlg-sub').textContent = 'Anyone with this link can watch this video, even without an account.'; }
+}; })(showShare);
+/* ---- Cute avatars (fairy, angel, bear, fox) that copy your face and your voice ---- */
+AVATARS = [['fairy', 'Fairy'], ['angel', 'Angel'], ['bear', 'Bear'], ['fox', 'Fox']];
+var AV = { jaw: 0, smile: 0, frown: 0, blinkL: 0, blinkR: 0, wideL: 0, wideR: 0, browL: 0, browR: 0, pucker: 0, lookX: 0, lookY: 0, dx: 0, dy: 0, roll: 0, tracked: 0 };
+var FACE_JS = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs', FACE_WASM = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm',
+  FACE_MODEL = 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
+function loadFace() {
+  if (FX.face) return Promise.resolve(FX.face);
+  if (FX.faceLoading) return FX.faceLoading;
+  FX.faceLoading = import(FACE_JS).then(function (m) {
+    return m.FilesetResolver.forVisionTasks(FACE_WASM).then(function (fs) {
+      function make(delegate) { return m.FaceLandmarker.createFromOptions(fs, { baseOptions: { modelAssetPath: FACE_MODEL, delegate: delegate }, runningMode: 'VIDEO', numFaces: 1, outputFaceBlendshapes: true }); }
+      return make('GPU').catch(function () { return make('CPU'); });
+    });
+  }).then(function (fl) { FX.face = fl; FX.faceLoading = null; return fl; }, function (e) { FX.faceLoading = null; FX.faceFailed = true; throw e; });
+  return FX.faceLoading;
+}
+function avEase(k, v, a) { AV[k] += (v - AV[k]) * a; }
+function faceStep() {
+  var vid = FX.faceVid;
+  if (!vid && S.stream && S.stream.getVideoTracks().length) {
+    vid = FX.faceVid = document.createElement('video'); vid.muted = true; vid.playsInline = true; vid.srcObject = new MediaStream(S.stream.getVideoTracks()); vid.play().catch(function () { });
+    loadFace().catch(function () { FX.error = 'The face tracker could not load, so your avatar only moves its mouth as you speak. Check your connection and try again.'; });
+  }
+  var seen = false;
+  if (FX.face && vid && vid.readyState >= 2 && vid.currentTime !== FX.lastT) {
+    FX.lastT = vid.currentTime;
+    try {
+      var res = FX.face.detectForVideo(vid, performance.now()), cats = res.faceBlendshapes && res.faceBlendshapes[0] && res.faceBlendshapes[0].categories, lm = res.faceLandmarks && res.faceLandmarks[0];
+      if (cats && lm) {
+        var m = {}; cats.forEach(function (c) { m[c.categoryName] = c.score; });
+        var clamp = function (v) { return Math.max(0, Math.min(1, v)); };
+        FX.tgt = { jaw: clamp(m.jawOpen * 1.5), smile: clamp(((m.mouthSmileLeft + m.mouthSmileRight) / 2) * 1.6), frown: clamp(((m.mouthFrownLeft + m.mouthFrownRight) / 2) * 1.6),
+          blinkL: clamp(m.eyeBlinkLeft * 1.3), blinkR: clamp(m.eyeBlinkRight * 1.3), wideL: clamp(m.eyeWideLeft * 1.5), wideR: clamp(m.eyeWideRight * 1.5),
+          browL: Math.max(-1, Math.min(1, (m.browOuterUpLeft * 1.2 + m.browInnerUp * 0.6) - m.browDownLeft * 1.4)), browR: Math.max(-1, Math.min(1, (m.browOuterUpRight * 1.2 + m.browInnerUp * 0.6) - m.browDownRight * 1.4)),
+          pucker: clamp(m.mouthPucker * 1.4),
+          lookX: Math.max(-1, Math.min(1, ((m.eyeLookOutRight + m.eyeLookInLeft) - (m.eyeLookOutLeft + m.eyeLookInRight)) * 0.9)), lookY: Math.max(-1, Math.min(1, ((m.eyeLookUpLeft + m.eyeLookUpRight) - (m.eyeLookDownLeft + m.eyeLookDownRight)) * 0.9)) };
+        var a = lm[33], b = lm[263], n = lm[1], c = lm[152], f = lm[10], wd = Math.abs(b.x - a.x) || 0.1, fh = Math.abs(c.y - f.y) || 0.3;
+        FX.tgt.dx = Math.max(-1, Math.min(1, -((n.x - (a.x + b.x) / 2) / wd) * 2.2));
+        FX.tgt.dy = Math.max(-1, Math.min(1, (((n.y - (a.y + b.y) / 2) / fh) - 0.27) * 3));
+        FX.tgt.roll = -Math.atan2(b.y - a.y, b.x - a.x);
+        seen = true; FX.seenAt = Date.now();
+      }
+    } catch (e) { FX.face = null; }
+  }
+  var T = FX.tgt;
+  if (seen || (T && Date.now() - (FX.seenAt || 0) < 400)) {
+    ['jaw', 'smile', 'frown', 'blinkL', 'blinkR', 'wideL', 'wideR', 'browL', 'browR', 'pucker', 'lookX', 'lookY', 'dx', 'dy', 'roll'].forEach(function (k) { avEase(k, T[k] || 0, k === 'blinkL' || k === 'blinkR' ? 0.75 : 0.5); });
+    AV.tracked = 1;
+  } else {
+    /* no face in view (or tracker still loading): relax, blink now and then, and move the mouth with the voice */
+    AV.tracked = 0; var t = Date.now(), bl = (t % 4200) < 150 ? 1 : 0;
+    avEase('jaw', Math.min(1, FX.level * 1.4), 0.5); avEase('blinkL', bl, 0.7); avEase('blinkR', bl, 0.7);
+    ['smile', 'wideL', 'wideR', 'browL', 'browR', 'pucker', 'lookX', 'lookY', 'dx', 'dy', 'roll', 'frown'].forEach(function (k) { avEase(k, k === 'smile' ? 0.35 : 0, 0.1); });
+  }
+  if (FX.force) Object.keys(FX.force).forEach(function (k) { AV[k] = FX.force[k]; });
+}
+avatarLoop = function (gen) {
+  if (gen !== FX.gen) return;
+  FX.level = FX.level * 0.6 + audioLevel() * 0.4;
+  faceStep(); drawAvatar();
+  FX.timer = setTimeout(function () { avatarLoop(gen); }, 33);
+};
+fxStop = (function (prev) { return function () { prev(); if (FX.faceVid) { try { FX.faceVid.pause(); FX.faceVid.srcObject = null; } catch (e) { } FX.faceVid = null; } FX.tgt = null; }; })(fxStop);
+window.__avatarTest = function (kind, params) { FX.choice = kind; FX.force = params || null; };
+
+function avStar(ctx, x, y, s, col, al) { ctx.save(); ctx.globalAlpha = al; ctx.fillStyle = col; ctx.beginPath(); for (var i = 0; i < 8; i++) { var rr = i % 2 ? s * 0.28 : s, an = -Math.PI / 2 + i * Math.PI / 4; ctx.lineTo(x + Math.cos(an) * rr, y + Math.sin(an) * rr); } ctx.closePath(); ctx.fill(); ctx.restore(); }
+function avEll(ctx, x, y, rx, ry, fill, rot) { ctx.fillStyle = fill; ctx.beginPath(); ctx.ellipse(x, y, Math.max(0.1, rx), Math.max(0.1, ry), rot || 0, 0, Math.PI * 2); ctx.fill(); }
+function avTri(ctx, x1, y1, x2, y2, x3, y3, fill) { ctx.fillStyle = fill; ctx.lineJoin = 'round'; ctx.strokeStyle = fill; ctx.lineWidth = 14; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.lineTo(x3, y3); ctx.closePath(); ctx.fill(); ctx.stroke(); }
+function drawAvatar() {
+  var ctx = FX.ctx, w = FX.canvas.width, h = FX.canvas.height, t = Date.now(), kind = FX.choice, r = h * 0.27, cx = w / 2, cy = h * 0.5 + Math.sin(t / 700) * h * 0.008;
+  var BG = { fairy: ['#f3e8ff', '#e0d0ff'], angel: ['#e8f3ff', '#d4e8ff'], bear: ['#f7ece1', '#efd9c4'], fox: ['#fff0e0', '#fddcc0'] }[kind] || ['#f3e8ff', '#e0d0ff'];
+  var g = ctx.createLinearGradient(0, 0, 0, h); g.addColorStop(0, BG[0]); g.addColorStop(1, BG[1]); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+  var i, s;
+  ctx.save(); ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  /* wings and sparkles sit behind the body */
+  if (kind === 'angel' || kind === 'fairy') {
+    var fl = Math.sin(t / (kind === 'fairy' ? 120 : 420)) * (kind === 'fairy' ? 0.1 : 0.06);
+    for (s = -1; s <= 1; s += 2) {
+      ctx.save(); ctx.translate(cx + s * r * 0.55, cy + r * 0.95); ctx.rotate(s * (0.65 + fl));
+      ctx.fillStyle = kind === 'angel' ? '#ffffff' : 'rgba(196,170,255,0.55)'; ctx.strokeStyle = kind === 'angel' ? '#c9def7' : 'rgba(150,110,240,0.8)'; ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.ellipse(s * r * 0.75, -r * 0.7, r * 0.38, r * 1.1, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      if (kind === 'fairy') { ctx.fillStyle = 'rgba(255,190,235,0.5)'; ctx.beginPath(); ctx.ellipse(s * r * 0.95, r * 0.05, r * 0.26, r * 0.62, 0.5 * s, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
+      ctx.restore();
+    }
+    if (kind === 'fairy') for (i = 0; i < 7; i++) avStar(ctx, cx + Math.cos(i * 2.1) * r * (1.9 + (i % 3) * 0.2), cy + Math.sin(i * 1.7) * r * (1.15 + (i % 2) * 0.3), r * (0.09 + (i % 3) * 0.03), i % 2 ? '#ffd86b' : '#ff9fd6', 0.4 + 0.6 * Math.abs(Math.sin(t / 500 + i)));
+  }
+  /* body */
+  var BODY = { fairy: '#c9a7ff', angel: '#ffffff', bear: '#b07a52', fox: '#f4913c' }[kind];
+  avEll(ctx, cx, h * 1.04, r * 1.45, r * 1.0, BODY);
+  if (kind === 'angel') { ctx.strokeStyle = '#f4d27a'; ctx.lineWidth = 10; ctx.beginPath(); ctx.ellipse(cx, h * 1.04, r * 1.45, r * 1.0, 0, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke(); }
+  if (kind === 'fox') avEll(ctx, cx, h * 1.0, r * 0.6, r * 0.55, '#fff4e6');
+  if (kind === 'bear') avEll(ctx, cx, h * 1.0, r * 0.62, r * 0.55, '#e8c6a0');
+  if (kind === 'fairy') { avStar(ctx, cx, h * 0.93, r * 0.16, '#ffe27a', 0.95); }
+  /* head group follows your head */
+  ctx.translate(cx + AV.dx * r * 0.28, cy + AV.dy * r * 0.18); ctx.rotate(Math.max(-0.5, Math.min(0.5, AV.roll)));
+  var SKIN = { fairy: '#ffe5d4', angel: '#ffe5d4', bear: '#b07a52', fox: '#f4913c' }[kind];
+  var HW = r * 1.14, HH = r * 1.0;
+  /* things behind the head */
+  if (kind === 'fairy') avEll(ctx, 0, r * 0.15, r * 1.3, r * 1.25, '#b98af0');
+  if (kind === 'angel') avEll(ctx, 0, r * 0.2, r * 1.28, r * 1.2, '#f5d36e');
+  if (kind === 'bear') for (s = -1; s <= 1; s += 2) { avEll(ctx, s * r * 0.82, -r * 0.8, r * 0.36, r * 0.36, '#b07a52'); avEll(ctx, s * r * 0.82, -r * 0.8, r * 0.21, r * 0.21, '#e8b896'); }
+  if (kind === 'fox') for (s = -1; s <= 1; s += 2) { avTri(ctx, s * r * 0.95, -r * 0.5, s * r * 0.78, -r * 1.55, s * r * 0.2, -r * 0.92, '#f4913c'); avTri(ctx, s * r * 0.78, -r * 0.62, s * r * 0.72, -r * 1.2, s * r * 0.38, -r * 0.88, '#4a2a2a'); }
+  if (kind === 'fairy') for (s = -1; s <= 1; s += 2) avTri(ctx, s * r * 1.0, -r * 0.05, s * r * 1.42, -r * 0.3, s * r * 1.0, r * 0.3, SKIN);
+  /* head */
+  avEll(ctx, 0, 0, HW, HH, SKIN);
+  if (kind === 'fox') { avTri(ctx, -HW * 0.98, r * 0.3, -r * 0.45, r * 0.15, -r * 0.7, r * 0.8, '#fff4e6'); avTri(ctx, HW * 0.98, r * 0.3, r * 0.45, r * 0.15, r * 0.7, r * 0.8, '#fff4e6'); avEll(ctx, 0, r * 0.38, r * 0.52, r * 0.4, '#fff4e6'); }
+  if (kind === 'bear') avEll(ctx, 0, r * 0.38, r * 0.42, r * 0.33, '#e8c6a0');
+  /* hair fringe and extras in front of the head */
+  if (kind === 'angel' || kind === 'fairy') {
+    ctx.fillStyle = kind === 'angel' ? '#f5d36e' : '#b98af0';
+    ctx.beginPath(); ctx.ellipse(0, -r * 0.05, HW * 1.04, HH * 1.02, 0, Math.PI * 1.03, Math.PI * 1.97); ctx.closePath(); ctx.fill();
+    for (i = 0; i < 5; i++) { ctx.beginPath(); ctx.arc(-HW * 0.8 + i * HW * 0.4, -r * 0.3, r * 0.27, 0, Math.PI); ctx.fill(); }
+  }
+  if (kind === 'angel') { ctx.save(); ctx.shadowColor = '#ffe27a'; ctx.shadowBlur = 24; ctx.strokeStyle = '#ffd24a'; ctx.lineWidth = r * 0.09; ctx.beginPath(); ctx.ellipse(0, -r * 1.2 + Math.sin(t / 500) * 5, r * 0.55, r * 0.15, 0, 0, Math.PI * 2); ctx.stroke(); ctx.restore(); }
+  if (kind === 'fairy') { avEll(ctx, 0, -r * 1.12, r * 0.26, r * 0.26, '#b98af0'); var FC = ['#ff8fc7', '#ffffff', '#ffd86b', '#ff8fc7', '#ffffff']; for (i = 0; i < 5; i++) avEll(ctx, -r * 0.7 + i * r * 0.35, -r * 0.78 - Math.sin(i / 4 * Math.PI) * r * 0.12, r * 0.12, r * 0.12, FC[i]); }
+  /* face */
+  var ex = r * 0.44, ey = r * 0.02, eo, side;
+  for (side = -1; side <= 1; side += 2) {
+    var bl = side < 0 ? AV.blinkL : AV.blinkR, wide = side < 0 ? AV.wideL : AV.wideR, brow = side < 0 ? AV.browL : AV.browR, px = side * ex, op = Math.max(0.05, 1 - bl * 0.95 + wide * 0.15);
+    if (op < 0.2) { ctx.strokeStyle = '#2b1a4a'; ctx.lineWidth = 7; ctx.beginPath(); ctx.arc(px, ey - r * 0.02, r * 0.14, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke(); }
+    else {
+      avEll(ctx, px + AV.lookX * r * 0.05, ey + AV.lookY * r * 0.05, r * 0.17, r * 0.22 * op, '#2b1a4a');
+      if (op > 0.5) { avEll(ctx, px + AV.lookX * r * 0.05 - r * 0.05, ey + AV.lookY * r * 0.05 - r * 0.08 * op, r * 0.06, r * 0.07 * op, '#ffffff'); avEll(ctx, px + AV.lookX * r * 0.05 + r * 0.06, ey + AV.lookY * r * 0.05 + r * 0.08 * op, r * 0.03, r * 0.03 * op, '#ffffff'); }
+    }
+    ctx.strokeStyle = kind === 'bear' || kind === 'fox' ? '#4a2a2a' : (kind === 'angel' ? '#c9a24a' : '#8b5fd0'); ctx.lineWidth = 7; ctx.beginPath();
+    var by = -r * 0.34 - Math.max(0, brow) * r * 0.13 + Math.max(0, -brow) * r * 0.03, angry = Math.max(0, -brow) * r * 0.1;
+    ctx.moveTo(px + side * r * 0.17, by); ctx.quadraticCurveTo(px, by - r * 0.07, px - side * r * 0.17, by + angry); ctx.stroke();
+    ctx.globalAlpha = 0.5; avEll(ctx, side * r * 0.68, r * 0.3, r * 0.17, r * 0.1, '#ff7aa8'); ctx.globalAlpha = 1;
+  }
+  /* nose */
+  if (kind === 'fox' || kind === 'bear') avEll(ctx, 0, r * 0.2, r * 0.13, r * 0.085, '#2b1a1a'); else avEll(ctx, 0, r * 0.2, r * 0.035, r * 0.03, '#e8a58f');
+  /* mouth */
+  var mw = r * 0.2 * (1 - AV.pucker * 0.45), my = r * (kind === 'fox' || kind === 'bear' ? 0.4 : 0.38), sm = AV.smile - AV.frown, open = AV.jaw * r * 0.3, corner = my - sm * r * 0.1, curve = r * (0.1 + AV.smile * 0.05 - AV.frown * 0.2);
+  ctx.strokeStyle = '#4a2030'; ctx.lineWidth = 6;
+  if (open < r * 0.03) { ctx.beginPath(); ctx.moveTo(-mw, corner); ctx.quadraticCurveTo(0, corner + curve * 1.6, mw, corner); ctx.stroke(); }
+  else {
+    ctx.fillStyle = '#7a1f3d'; ctx.beginPath(); ctx.moveTo(-mw, corner); ctx.quadraticCurveTo(0, corner + curve * 0.6, mw, corner); ctx.quadraticCurveTo(0, corner + curve * 0.6 + open * 2, -mw, corner); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.save(); ctx.clip(); avEll(ctx, 0, corner + curve * 0.6 + open * 1.5, mw * 0.65, open * 0.55, '#ff8fa8'); ctx.restore();
+  }
+  ctx.restore();
+}
 
 sbBoot(); adsLoad(); modLoad(); profLoad().then(jobsLoad).then(function () { profPublish(false); jobsPublish(); }).then(recSync).then(vidSync).then(socSync);
 renderHeader();
