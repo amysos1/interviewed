@@ -397,6 +397,14 @@ footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wr
 .art .f3 { right: 7%; bottom: 8%; flex-direction: row; padding: 8px 14px; font-weight: 800; color: #e0467f; border-radius: 999px; transform: rotate(4deg); }
 @media (prefers-reduced-motion: no-preference) { .art .float { animation: bob 5s ease-in-out infinite; } .art .f2 { animation-delay: -1.6s; } .art .f3 { animation-delay: -3.2s; }
   @keyframes bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -7px; } } }
+
+.adgate { position: fixed; inset: 0; z-index: 500; background: rgba(30, 16, 60, .72); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.adgate-box { background: #fff; border-radius: 18px; max-width: 560px; width: 100%; padding: 20px; box-shadow: 0 20px 60px rgba(30, 16, 60, .4); max-height: 94vh; overflow: auto; }
+.adgate-tag { margin: 0 0 8px; font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: #7a6a99; }
+.adgate-media iframe, .adgate-media video { width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 12px; background: #000; display: block; }
+.adgate-house { height: 160px; display: flex; align-items: center; justify-content: center; font-size: 4.5rem; border-radius: 12px; background: linear-gradient(135deg, #f1e9fd, #d6c0fa); }
+.ext-frame { width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 12px; background: #000; display: block; }
+#link-box { margin-top: 12px; } #link-box .steps { padding-left: 20px; } #link-box .steps li { margin-bottom: 6px; }
 </style>
 
 <div class="shell">
@@ -570,7 +578,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wr
   <div id="ads" class="ads" aria-label="Advertisements"></div>
   <footer>
     <span>Interviewed. Video interviews for interviewees and employers.</span>
-    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.17.5</span> · <a href="#terms">Terms</a> · <a href="#privacy">Privacy</a> · <a href="#sync">Sync check</a> · <a href="#admin-setup">Administrator</a></span>
+    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.18.0</span> · <a href="#terms">Terms</a> · <a href="#privacy">Privacy</a> · <a href="#sync">Sync check</a> · <a href="#admin-setup">Administrator</a></span>
   </footer>
 </div>
 
@@ -3680,7 +3688,7 @@ var VID_MAX = 40 * 1024 * 1024;
 var vidSig = {}, vidBusy = false, vidAgain = false, vidTimer = 0, vidFetching = {};
 function vidKind(v) { return v.inviteId ? 'invite' : (v.visibility === 'public' ? 'public' : 'private'); }
 function vidPayload(v) {
-  var o = {}; ['title', 'question', 'source', 'inviteId', 'jobId', 'visibility', 'commentsMode', 'createdAt', 'duration', 'mime', 'size', 'skill', 'isAnswer', 'label'].forEach(function (k) { if (v[k] !== undefined) o[k] = v[k]; });
+  var o = {}; ['title', 'question', 'source', 'inviteId', 'jobId', 'visibility', 'commentsMode', 'createdAt', 'duration', 'mime', 'size', 'skill', 'isAnswer', 'label', 'ext'].forEach(function (k) { if (v[k] !== undefined) o[k] = v[k]; });
   return o;
 }
 function vidAuthFetch(url, opts) {
@@ -3694,7 +3702,7 @@ function vidPublish() {
   var chain = Promise.resolve();
   mine.forEach(function (v) {
     chain = chain.then(function () {
-      var up = v.cloud ? Promise.resolve(true) : (v.cloudSkip ? Promise.resolve(false) : blobGet(v.id).then(function (b) {
+      var up = (v.cloud || v.ext) ? Promise.resolve(true) : (v.cloudSkip ? Promise.resolve(false) : blobGet(v.id).then(function (b) {
         if (!b) return false;
         if (b.size > VID_MAX) { v.cloudSkip = 'large'; return false; }
         return vidAuthFetch(SB.url + '/storage/v1/object/videos/' + u.id + '/' + v.id, { method: 'POST', body: b, headers: { 'Content-Type': b.type || 'video/webm', 'x-upsert': 'true', 'cache-control': '3600' } }).then(function (r) { if (r.ok) { v.cloud = true; return true; } return false; }, function () { return false; });
@@ -3715,7 +3723,7 @@ function vidCleanRow(row) {
   var mime = s(d.mime, 60); if (!/^(video|audio)\//.test(mime)) mime = 'video/webm';
   return { id: row.id, ownerId: row.owner_id, title: s(d.title, 200), question: s(d.question, 400), source: s(d.source, 20), inviteId: row.invite_id ? String(row.invite_id) : null, jobId: s(d.jobId, 40) || null, setId: null, eventId: null,
     visibility: row.kind === 'public' ? 'public' : 'private', commentsMode: d.commentsMode === 'private' ? 'private' : 'public', createdAt: Number(row.created_at) || 0, duration: Number(d.duration) || 0, mime: mime, size: Number(d.size) || 0,
-    likes: [], skill: !!d.skill, isAnswer: !!d.isAnswer, label: s(d.label, 80), cloud: true, remote: true };
+    likes: [], skill: !!d.skill, isAnswer: !!d.isAnswer, label: s(d.label, 80), cloud: true, remote: true, ext: extClean(d.ext) };
 }
 function videosLoad() {
   var req = sbToken() ? sbAuthed('/rest/v1/videos?select=id,owner_id,kind,invite_id,created_at,data&order=created_at.desc&limit=300', 'GET') : sbCall('/rest/v1/videos?select=id,owner_id,kind,invite_id,created_at,data&order=created_at.desc&limit=300', 'GET');
@@ -4549,8 +4557,8 @@ function redo() {
 /* Save into the site; nothing is downloaded automatically */
 function saveVideo(take, blob, ms) {
   var v = { id: uid(), ownerId: take.ownerId, title: take.title, question: take.question, source: take.mode, inviteId: take.invite ? take.invite.id : null, jobId: take.invite ? take.invite.jobId : null,
-    setId: take.set ? take.set.id : null, eventId: take.event ? take.event.id : null, visibility: take.visibility, commentsMode: 'public', createdAt: Date.now(), duration: Math.round(ms), mime: blob.type, size: blob.size, likes: [], skill: !!(take.set && take.set.skill) };
-  return blobPut(v.id, blob).then(function () {
+    setId: take.set ? take.set.id : null, eventId: take.event ? take.event.id : null, visibility: take.visibility, commentsMode: 'public', createdAt: Date.now(), duration: Math.round(ms), mime: blob.type, size: blob.size, ext: take.ext || null, likes: [], skill: !!(take.set && take.set.skill) };
+  return (take.ext ? Promise.resolve() : blobPut(v.id, blob)).then(function () {
     var old = null;
     if (take.invite) {
       var inv = byId(db.invites, take.invite.id);
@@ -4800,6 +4808,154 @@ function drawAvatar() {
   ctx.fillStyle = '#1d1236'; ctx.beginPath(); ctx.ellipse(cx, cy + r * 0.52, r * 0.22, mh, 0, 0, Math.PI * 2); ctx.fill();
   if (FX.level > 0.25) { ctx.fillStyle = '#e8708a'; ctx.beginPath(); ctx.ellipse(cx, cy + r * 0.52 + mh * 0.45, r * 0.13, mh * 0.35, 0, 0, Math.PI * 2); ctx.fill(); }
 }
+/* ---- Videos from YouTube / Vimeo links, and the short ad shown before watching or recording ---- */
+function parseExt(str) {
+  var s = String(str || '').trim(); if (!s || s.length > 300) return null;
+  if (!/^https?:\/\//i.test(s)) s = 'https://' + s;
+  var u; try { u = new URL(s); } catch (e) { return null; }
+  var host = u.hostname.toLowerCase().replace(/^(www\.|m\.|music\.)/, ''), parts = u.pathname.split('/').filter(Boolean), id = '';
+  if (host === 'youtu.be') id = parts[0] || '';
+  else if (host === 'youtube.com' || host === 'youtube-nocookie.com') {
+    if (parts[0] === 'watch') id = u.searchParams.get('v') || '';
+    else if (/^(embed|shorts|live|v)$/.test(parts[0] || '')) id = parts[1] || '';
+  }
+  if (id) return /^[A-Za-z0-9_-]{11}$/.test(id) ? { p: 'youtube', id: id } : null;
+  if (host === 'vimeo.com' || host === 'player.vimeo.com') {
+    var i = host === 'player.vimeo.com' ? parts.indexOf('video') + 1 : 0, vid = parts[i] || '', h = u.searchParams.get('h') || '';
+    if (!h && /^[a-f0-9]{8,12}$/i.test(parts[i + 1] || '')) h = parts[i + 1];
+    return /^\d{5,12}$/.test(vid) ? (h && /^[A-Za-z0-9]{6,20}$/.test(h) ? { p: 'vimeo', id: vid, h: h } : { p: 'vimeo', id: vid }) : null;
+  }
+  return null;
+}
+function extClean(o) {
+  if (!o || typeof o !== 'object') return null;
+  if (o.p === 'youtube' && /^[A-Za-z0-9_-]{11}$/.test(String(o.id))) return { p: 'youtube', id: String(o.id) };
+  if (o.p === 'vimeo' && /^\d{5,12}$/.test(String(o.id))) { var r = { p: 'vimeo', id: String(o.id) }; if (o.h && /^[A-Za-z0-9]{6,20}$/.test(String(o.h))) r.h = String(o.h); return r; }
+  return null;
+}
+function extSrc(x, auto) {
+  var a = auto ? '&autoplay=1&muted=1' : '';
+  if (x.p === 'youtube') return 'https://www.youtube-nocookie.com/embed/' + x.id + '?rel=0&playsinline=1' + (auto ? '&autoplay=1&mute=1&controls=0' : '');
+  return 'https://player.vimeo.com/video/' + x.id + '?dnt=1' + (x.h ? '&h=' + x.h : '') + a;
+}
+function extFrame(x, auto) {
+  var f = document.createElement('iframe'); f.src = extSrc(x, auto); f.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture; encrypted-media'); f.setAttribute('allowfullscreen', '');
+  f.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin'); f.setAttribute('title', 'Video'); f.className = 'ext-frame'; return f;
+}
+
+/* ---- the ad that plays first (set by the administrator, Ads tab) ---- */
+function preData() {
+  var d = db.preroll || {}; return { on: d.on !== false, url: typeof d.url === 'string' ? d.url : '', seconds: Math.min(30, Math.max(3, Number(d.seconds) || 5)), title: typeof d.title === 'string' ? d.title : 'Your ad could be here', text: typeof d.text === 'string' ? d.text : 'Advertise to interviewees and employers. Ask the site owner.', link: safeAdLink(d.link), cta: typeof d.cta === 'string' ? d.cta : '' };
+}
+function adGateNeeded() { var u = me(); return !(u && u.role === 'admin') && preData().on; }
+function adGate(done, cancel) {
+  if (document.getElementById('adgate')) return;
+  var p = preData(), ext = parseExt(p.url), vid = !ext && /^https:\/\/[^\s"'<>]+\.(mp4|webm|m4v)(\?[^\s"'<>]*)?$/i.test(p.url) ? p.url : '';
+  var o = document.createElement('div'); o.id = 'adgate'; o.className = 'adgate'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-modal', 'true'); o.setAttribute('aria-label', 'Advertisement');
+  o.innerHTML = '<div class="adgate-box"><p class="adgate-tag">Advertisement</p><div class="adgate-media" id="adgate-media"></div><h3>' + esc(p.title) + '</h3><p class="sub">' + esc(p.text) + '</p>' +
+    '<div class="acts"><button class="btn" type="button" id="adgate-go" disabled>Continue in ' + p.seconds + '</button>' +
+    (p.link ? '<a class="btn ghost" id="adgate-link" href="' + esc(p.link) + '" target="_blank" rel="noopener noreferrer">' + esc(p.cta || 'Learn more') + '</a>' : '') +
+    '<button class="btn ghost" type="button" id="adgate-no">Go back</button></div></div>';
+  document.body.appendChild(o);
+  var m = document.getElementById('adgate-media');
+  if (ext) m.appendChild(extFrame(ext, true));
+  else if (vid) { var v = document.createElement('video'); v.src = vid; v.autoplay = true; v.muted = true; v.playsInline = true; v.controls = false; m.appendChild(v); }
+  else m.innerHTML = '<div class="adgate-house" aria-hidden="true">💜</div>';
+  var left = p.seconds, go = document.getElementById('adgate-go');
+  function close() { clearInterval(t); o.remove(); }
+  var t = setInterval(function () { left--; if (left <= 0) { clearInterval(t); go.disabled = false; go.textContent = 'Continue'; go.focus(); } else go.textContent = 'Continue in ' + left; }, 1000);
+  go.onclick = function () { close(); done(); };
+  document.getElementById('adgate-no').onclick = function () { close(); if (cancel) cancel(); };
+}
+attachVideo = (function (prev) { return function (el, id) {
+  var v = byId(db.videos, id);
+  function go() {
+    if (!el || !el.isConnected) return;
+    if (v && v.ext && extClean(v.ext)) { el.parentNode.replaceChild(extFrame(extClean(v.ext), false), el); return; }
+    prev(el, id);
+  }
+  if (el && el.id !== 'playback' && adGateNeeded()) adGate(go, function () { go2home(); }); else go();
+}; })(attachVideo);
+function go2home() { var u = me(); window.location.hash = '#' + (u ? homeFor(u) : 'login'); }
+downloadVideo = (function (prev) { return function (id) { var v = byId(db.videos, id); if (v && v.ext) { toast('This video lives on ' + (v.ext.p === 'vimeo' ? 'Vimeo' : 'YouTube') + '. Download it from there.'); return; } prev(id); }; })(downloadVideo);
+document.addEventListener('click', function (e) {
+  var b = e.target && e.target.closest ? e.target.closest('#btn-start') : null;
+  if (!b || b._gateOk || !adGateNeeded()) return;
+  e.stopImmediatePropagation(); e.preventDefault();
+  adGate(function () { b._gateOk = true; b.click(); b._gateOk = false; }, null);
+}, true);
+
+/* ---- Studio: paste a link instead of recording or uploading ---- */
+function linkVideo(str) {
+  var x = parseExt(str); showError('');
+  if (!x) { showError('That does not look like a YouTube or Vimeo video link. Copy the link from the address bar or the Share button and paste it here.'); return; }
+  var take = makeTake(); if (!take) return;
+  if (S.state === 'ready') stopStream();
+  take.ext = x; take.mime = 'video/webm'; S.state = 'saving'; S.take = take; renderStudio();
+  finalizeTake(take, new Blob([], { type: 'video/webm' }), 0);
+}
+(function () {
+  var up = $('btn-upload'); if (!up || $('btn-link')) return;
+  var b = document.createElement('button'); b.className = 'btn ghost'; b.type = 'button'; b.id = 'btn-link'; b.textContent = 'Use a YouTube or Vimeo link instead';
+  up.parentNode.insertBefore(b, up.nextSibling);
+  var box = document.createElement('div'); box.id = 'link-box'; box.className = 'box tint'; box.hidden = true;
+  box.innerHTML = '<h3>Put your video on YouTube first, then paste its link</h3>' +
+    '<ol class="steps"><li>Record your answer with your phone or computer.</li>' +
+    '<li>Go to <b>youtube.com</b>, sign in, click <b>Create</b>, then <b>Upload video</b>, and choose your file.</li>' +
+    '<li>When it asks about visibility, choose <b>Unlisted</b>. Anyone with the link can watch, but it will not show up in YouTube search. <b>Do not choose Private.</b> A private video cannot be played on this site.</li>' +
+    '<li>When it finishes, click <b>Copy link</b> and paste it below. (Vimeo works too: set its privacy to a link that anyone can watch and allow embedding.)</li></ol>' +
+    '<p class="sub">The video stays on YouTube or Vimeo. Anyone who has the link can watch it there, and removing it from this site does not delete it from YouTube. Time limits set by an employer cannot be checked for linked videos.</p>' +
+    '<div class="field"><label for="link-in">Video link</label><input type="url" id="link-in" placeholder="https://youtu.be/…" autocomplete="off"></div>' +
+    '<div class="acts"><button class="btn" type="button" id="link-go">Use this link</button><a class="btn ghost" href="https://www.youtube.com/upload" target="_blank" rel="noopener noreferrer">Open YouTube upload</a></div>';
+  b.parentNode.insertBefore(box, b.nextSibling);
+  b.addEventListener('click', function () { box.hidden = !box.hidden; if (!box.hidden) $('link-in').focus(); });
+  $('link-go').addEventListener('click', function () { linkVideo($('link-in').value); $('link-in').value = ''; box.hidden = true; });
+  $('link-in').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); $('link-go').click(); } });
+})();
+renderStudio = (function (prev) { return function () { prev(); var b = $('btn-link'); if (b) { b.hidden = $('btn-upload').hidden; if (b.hidden && $('link-box')) $('link-box').hidden = true; } }; })(renderStudio);
+
+/* ---- Admin: the ad shown first (Ads tab) and sharing it with everyone ---- */
+function preHtml() {
+  var p = preData();
+  return '<form data-form="presave" class="box tint" novalidate><h3>Ad before watching or recording</h3>' +
+    '<p class="sub">Every visitor except you sees this for a few seconds before they watch a video or start recording. Paste a YouTube or Vimeo link (or a direct https link ending in .mp4) to play a video ad, or leave the link empty to show the text card.</p>' +
+    '<label class="check"><input type="checkbox" name="on"' + (p.on ? ' checked' : '') + '> Show this ad</label>' +
+    '<div class="row2"><div class="field"><label>Video link <span class="opt">(optional)</span></label><input type="text" name="url" maxlength="300" value="' + esc(p.url) + '"><p class="err" data-err="url"></p></div>' +
+    '<div class="field"><label>Seconds before Continue works</label><input type="number" name="seconds" min="3" max="30" value="' + p.seconds + '"></div></div>' +
+    '<div class="field"><label>Headline</label><input type="text" name="title" maxlength="60" value="' + esc(p.title) + '"></div>' +
+    '<div class="field"><label>Text</label><input type="text" name="text" maxlength="140" value="' + esc(p.text) + '"></div>' +
+    '<div class="row2"><div class="field"><label>Button words <span class="opt">(optional)</span></label><input type="text" name="cta" maxlength="22" value="' + esc(p.cta) + '"></div>' +
+    '<div class="field"><label>Link <span class="opt">(https://…)</span></label><input type="text" name="link" maxlength="300" value="' + esc(p.link) + '"><p class="err" data-err="link"></p></div></div>' +
+    '<div class="acts"><button class="btn" type="submit">Save ad</button><button class="btn ghost" type="button" data-act="pre-preview">Preview</button></div></form>';
+}
+renderAdminParts = (function (prev) { return function () { prev(); if (ui.tab !== 'ads') return; var l = $('ad-list'); if (l) l.insertAdjacentHTML('beforeend', preHtml()); }; })(renderAdminParts);
+acts['pre-preview'] = function () { adGate(function () { }, function () { }); };
+function prePublish() {
+  if (!adsToken) return Promise.resolve('notoken');
+  return sbCall('/rest/v1/site_ads?on_conflict=slot', 'POST', { slot: 'preroll', data: preData() }, adsToken, { 'Prefer': 'resolution=merge-duplicates,return=minimal' }).then(function (r) {
+    if (r.ok) return 'ok'; if (r.status === 401) { adsSetToken(''); return 'expired'; } return (r.status === 400 || r.status === 404) ? 'notable' : 'fail';
+  }, function () { return 'fail'; });
+}
+forms.presave = function (f) {
+  var u = me(); if (!u || u.role !== 'admin') return;
+  var url = f.elements.url.value.trim(), link = f.elements.link.value.trim();
+  if (url && !parseExt(url) && !/^https:\/\/[^\s"'<>]+\.(mp4|webm|m4v)(\?[^\s"'<>]*)?$/i.test(url)) { showErrors(f, { url: 'Use a YouTube or Vimeo link, or an https link ending in .mp4.' }); return; }
+  if (link && !safeAdLink(link)) { showErrors(f, { link: 'Use a web address starting with https://' }); return; }
+  db.preroll = { on: f.elements.on.checked, url: url, seconds: Number(f.elements.seconds.value) || 5, title: f.elements.title.value.trim() || 'Advertisement', text: f.elements.text.value.trim(), cta: f.elements.cta.value.trim(), link: link };
+  audit('Updated the ad before videos'); save();
+  prePublish().then(function (st) {
+    toast({ ok: 'Saved. Everyone sees it now.', notoken: 'Saved in this browser only. Connect above to show it to everyone.', expired: 'Saved here only. Your connection ran out; connect again above.', notable: 'Saved here only. Run supabase-preroll.sql in Supabase first.', fail: 'Saved here only. Could not reach Supabase.' }[st] || 'Saved.');
+  });
+};
+function preLoad() {
+  sbCall('/rest/v1/site_ads?slot=eq.preroll&select=data', 'GET').then(function (r) {
+    if (!r.ok || !Array.isArray(r.data) || !r.data.length || !r.data[0] || typeof r.data[0].data !== 'object') return;
+    var d = r.data[0].data || {};
+    db.preroll = { on: d.on !== false, url: typeof d.url === 'string' ? d.url.slice(0, 300) : '', seconds: Math.min(30, Math.max(3, Number(d.seconds) || 5)), title: String(d.title || '').slice(0, 60), text: String(d.text || '').slice(0, 140), cta: String(d.cta || '').slice(0, 22), link: safeAdLink(d.link) };
+    lsSet(KEY, JSON.stringify(db));
+  }, function () { });
+}
+preLoad(); setInterval(preLoad, 300000);
 
 sbBoot(); adsLoad(); modLoad(); profLoad().then(jobsLoad).then(function () { profPublish(false); jobsPublish(); }).then(recSync).then(vidSync).then(socSync);
 renderHeader();
