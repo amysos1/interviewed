@@ -428,6 +428,13 @@ footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wr
 
 .ext-cover { width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 12px; background: linear-gradient(135deg, #3a1a7a, #8a5cf0); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer; font: inherit; font-weight: 700; }
 .ext-play { width: 72px; height: 72px; border-radius: 50%; background: #fff; color: #6a2fd8; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; padding-left: 5px; }
+
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 14px; }
+@media (max-width: 800px) { .three { grid-template-columns: minmax(0, 1fr); } }
+.chip.gold { background: linear-gradient(135deg, #fff3c4, #ffd86b); color: #5a3d00; border-color: #e8c874; }
+li.row.boosted { background: linear-gradient(90deg, #fffaf0, #fff); border-left: 4px solid #ffd24a; }
+.sparkle { position: absolute; pointer-events: none; z-index: 5; line-height: 1; text-shadow: 0 0 6px rgba(255, 220, 120, .9); animation: spark .95s ease-out forwards; }
+@keyframes spark { 0% { opacity: 0; transform: translate(0, 0) scale(.2) rotate(0deg); } 25% { opacity: 1; transform: translate(calc(var(--dx) * .3), calc(var(--dy) * .3)) scale(1.1) rotate(60deg); } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(.4) rotate(220deg); } }
 </style>
 
 <div class="shell">
@@ -601,7 +608,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wr
   <div id="ads" class="ads" aria-label="Advertisements"></div>
   <footer>
     <span>Interviewed. Video interviews for interviewees and employers.</span>
-    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.21.0</span> · <a href="#terms">Terms</a> · <a href="#privacy">Privacy</a> · <a href="#sync">Sync check</a> · <a href="#admin-setup">Administrator</a></span>
+    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.22.0</span> · <a href="#terms">Terms</a> · <a href="#privacy">Privacy</a> · <a href="#sync">Sync check</a> · <a href="#admin-setup">Administrator</a></span>
   </footer>
 </div>
 
@@ -935,7 +942,7 @@ function renderHeader() {
   if (u) {
     var items = u.role === 'admin' ? [['admin', 'Admin'], ['jobs', 'Jobs'], ['studio', 'Studio'], ['@videos', 'Videos'], ['@explore', 'Explore'], ['coffee', 'Coffee chat'], ['network', 'Network'], ['notifications', 'Alerts']] : u.role === 'employer'
       ? [['jobs', 'Jobs'], ['studio', 'Studio'], ['@videos', 'Videos'], ['@explore', 'Explore'], ['network', 'Network'], ['coffee', 'Coffee chat'], ['notifications', 'Alerts']]
-      : [['jobs', 'Jobs'], ['invites', 'Invitations'], ['studio', 'Studio'], ['@videos', 'Videos'], ['@explore', 'Explore'], ['network', 'Network'], ['coffee', 'Coffee chat'], ['notifications', 'Alerts']];
+      : [['jobs', 'Jobs'], ['invites', 'Invitations'], ['studio', 'Studio'], ['@videos', 'Videos'], ['@explore', 'Explore'], ['network', 'Network'], ['boost', 'Boost ✨'], ['coffee', 'Coffee chat'], ['notifications', 'Alerts']];
     var netCount = u.role === 'admin' ? 0 : connectionsOf(u).length;
     var unread = db.notifications.filter(function (n) { return n.userId === u.id && !n.read; }).length;
     var pending = u.role === 'interviewer' ? db.invites.filter(function (i) { return i.interviewerId === u.id && i.status === 'invited'; }).length : 0;
@@ -988,7 +995,7 @@ function route(noScroll) {
     $('app').hidden = false;
     var views = { login: viewLogin, signup: viewSignup, setup: viewSetup, profile: viewProfile, person: viewPerson,
       coffee: viewCoffee, network: viewNetwork, jobs: viewJobs, job: viewJob, invites: viewInvites, videos: viewVideos, watch: viewWatch, playlists: viewPlaylists,
-      list: viewList, explore: viewExplore, admin: viewAdmin, screen: viewScreen, events: viewEvents, event: viewEvent, notifications: viewNotifications, ranking: viewRanking, chooserole: viewChooseRole, forgot: viewForgot, reset: viewReset, terms: viewTerms, privacy: viewPrivacy, sync: viewSync };
+      list: viewList, explore: viewExplore, admin: viewAdmin, screen: viewScreen, events: viewEvents, event: viewEvent, notifications: viewNotifications, ranking: viewRanking, chooserole: viewChooseRole, forgot: viewForgot, reset: viewReset, terms: viewTerms, privacy: viewPrivacy, boost: viewBoost, sync: viewSync };
     (views[name] || viewNotFound)(arg);
   }
   if (!noScroll) window.scrollTo(0, 0);
@@ -3959,10 +3966,10 @@ function renderAdminParts() {
     rows = people.filter(function (x) { return has(x.name) || has(x.email) || has(x.company); }).map(function (x) {
       return '<li class="row">' + avatar(x) + '<div class="grow"><a class="name" href="#person-' + x.id + '">' + esc(x.name) + '</a><span class="meta">' + esc(x.email) + (x.company ? ' · ' + esc(x.company) : '') + '</span>' +
         '<div class="chips">' + chip(x.role === 'employer' ? 'Employer' : 'Interviewee', 'muted') + (x.role === 'employer' ? chip(x.verified ? 'Verified' : 'Not verified', x.verified ? 'solid' : 'warn') : '') +
-        (x.pro && x.pro.active ? chip('Pro', 'solid') : '') + (x.suspended ? chip('Suspended', 'warn') : '') + (x.noComment ? chip('Cannot comment', 'warn') : '') + (x.demo ? chip('Example', 'muted') : '') + '</div></div>' +
+        (x.pro && x.pro.active ? chip('Pro', 'solid') : '') + (typeof boostTier === 'function' && boostTier(x) ? chip(boostTier(x) === 'plus' ? 'Boost Plus' : 'Boost', 'solid') : '') + (x.suspended ? chip('Suspended', 'warn') : '') + (x.noComment ? chip('Cannot comment', 'warn') : '') + (x.demo ? chip('Example', 'muted') : '') + '</div></div>' +
         '<div class="acts"><button class="btn ghost small" type="button" data-act="ad-suspend" data-id="' + x.id + '">' + (x.suspended ? 'Unsuspend' : 'Suspend') + '</button>' +
         '<button class="btn ghost small" type="button" data-act="ad-pro" data-id="' + x.id + '">' + (x.pro && x.pro.active ? 'Remove Pro' : 'Give Pro') + '</button>' +
-        '<button class="btn ghost small" type="button" data-act="ad-nocomment" data-id="' + x.id + '">' + (x.noComment ? 'Allow commenting' : 'Stop commenting') + '</button>' +
+        (x.role === 'interviewer' && typeof boostTier === 'function' ? '<button class="btn ghost small" type="button" data-act="ad-boost" data-id="' + x.id + '">' + (boostTier(x) === 'plus' ? 'Remove boost' : boostTier(x) ? 'Upgrade to Boost Plus' : 'Give Boost (30 days)') + '</button>' : '') + '<button class="btn ghost small" type="button" data-act="ad-nocomment" data-id="' + x.id + '">' + (x.noComment ? 'Allow commenting' : 'Stop commenting') + '</button>' +
         (x.role === 'employer' ? '<button class="btn ghost small" type="button" data-act="ad-verify" data-id="' + x.id + '">' + (x.verified ? 'Remove verification' : 'Verify') + '</button>' : '') +
         '<button class="btn danger small" type="button" data-act="ad-user-del" data-id="' + x.id + '">Delete</button></div></li>';
     });
@@ -4076,6 +4083,7 @@ function modApplyUser(u) {
   if (f.noComment !== undefined) setb('noComment', f.noComment);
   if (f.verified !== undefined) setb('verified', f.verified);
   if (f.pro !== undefined && !!(u.pro && u.pro.active) !== !!f.pro) { u.pro = { active: !!f.pro, by: 'admin', ts: Date.now() }; ch = true; }
+  if (f.boost !== undefined) { var b = f.boost || {}, un = Number(b.until) || 0, tr = b.tier === 'plus' ? 'plus' : b.tier === 'boost' ? 'boost' : ''; if ((u.boostUntil || 0) !== un || (u.boostTier || '') !== tr) { u.boostUntil = un; u.boostTier = tr; ch = true; } }
   return ch;
 }
 function modApplyAll() {
@@ -5206,29 +5214,41 @@ function drawAvatar() {
 acts['link-open'] = function () {
   var u = me(); if (!u || u.sbId || document.getElementById('linkacct')) return;
   var o = document.createElement('div'); o.id = 'linkacct'; o.className = 'adgate'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-modal', 'true');
-  o.innerHTML = '<div class="adgate-box"><h3>Connect your account</h3><p class="sub">This puts <b>' + esc(u.email) + '</b> on the shared database so other people can see you, your jobs, videos and invitations. Everything already on this account moves with it. Type your password to continue (at least 8 characters).</p>' +
+  o.innerHTML = '<div class="adgate-box"><h3>Connect your account</h3><p class="sub">This puts your account on the shared database so other people can see you, your jobs, videos and invitations. Everything already on this account moves with it. Type the email and password you log in with (at least 8 characters).</p>' +
+    '<div class="field"><label for="la-em">Email</label><input type="email" id="la-em" autocomplete="email" value="' + esc(u.email || u.workEmail || '') + '"></div>' +
     '<div class="field"><label for="la-pw">Password</label><input type="password" id="la-pw" autocomplete="current-password"></div><p class="err" id="la-msg" role="alert"></p>' +
-    '<div class="acts"><button class="btn" type="button" id="la-go">Connect</button><button class="btn ghost" type="button" id="la-no">Not now</button></div></div>';
+    '<div class="acts"><button class="btn" type="button" id="la-go">Connect</button><button class="btn ghost" type="button" id="la-no">Not now</button></div>' +
+    '<p class="sub"><a href="#forgot">Forgot the password of your shared account?</a></p></div>';
   document.body.appendChild(o);
   var msg = function (t) { document.getElementById('la-msg').textContent = t; };
   document.getElementById('la-no').onclick = function () { o.remove(); };
+  function done(d) { u.email = String(d.user.email || u.email || '').toLowerCase(); sbFinish(d.user, d.access_token); profSignedIn(d); o.remove(); renderHeader(); toast('Your account is connected.'); route(); }
   document.getElementById('la-go').onclick = function () {
-    var pw = document.getElementById('la-pw').value; msg('');
+    var em = document.getElementById('la-em').value.trim().toLowerCase(), pw = document.getElementById('la-pw').value; msg('');
+    if (!validEmail(em)) { msg('Type your email address, like name@company.com.'); return; }
     if (pw.length < 8) { msg('Your password needs at least 8 characters.'); return; }
     var go = document.getElementById('la-go'); go.disabled = true; go.textContent = 'Connecting…';
-    sbCall('/auth/v1/signup?redirect_to=' + encodeURIComponent(sbRedirect()), 'POST', { email: u.email, password: pw, data: { name: u.name, role: u.role, company: u.company || '', workEmail: u.workEmail || '' } }).then(function (r) {
-      go.disabled = false; go.textContent = 'Connect'; var d = r.data || {}, m = sbMsg(r);
-      if (!r.ok) {
-        if (/already/i.test(m)) msg('This email already has a shared account. Sign out, then log in with that account\'s password (use Forgot password if needed). Everything on this device will move over when you do.');
-        else if (r.status === 429 || /rate|limit/i.test(m)) msg('Too many emails were sent recently. Please wait a little and try again.');
-        else msg(m || 'That did not work. Check your connection and try again.');
-        return;
-      }
-      if (d.user && d.user.identities && d.user.identities.length === 0) { msg('This email already has a shared account. Sign out, then log in with that account\'s password. Everything on this device will move over when you do.'); return; }
-      if (d.access_token && d.user) { sbFinish(d.user, d.access_token); profSignedIn(d); o.remove(); renderHeader(); toast('Your account is connected.'); route(); return; }
-      o.querySelector('.adgate-box').innerHTML = '<h3>Check your email</h3><p class="sub">We sent a confirmation link to <b>' + esc(u.email) + '</b>. Click it, then come back here, sign out and log in with the same password. Everything on this account will be connected when you log in.</p><div class="acts"><button class="btn" type="button" id="la-ok">OK</button></div>';
-      document.getElementById('la-ok').onclick = function () { o.remove(); };
-    }, function () { go.disabled = false; go.textContent = 'Connect'; msg('Could not reach the server. Check your connection and try again.'); });
+    var back = function () { go.disabled = false; go.textContent = 'Connect'; };
+    /* 1. does this email already have a shared account with this password? */
+    sbCall('/auth/v1/token?grant_type=password', 'POST', { email: em, password: pw }).then(function (r) {
+      if (r.ok && r.data && r.data.access_token && r.data.user) { back(); done(r.data); return; }
+      if (/not confirmed/i.test(sbMsg(r))) { back(); msg('Please open the confirmation email we sent to ' + em + ' first, then press Connect again.'); return; }
+      /* 2. no: create the shared account for this email */
+      return sbCall('/auth/v1/signup?redirect_to=' + encodeURIComponent(sbRedirect()), 'POST', { email: em, password: pw, data: { name: u.name, role: u.role, company: u.company || '', workEmail: u.workEmail || '' } }).then(function (r2) {
+        back(); var d = r2.data || {}, m = sbMsg(r2);
+        if (!r2.ok) {
+          if (/already/i.test(m)) msg('This email already has a shared account, but that password does not match it. Use "Forgot the password" below to set a new one, then press Connect again.');
+          else if (r2.status === 429 || /rate|limit/i.test(m)) msg('Too many emails were sent recently. Please wait a little and try again.');
+          else if (/anonymous/i.test(m)) msg('Please type your email address above.');
+          else msg(m || 'That did not work. Check your connection and try again.');
+          return;
+        }
+        if (d.user && d.user.identities && d.user.identities.length === 0) { msg('This email already has a shared account, but that password does not match it. Use "Forgot the password" below to set a new one, then press Connect again.'); return; }
+        if (d.access_token && d.user) { done(d); return; }
+        o.querySelector('.adgate-box').innerHTML = '<h3>Check your email</h3><p class="sub">We sent a confirmation link to <b>' + esc(em) + '</b>. Click it, then come back, press Connect again and type the same email and password.</p><div class="acts"><button class="btn" type="button" id="la-ok">OK</button></div>';
+        document.getElementById('la-ok').onclick = function () { o.remove(); };
+      });
+    }, function () { back(); msg('Could not reach the server. Check your connection and try again.'); });
   };
   document.getElementById('la-pw').focus();
 };
@@ -5331,6 +5351,126 @@ function alertScan() {
   if (notes.length) { notes.slice(0, 8).forEach(function (n) { notify(u.id, n[0], n[1]); }); save(); renderHeader(); }
 }
 setInterval(alertScan, 6000);
+/* ---- Matching profiles to jobs, candidate search, and boosted (sponsored) profiles ---- */
+var BOOST_PLANS = [
+  { id: 'week', name: 'Spotlight', tier: 'boost', days: 7, price: 5, per: 'one week', blurb: 'A low-risk way to try it. Above free profiles in matching searches for 7 days.' },
+  { id: 'boost', name: 'Boost', tier: 'boost', month: 12, year: 120, blurb: 'Above free profiles whenever an employer searches or looks for people to invite.' },
+  { id: 'plus', name: 'Boost Plus', tier: 'plus', month: 24, year: 240, blurb: 'Always above Boost and free profiles, with a gold “Top pick” badge and first place in each employer’s suggested candidates.' }
+];
+function boostTier(u) { return u && (u.boostUntil || 0) > Date.now() ? (u.boostTier === 'plus' ? 'plus' : 'boost') : ''; }
+function boostRank(u) { var t = boostTier(u); return t === 'plus' ? 2 : t ? 1 : 0; }
+function boostChip(u) { var t = boostTier(u); return t === 'plus' ? '<span class="chip gold">✨ Top pick · Sponsored</span>' : t ? '<span class="chip gold">✨ Sponsored</span>' : ''; }
+var STOP = { the: 1, and: 1, for: 1, with: 1, of: 1, a: 1, an: 1, in: 1, at: 1, to: 1, senior: 1, junior: 1, lead: 1, sr: 1, jr: 1, i: 1, ii: 1, iii: 1 };
+function qTokens(s) { return String(s || '').toLowerCase().split(/[^a-z0-9+#.]+/).map(function (w) { return w.length > 3 && /s$/.test(w) && !/ss$/.test(w) ? w.slice(0, -1) : w; }).filter(function (w) { return w.length > 1 && !STOP[w]; }); }
+function jobTerms(j) {
+  var t = [].concat(j.skills || [], j.software || []).map(function (x) { return String(x).trim().toLowerCase(); }).filter(Boolean);
+  if (t.length < 3) qTokens(j.title).forEach(function (w) { if (t.indexOf(w) < 0) t.push(w); });
+  return t.filter(function (x, i, a) { return a.indexOf(x) === i; }).slice(0, 30);
+}
+function personBlob(p) { return (profileText(p) + ' ' + (p.name || '') + ' ' + (p.headline || '') + ' ' + (p.location || '')).toLowerCase(); }
+function matchOf(p, j) {
+  var terms = jobTerms(j); if (!terms.length) return { pct: 0, hits: [] };
+  var txt = personBlob(p), hits = terms.filter(function (t) { return txt.indexOf(t) >= 0; });
+  return { pct: Math.round(100 * hits.length / terms.length), hits: hits };
+}
+function candList(u, q, jobId) {
+  var j = jobId ? byId(db.jobs, jobId) : null, toks = qTokens(q), out = [];
+  db.users.forEach(function (p) {
+    if (p.role !== 'interviewer' || p.suspended) return;
+    var blob = personBlob(p), qh = toks.filter(function (t) { return blob.indexOf(t) >= 0; }).length, m = j ? matchOf(p, j) : { pct: 0, hits: [] };
+    if (toks.length && !qh) return;
+    out.push({ p: p, qh: qh, m: m, tier: boostRank(p) });
+  });
+  out.sort(function (a, b) { var ar = (a.qh || a.m.pct || !toks.length && !j) ? a.tier : 0, br = (b.qh || b.m.pct || !toks.length && !j) ? b.tier : 0; return br - ar || b.qh - a.qh || b.m.pct - a.m.pct || String(a.p.name).localeCompare(String(b.p.name)); });
+  return out;
+}
+function candRow(x, j) {
+  var p = x.p, m = x.m;
+  return '<li class="row' + (x.tier ? ' boosted' : '') + '">' + avatar(p) + '<div class="grow"><a class="name" href="#person-' + p.id + '">' + esc(p.name) + '</a> ' + boostChip(p) + '<span class="meta">' + esc(p.headline || '') + '</span>' +
+    (j && m.pct ? '<div class="chips"><span class="chip">' + m.pct + '% match</span><span class="meta">' + esc(m.hits.slice(0, 5).join(', ')) + '</span></div>' : '') + '</div><a class="btn ghost small" href="#person-' + p.id + '">View profile</a></li>';
+}
+function candListHtml(u) {
+  var rows = candList(u, ui.cq || '', ui.cj || '').map(function (x) { return candRow(x, ui.cj ? byId(db.jobs, ui.cj) : null); }).join('');
+  return rows ? '<ul class="list" id="cand-list">' + rows + '</ul>' : '<div class="empty" id="cand-list"><h3>No one matches yet</h3><p>Try fewer or different words.</p></div>';
+}
+function candSection(u) {
+  var jobs = db.jobs.filter(function (j) { return j.employerId === u.id && j.status === 'open'; });
+  return '<section class="sec" id="cand-sec"><h2>Interviewees</h2><div class="row2"><div class="field"><label for="cand-q">Search by skill, job title or name</label><input type="search" id="cand-q" placeholder="software engineer, python, nurse…" value="' + esc(ui.cq || '') + '"></div>' +
+    '<div class="field"><label for="cand-job">Match to one of my jobs</label><select id="cand-job"><option value="">No job selected</option>' + jobs.map(function (j) { return '<option value="' + j.id + '"' + (ui.cj === j.id ? ' selected' : '') + '>' + esc(j.title) + '</option>'; }).join('') + '</select></div></div>' +
+    '<p class="sub">Sponsored profiles are paid placements and appear first when they match what you search for.</p>' + candListHtml(u) + '</section>';
+}
+viewExplore = (function (prev) { return function () {
+  prev(); var u = me(); if (!u || u.role !== 'employer') return;
+  var h = Array.prototype.filter.call(document.querySelectorAll('#app h2'), function (x) { return x.textContent === 'Interviewees'; })[0], sec = h && h.closest('section'); if (!sec) return;
+  sec.outerHTML = candSection(u);
+}; })(viewExplore);
+document.addEventListener('input', function (e) { if (e.target && e.target.id === 'cand-q') { ui.cq = e.target.value; var l = document.getElementById('cand-list'); if (l) l.outerHTML = candListHtml(me()); } });
+document.addEventListener('change', function (e) { if (e.target && e.target.id === 'cand-job') { ui.cj = e.target.value; var l = document.getElementById('cand-list'); if (l) l.outerHTML = candListHtml(me()); } });
+
+/* suggested candidates on the employer's job page */
+viewJobManage = (function (prev) { return function (j, u) {
+  prev(j, u);
+  var pg = document.querySelector('#app .page'); if (!pg || !jobTerms(j).length) return;
+  var top = candList(u, '', j.id).filter(function (x) { return x.m.pct > 0; }).slice(0, 5);
+  var d = document.createElement('div');
+  d.innerHTML = '<section class="box"><h3>Suggested candidates</h3><p class="sub">Interviewees whose profiles match this job’s skills and software. Sponsored profiles appear first.</p>' + (top.length ? '<ul class="list">' + top.map(function (x) { return candRow(x, j); }).join('') + '</ul>' : '<p class="sub">No profiles match yet. Add skills and software to the job to get suggestions.</p>') + '</section>';
+  pg.insertBefore(d.firstChild, pg.children[3] || null);
+}; })(viewJobManage);
+
+/* interviewees see how well they match a job */
+viewJob = (function (prev) { return function (id) {
+  prev(id); var u = me(), j = byId(db.jobs, id); if (!u || u.role !== 'interviewer' || !j) return;
+  var m = matchOf(u, j), box = document.querySelector('#app .page .chips'); if (!box || !jobTerms(j).length) return;
+  var miss = jobTerms(j).filter(function (t) { return m.hits.indexOf(t) < 0; }).slice(0, 5);
+  box.insertAdjacentHTML('afterend', '<div class="box tint"><b>Your profile matches ' + m.pct + '% of this job’s skills.</b>' + (m.hits.length ? '<p class="sub">You have: ' + esc(m.hits.slice(0, 6).join(', ')) + '.</p>' : '') + (miss.length ? '<p class="sub">Not on your profile yet: ' + esc(miss.join(', ')) + '. Add what you really know to your profile to rank higher.</p>' : '') + '</div>');
+}; })(viewJob);
+
+/* the Boost page for interviewees */
+function viewBoost() {
+  var u = me(), t = boostTier(u), yearly = ui.bill !== 'month';
+  var cards = BOOST_PLANS.map(function (p) {
+    var price = p.price ? '$' + p.price : yearly ? '$' + p.year : '$' + p.month, per = p.price ? p.per : yearly ? 'per year' : 'per month', note = p.price ? '' : yearly ? 'Two months free (that is $' + (p.year / 12) + ' a month)' : '';
+    return '<div class="box' + (p.id === 'plus' ? ' strong' : '') + '"><h3>' + esc(p.name) + (p.id === 'plus' ? ' ✨' : '') + '</h3><div style="font-size:1.9rem;font-weight:800">' + price + '</div><span class="meta">' + per + '</span>' + (note ? '<p class="sub"><b>' + note + '</b></p>' : '') + '<p class="sub">' + esc(p.blurb) + '</p><button class="btn" type="button" data-act="boost-buy" data-plan="' + p.id + '">Choose ' + esc(p.name) + '</button></div>';
+  }).join('');
+  show('<div class="page" style="max-width:980px"><div class="page-head"><div><span class="eyebrow">Get seen first</span><h1>Boost your profile</h1></div></div>' +
+    '<p class="sub">When an employer searches for people or looks for someone to invite, boosted profiles appear above everyone else who matches, with a ✨ Sponsored badge. Free profiles still appear below, so you only pay to be seen sooner.</p>' +
+    (t ? '<div class="box strong"><b>Your boost is on (' + (t === 'plus' ? 'Boost Plus' : 'Boost') + ') until ' + esc(fmtDate(u.boostUntil)) + '.</b></div>' : '') +
+    '<div class="acts"><button class="btn' + (yearly ? '' : ' ghost') + '" type="button" data-act="boost-bill" data-v="year">Yearly (2 months free)</button><button class="btn' + (yearly ? ' ghost' : '') + '" type="button" data-act="boost-bill" data-v="month">Monthly</button></div>' +
+    '<div class="three">' + cards + '</div><p class="notice">Payments are not open yet, so nothing is charged. Choose a plan and the site owner will be told you want it; boosts are switched on by hand until card payments are added.</p>' +
+    '<div class="box tint"><b>Tip:</b> a boost works best when your profile lists the real skills and software employers search for. Employers see the ✨ Sponsored badge, so keep your profile and videos strong.</div></div>');
+}
+acts['boost-bill'] = function (el) { ui.bill = el.dataset.v; viewBoost(); };
+acts['boost-buy'] = function (el) {
+  var u = me(), p = BOOST_PLANS.filter(function (x) { return x.id === el.dataset.plan; })[0]; if (!u || !p) return;
+  u.boostWant = { plan: p.id, bill: ui.bill === 'month' ? 'month' : 'year', ts: Date.now() }; save();
+  toast('Thanks! Payments are not open yet. Your request for ' + p.name + ' was saved.');
+};
+acts['ad-boost'] = function (el) {
+  var x = byId(db.users, el.dataset.id); if (!x || x.role !== 'interviewer') return;
+  var t = boostTier(x);
+  if (t === 'plus') { x.boostUntil = 0; x.boostTier = ''; } else if (t) { x.boostTier = 'plus'; x.boostUntil = Math.max(x.boostUntil, Date.now() + 30 * 86400000); } else { x.boostTier = 'boost'; x.boostUntil = Date.now() + 30 * 86400000; }
+  if (x.boostUntil) notify(x.id, 'Your profile boost is on until ' + fmtDate(x.boostUntil) + '.', 'boost');
+  adminDone((boostTier(x) ? 'Boosted ' : 'Removed boost from ') + x.name, boostTier(x) ? 'Boost is on for 30 days.' : 'Boost removed.');
+  modPush('user', x.id, { boost: { until: x.boostUntil || 0, tier: x.boostTier || '' } });
+};
+
+/* sparkles when someone hovers over an ad banner */
+(function () {
+  var cur = null, timer = 0, ch = ['✨', '⭐', '✦', '💜', '★'], cols = ['#ffd24a', '#b98af0', '#ff8fc7', '#ffffff', '#8a5cf0'];
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  function burst() {
+    if (!cur || !cur.isConnected) { clearInterval(timer); cur = null; return; }
+    if (cur.querySelectorAll('.sparkle').length > 36) return;
+    for (var i = 0; i < 3; i++) {
+      var s = document.createElement('span'); s.className = 'sparkle'; s.setAttribute('aria-hidden', 'true'); s.textContent = ch[Math.floor(Math.random() * ch.length)];
+      s.style.left = (Math.random() * 100) + '%'; s.style.top = (Math.random() * 100) + '%'; s.style.fontSize = (10 + Math.random() * 14) + 'px'; s.style.color = cols[Math.floor(Math.random() * cols.length)];
+      s.style.setProperty('--dx', (Math.random() * 60 - 30) + 'px'); s.style.setProperty('--dy', (-20 - Math.random() * 50) + 'px');
+      s.addEventListener('animationend', function () { this.remove(); }); cur.appendChild(s);
+    }
+  }
+  document.addEventListener('mouseover', function (e) { var ad = e.target.closest && e.target.closest('.ad'); if (!ad || ad === cur) return; cur = ad; clearInterval(timer); burst(); timer = setInterval(burst, 140); });
+  document.addEventListener('mouseout', function (e) { if (!cur) return; var to = e.relatedTarget; if (to && cur.contains(to)) return; clearInterval(timer); cur = null; });
+})();
 
 sbBoot(); adsLoad(); modLoad(); profLoad().then(jobsLoad).then(function () { profPublish(false); jobsPublish(); }).then(recSync).then(vidSync).then(socSync);
 renderHeader();
