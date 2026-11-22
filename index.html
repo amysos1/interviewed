@@ -425,6 +425,9 @@ footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wr
 .hv-t.t2 { animation-delay: 2s; } .hv-t.t3 { animation-delay: 4s; font-size: 1.2rem; }
 @keyframes hvtxt { 0% { opacity: 0; transform: translateY(10px); } 6%, 30% { opacity: 1; transform: none; } 36%, 100% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .hv-bear, .hv-t { animation: none; } .hv-t.t1 { opacity: 1; } }
+
+.ext-cover { width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 12px; background: linear-gradient(135deg, #3a1a7a, #8a5cf0); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer; font: inherit; font-weight: 700; }
+.ext-play { width: 72px; height: 72px; border-radius: 50%; background: #fff; color: #6a2fd8; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; padding-left: 5px; }
 </style>
 
 <div class="shell">
@@ -598,7 +601,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wr
   <div id="ads" class="ads" aria-label="Advertisements"></div>
   <footer>
     <span>Interviewed. Video interviews for interviewees and employers.</span>
-    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.19.3</span> · <a href="#terms">Terms</a> · <a href="#privacy">Privacy</a> · <a href="#sync">Sync check</a> · <a href="#admin-setup">Administrator</a></span>
+    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.21.0</span> · <a href="#terms">Terms</a> · <a href="#privacy">Privacy</a> · <a href="#sync">Sync check</a> · <a href="#admin-setup">Administrator</a></span>
   </footer>
 </div>
 
@@ -3122,8 +3125,10 @@ function sbFinish(user, token, pick) {
     u = { id: String(user.id).replace(/-/g, ''), sbId: user.id, role: role, name: meta.name || email.split('@')[0], email: email, company: role === 'employer' ? (meta.company || '') : '', verified: role === 'employer' && !!meta.workEmail, workEmail: meta.workEmail || undefined, headline: '', location: '', about: '', photo: null, linkedin: false, createdAt: Date.now() };
     db.users.push(u);
   } else if (!u.sbId) u.sbId = user.id;
-  if (u.id.indexOf('-') >= 0) { /* page addresses use "-" as a separator, so ids must not contain one */
-    var oldId = u.id, newId = oldId.replace(/-/g, ''), snap = JSON.parse(JSON.stringify(db).split('"' + oldId + '"').join('"' + newId + '"'));
+  var wantId = String(user.id).replace(/-/g, '');
+  if (u.id !== wantId) { /* the shared database knows this person by their account id (without dashes, because page addresses use "-"): move everything on this device over to it */
+    var oldId = u.id, newId = wantId; db.users = db.users.filter(function (x) { return x === u || x.id !== newId; });
+    var snap = JSON.parse(JSON.stringify(db).split('"' + oldId + '"').join('"' + newId + '"'));
     Object.keys(db).forEach(function (k) { delete db[k]; }); Object.keys(snap).forEach(function (k) { db[k] = snap[k]; });
     u = byId(db.users, newId);
   }
@@ -3504,6 +3509,7 @@ function profPayload(u) {
     o.profiles = u.profiles.slice(0, 3).map(function (pr) { return { id: String(pr.id).slice(0, 40), name: String(pr.name || '').slice(0, 60), headline: String(pr.headline || '').slice(0, 120), location: String(pr.location || '').slice(0, 80), sections: (pr.sections || []).filter(function (s) { return s.visible; }).slice(0, 10).map(function (s) { return { id: String(s.id).slice(0, 40), title: String(s.title || '').slice(0, 80), body: String(s.body || '').slice(0, 4000), visible: true }; }) }; });
     o.defProfile = String(u.defaultProfileId || '').slice(0, 40);
   }
+  if (u.orgs && u.orgs.length) o.orgs = u.orgs.slice(0, 10).map(function (x) { return String(x).slice(0, 80); });
   return o;
 }
 function profPublish(force) {
@@ -3529,6 +3535,7 @@ function profLoad() {
         pub.profiles = d.profiles.slice(0, 3).map(function (pr) { pr = pr || {}; return { id: s(pr.id, 40) || uid(), name: s(pr.name, 60), headline: s(pr.headline, 120), location: s(pr.location, 80), sections: (Array.isArray(pr.sections) ? pr.sections : []).slice(0, 10).map(function (x) { x = x || {}; return { id: s(x.id, 40) || uid(), title: s(x.title, 80), body: s(x.body, 4000), visible: true }; }) }; });
         if (pub.profiles.length) pub.defaultProfileId = pub.profiles.some(function (x) { return x.id === d.defProfile; }) ? d.defProfile : pub.profiles[0].id; else delete pub.profiles;
       }
+      pub.orgs = Array.isArray(d.orgs) ? d.orgs.slice(0, 10).map(function (x) { return s(x, 80); }).filter(Boolean) : [];
       if (u) { if (u.id === sessionId || u.passHash || !u.remote) return; Object.keys(pub).forEach(function (k) { u[k] = pub[k]; }); }
       else { pub.id = row.id; pub.email = ''; pub.remote = true; pub.linkedin = false; pub.createdAt = Number(d.createdAt) || 0; db.users.push(pub); }
     });
@@ -4241,16 +4248,16 @@ acts['sync-now'] = function () {
 
 /* A banner that says out loud when this account is not reaching the shared database */
 function syncBannerCheck() {
-  var u = me(), msg = '';
+  var u = me(), msg = '', needLink = false;
   if (u && u.role !== 'admin') {
-    if (!u.sbId) msg = 'This account only exists in this browser, so other people cannot see you or anything you post. Sign out, then use Sign up to create a shared account.';
+    if (!u.sbId) { msg = 'This account only exists in this browser, so other people cannot see you or anything you post.'; needLink = true; }
     else if (!profSess) msg = 'Your connection to the shared database ended, so other people cannot see what you post right now. Please sign out and log back in.';
     else if (syncWriteFail && Date.now() - syncWriteFail < 180000) msg = 'Something you just saved did not reach the shared database (' + (syncErrs.filter(function (e) { return !/^GET/.test(e); })[0] || 'unknown error') + ').';
   }
   var b = document.getElementById('sync-banner');
   if (!msg) { if (b) b.remove(); return; }
   if (!b) { b = document.createElement('div'); b.id = 'sync-banner'; b.className = 'syncbar'; b.setAttribute('role', 'status'); document.body.appendChild(b); }
-  var html = esc(msg) + ' <a href="#sync">Sync check</a>';
+  var html = esc(msg) + (needLink ? ' <button type="button" class="btn" data-act="link-open">Connect my account</button>' : '') + ' <a href="#sync">Sync check</a>';
   if (b.innerHTML !== html) b.innerHTML = html;
 }
 setInterval(syncBannerCheck, 3000);
@@ -4890,8 +4897,8 @@ function extClean(o) {
   return null;
 }
 function extSrc(x, auto) {
-  var a = auto ? '&autoplay=1&muted=1' : '';
-  if (x.p === 'youtube') return 'https://www.youtube-nocookie.com/embed/' + x.id + '?rel=0&playsinline=1' + (auto ? '&autoplay=1&mute=1&controls=0' : '');
+  var ad = auto === true, play = auto === 'play', a = ad ? '&autoplay=1&muted=1' : play ? '&autoplay=1' : '';
+  if (x.p === 'youtube') return 'https://www.youtube-nocookie.com/embed/' + x.id + '?rel=0&playsinline=1' + (ad ? '&autoplay=1&mute=1&controls=0' : play ? '&autoplay=1' : '');
   return 'https://player.vimeo.com/video/' + x.id + '?dnt=1' + (x.h ? '&h=' + x.h : '') + a;
 }
 function extFrame(x, auto) {
@@ -4925,12 +4932,26 @@ function adGate(done, cancel) {
 }
 attachVideo = (function (prev) { return function (el, id) {
   var v = byId(db.videos, id);
-  function go() {
-    if (!el || !el.isConnected) return;
-    if (v && v.ext && extClean(v.ext)) { el.parentNode.replaceChild(extFrame(extClean(v.ext), false), el); return; }
-    prev(el, id);
+  if (!el || !el.isConnected) return;
+  var gated = el.id !== 'playback' && adGateNeeded();
+  if (v && v.ext && extClean(v.ext)) {
+    var x = extClean(v.ext);
+    if (!gated) { el.parentNode.replaceChild(extFrame(x, false), el); return; }
+    /* linked videos: show a play cover; the ad runs when the person presses play */
+    var cover = document.createElement('button'); cover.type = 'button'; cover.className = 'ext-cover'; cover.setAttribute('aria-label', 'Play video');
+    cover.innerHTML = '<span class="ext-play" aria-hidden="true">▶</span><span>Press play</span>';
+    cover.onclick = function () { adGate(function () { if (cover.isConnected) cover.parentNode.replaceChild(extFrame(x, 'play'), cover); }, null); };
+    el.parentNode.replaceChild(cover, el); return;
   }
-  if (el && el.id !== 'playback' && adGateNeeded()) adGate(go, function () { go2home(); }); else go();
+  prev(el, id);
+  if (gated) {
+    var busy = false;
+    el.addEventListener('play', function () {
+      if (el._adOk || busy) { if (busy) el.pause(); return; }
+      el.pause(); busy = true;
+      adGate(function () { el._adOk = true; busy = false; var pr = el.play(); if (pr && pr.catch) pr.catch(function () { }); }, function () { busy = false; });
+    });
+  }
 }; })(attachVideo);
 function go2home() { var u = me(); window.location.hash = '#' + (u ? homeFor(u) : 'login'); }
 downloadVideo = (function (prev) { return function (id) { var v = byId(db.videos, id); if (v && v.ext) { toast('This video lives on ' + (v.ext.p === 'vimeo' ? 'Vimeo' : 'YouTube') + '. Download it from there.'); return; } prev(id); }; })(downloadVideo);
@@ -5181,6 +5202,135 @@ function drawAvatar() {
   }
   ctx.restore();
 }
+/* Connect an account that only exists in this browser to the shared database (keeps everything already on it) */
+acts['link-open'] = function () {
+  var u = me(); if (!u || u.sbId || document.getElementById('linkacct')) return;
+  var o = document.createElement('div'); o.id = 'linkacct'; o.className = 'adgate'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-modal', 'true');
+  o.innerHTML = '<div class="adgate-box"><h3>Connect your account</h3><p class="sub">This puts <b>' + esc(u.email) + '</b> on the shared database so other people can see you, your jobs, videos and invitations. Everything already on this account moves with it. Type your password to continue (at least 8 characters).</p>' +
+    '<div class="field"><label for="la-pw">Password</label><input type="password" id="la-pw" autocomplete="current-password"></div><p class="err" id="la-msg" role="alert"></p>' +
+    '<div class="acts"><button class="btn" type="button" id="la-go">Connect</button><button class="btn ghost" type="button" id="la-no">Not now</button></div></div>';
+  document.body.appendChild(o);
+  var msg = function (t) { document.getElementById('la-msg').textContent = t; };
+  document.getElementById('la-no').onclick = function () { o.remove(); };
+  document.getElementById('la-go').onclick = function () {
+    var pw = document.getElementById('la-pw').value; msg('');
+    if (pw.length < 8) { msg('Your password needs at least 8 characters.'); return; }
+    var go = document.getElementById('la-go'); go.disabled = true; go.textContent = 'Connecting…';
+    sbCall('/auth/v1/signup?redirect_to=' + encodeURIComponent(sbRedirect()), 'POST', { email: u.email, password: pw, data: { name: u.name, role: u.role, company: u.company || '', workEmail: u.workEmail || '' } }).then(function (r) {
+      go.disabled = false; go.textContent = 'Connect'; var d = r.data || {}, m = sbMsg(r);
+      if (!r.ok) {
+        if (/already/i.test(m)) msg('This email already has a shared account. Sign out, then log in with that account\'s password (use Forgot password if needed). Everything on this device will move over when you do.');
+        else if (r.status === 429 || /rate|limit/i.test(m)) msg('Too many emails were sent recently. Please wait a little and try again.');
+        else msg(m || 'That did not work. Check your connection and try again.');
+        return;
+      }
+      if (d.user && d.user.identities && d.user.identities.length === 0) { msg('This email already has a shared account. Sign out, then log in with that account\'s password. Everything on this device will move over when you do.'); return; }
+      if (d.access_token && d.user) { sbFinish(d.user, d.access_token); profSignedIn(d); o.remove(); renderHeader(); toast('Your account is connected.'); route(); return; }
+      o.querySelector('.adgate-box').innerHTML = '<h3>Check your email</h3><p class="sub">We sent a confirmation link to <b>' + esc(u.email) + '</b>. Click it, then come back here, sign out and log in with the same password. Everything on this account will be connected when you log in.</p><div class="acts"><button class="btn" type="button" id="la-ok">OK</button></div>';
+      document.getElementById('la-ok').onclick = function () { o.remove(); };
+    }, function () { go.disabled = false; go.textContent = 'Connect'; msg('Could not reach the server. Check your connection and try again.'); });
+  };
+  document.getElementById('la-pw').focus();
+};
+/* ---- Referrals shared between people (table referrals) ---- */
+var refSig = {}; try { refSig = JSON.parse(localStorage.getItem('interviewed.refsig') || '{}') || {}; } catch (e) { refSig = {}; }
+var refFirst = !localStorage.getItem('interviewed.refdone'), refBusy = false, refAgain = false, refTimer = 0;
+function refSaveSig() { try { localStorage.setItem('interviewed.refsig', JSON.stringify(refSig)); } catch (e) { } }
+function refParts(r) {
+  var author = r.type === 'request' ? r.fromId : r.referrerId, to = r.type === 'request' ? r.toId : r.candidateId, j = r.type === 'referral' ? byId(db.jobs, r.jobId) : null;
+  return { a: author, t: to, e: j ? j.employerId : null };
+}
+function refOk(id) { return /^[a-z0-9]{6,40}$/i.test(String(id)) && !(byId(db.users, id) || {}).demo; }
+function refPublish() {
+  var u = me(); if (!u || !u.sbId || !profSess || u.role === 'admin') return Promise.resolve();
+  var posts = [], patches = [];
+  db.referrals.forEach(function (r) {
+    if (!r || !r.id || (r.type !== 'request' && r.type !== 'referral')) return;
+    var p = refParts(r); if (!refOk(p.a) || !refOk(p.t) || p.a === p.t || (p.e && !refOk(p.e))) return;
+    if ([p.a, p.t, p.e].indexOf(u.id) < 0) return;
+    var body = recJson(r), h = recHash(body), prev = refSig[r.id];
+    if (prev && prev.h === h) return;
+    if (!prev && p.a !== u.id) return;
+    r._u = Date.now();
+    (prev ? patches : posts).push({ row: { id: r.id, kind: r.type, from_id: p.a, to_id: p.t, emp_id: p.e || null, updated_at: r._u, data: JSON.parse(body) }, h: h });
+  });
+  function patchOne(x) { return sbAuthed('/rest/v1/referrals?id=eq.' + encodeURIComponent(x.row.id), 'PATCH', { updated_at: x.row.updated_at, data: x.row.data }, { 'Prefer': 'return=minimal' }).then(function (r) { if (r.ok) refSig[x.row.id] = { h: x.h }; }); }
+  var jobs = patches.map(patchOne);
+  if (posts.length) jobs.push(sbAuthed('/rest/v1/referrals', 'POST', posts.map(function (x) { return x.row; }), { 'Prefer': 'return=minimal' }).then(function (r) {
+    if (r.ok) posts.forEach(function (x) { refSig[x.row.id] = { h: x.h }; }); else if (r.status === 409) return Promise.all(posts.map(patchOne));
+  }));
+  return Promise.all(jobs).then(refSaveSig, function () { });
+}
+function refLoad() {
+  var u = me(); if (!u || !profSess) return Promise.resolve();
+  return sbAuthed('/rest/v1/referrals?select=id,kind,from_id,to_id,emp_id,updated_at,data&limit=1000', 'GET').then(function (r) {
+    if (!r.ok || !Array.isArray(r.data)) return;
+    var quiet = refFirst, notes = [], changed = false;
+    r.data.forEach(function (row) {
+      if (!row || (row.kind !== 'request' && row.kind !== 'referral') || !/^[A-Za-z0-9]{4,40}$/.test(String(row.id)) || !refOk(row.from_id) || !refOk(row.to_id)) return;
+      if ([row.from_id, row.to_id, row.emp_id].indexOf(u.id) < 0) return;
+      var d = recClean(row.data || {}, 0); if (!d || typeof d !== 'object' || Array.isArray(d)) d = {};
+      d.id = row.id; d.type = row.kind; d.jobId = String(d.jobId || ''); d.ts = Number(d.ts) || 0; d.status = typeof d.status === 'string' ? d.status : '';
+      if (row.kind === 'request') { d.fromId = row.from_id; d.toId = row.to_id; } else { d.referrerId = row.from_id; d.candidateId = row.to_id; }
+      var loc = byId(db.referrals, row.id), up = Number(row.updated_at) || 0, j = byId(db.jobs, d.jobId);
+      if (!loc) {
+        d._u = up; db.referrals.push(d); refSig[row.id] = { h: recHash(recJson(d)) }; changed = true;
+        if (!quiet) {
+          if (row.kind === 'request' && row.to_id === u.id) notes.push([u.id, userName(row.from_id) + ' asked you for a referral to ' + jobLabel(j) + '.', 'network']);
+          if (row.kind === 'referral' && row.to_id === u.id) notes.push([u.id, userName(row.from_id) + ' referred you for ' + jobLabel(j) + '.', 'network']);
+          if (row.kind === 'referral' && row.emp_id === u.id) notes.push([u.id, userName(row.from_id) + ' referred ' + userName(row.to_id) + ' for “' + (j ? j.title : 'a job') + '”.', 'network']);
+        }
+        return;
+      }
+      var prev = refSig[row.id];
+      if ((!prev || prev.h !== recHash(recJson(loc))) || up <= (loc._u || 0)) return;
+      var old = loc.status; Object.keys(loc).forEach(function (k) { delete loc[k]; }); Object.keys(d).forEach(function (k) { loc[k] = d[k]; }); loc._u = up;
+      refSig[row.id] = { h: recHash(recJson(loc)) }; changed = true;
+      if (!quiet && row.kind === 'request' && old !== loc.status && row.from_id === u.id) notes.push([u.id, userName(row.to_id) + ' ' + (loc.status === 'accepted' ? 'accepted your referral request.' : 'could not refer you.'), 'network']);
+    });
+    refFirst = false; try { localStorage.setItem('interviewed.refdone', '1'); } catch (e) { } refSaveSig();
+    notes.forEach(function (n) { notify(n[0], n[1], n[2]); });
+    if (changed || notes.length) { lsSet(KEY, JSON.stringify(db)); renderHeader(); var ae = document.activeElement; if (/^(network|notifications)$/.test(R.name) && !(ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName))) refresh(); }
+  }, function () { });
+}
+function refSync() {
+  if (!me() || !profSess) return Promise.resolve();
+  if (refBusy) { refAgain = true; return Promise.resolve(); }
+  refBusy = true;
+  return refPublish().then(refLoad).then(function () { refBusy = false; if (refAgain) { refAgain = false; setTimeout(refSync, 400); } }, function () { refBusy = false; });
+}
+save = (function (prev) { return function () { prev(); clearTimeout(refTimer); refTimer = setTimeout(refSync, 1500); }; })(save);
+setInterval(function () { if (document.visibilityState === 'visible') refSync(); }, 30000);
+setTimeout(refSync, 4000);
+
+/* ---- Alerts: likes and comments on my videos, and new videos from people in my network ---- */
+var alertBoot = Date.now();
+function alertKey(u) { return 'interviewed.seen.' + u.id; }
+function alertScan() {
+  var u = me(); if (!u || u.role === 'admin' || Date.now() - alertBoot < 15000) return;
+  var snap = null; try { snap = JSON.parse(localStorage.getItem(alertKey(u)) || 'null'); } catch (e) { snap = null; }
+  var first = !snap; if (!snap) snap = { likes: {}, comments: {}, videos: {} };
+  var net = {}; try { connectionsOf(u).forEach(function (x) { net[x.id] = 1; }); } catch (e) { }
+  var notes = [], mineIds = {};
+  db.videos.forEach(function (v) {
+    var t = v.title || v.question || 'a video';
+    if (v.ownerId === u.id) {
+      mineIds[v.id] = 1;
+      var seenL = snap.likes[v.id] || [], nowL = (v.likes || []).filter(function (x) { return x !== u.id; });
+      if (!first) nowL.forEach(function (x) { if (seenL.indexOf(x) < 0) notes.push([userName(x) + ' liked your video “' + t + '”.', 'watch-' + v.id]); });
+      snap.likes[v.id] = nowL.slice(0, 300);
+    } else if (net[v.ownerId] && canView(v, u)) {
+      if (!snap.videos[v.id]) { if (!first && v.createdAt && Date.now() - v.createdAt < 14 * 86400000) notes.push([userName(v.ownerId) + ' posted a new video: “' + t + '”.', 'watch-' + v.id]); snap.videos[v.id] = 1; }
+    }
+  });
+  db.comments.forEach(function (c) {
+    var v = byId(db.videos, c.videoId); if (!v || v.ownerId !== u.id || c.authorId === u.id) return;
+    if (!snap.comments[c.id]) { if (!first) notes.push([(c.name || userName(c.authorId)) + ' commented on “' + (v.title || v.question || 'your video') + '”: ' + String(c.text || '').slice(0, 80), 'watch-' + v.id]); snap.comments[c.id] = 1; }
+  });
+  try { localStorage.setItem(alertKey(u), JSON.stringify(snap)); } catch (e) { }
+  if (notes.length) { notes.slice(0, 8).forEach(function (n) { notify(u.id, n[0], n[1]); }); save(); renderHeader(); }
+}
+setInterval(alertScan, 6000);
 
 sbBoot(); adsLoad(); modLoad(); profLoad().then(jobsLoad).then(function () { profPublish(false); jobsPublish(); }).then(recSync).then(vidSync).then(socSync);
 renderHeader();
