@@ -429,6 +429,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wr
 .ext-cover { width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 12px; background: linear-gradient(135deg, #3a1a7a, #8a5cf0); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer; font: inherit; font-weight: 700; }
 .ext-play { width: 72px; height: 72px; border-radius: 50%; background: #fff; color: #6a2fd8; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; padding-left: 5px; }
 
+.four { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-top: 14px; }
 .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 14px; }
 @media (max-width: 800px) { .three { grid-template-columns: minmax(0, 1fr); } }
 .chip.gold { background: linear-gradient(135deg, #fff3c4, #ffd86b); color: #5a3d00; border-color: #e8c874; }
@@ -608,7 +609,7 @@ li.row.boosted { background: linear-gradient(90deg, #fffaf0, #fff); border-left:
   <div id="ads" class="ads" aria-label="Advertisements"></div>
   <footer>
     <span>Interviewed. Video interviews for interviewees and employers.</span>
-    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.22.0</span> · <a href="#terms">Terms</a> · <a href="#privacy">Privacy</a> · <a href="#sync">Sync check</a> · <a href="#admin-setup">Administrator</a></span>
+    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.23.0</span> · <a href="#terms">Terms</a> · <a href="#privacy">Privacy</a> · <a href="#sync">Sync check</a> · <a href="#admin-setup">Administrator</a></span>
   </footer>
 </div>
 
@@ -669,7 +670,7 @@ function toast(msg) {
   var t = $('toast');
   t.textContent = msg; t.hidden = false;
   if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(function () { t.hidden = true; }, 4000);
+  toastTimer = setTimeout(function () { t.hidden = true; }, 8000);
 }
 
 /* ================= Storage ================= */
@@ -3385,7 +3386,7 @@ function adHtml(k, a, admin) {
 function renderAds() {
   var box = $('ads'); if (!box) return;
   var u = me(), admin = u && u.role === 'admin', a = adsData();
-  var hide = R.name === 'studio' || R.name === 'live';
+  var hide = R.name === 'live';
   document.body.classList.toggle('no-ads', hide);
   box.innerHTML = ['left', 'right', 'foot'].filter(function (k) { return a[k].on; }).map(function (k) { return adHtml(k, a[k], admin); }).join('');
 }
@@ -3517,6 +3518,7 @@ function profPayload(u) {
     o.defProfile = String(u.defaultProfileId || '').slice(0, 40);
   }
   if (u.orgs && u.orgs.length) o.orgs = u.orgs.slice(0, 10).map(function (x) { return String(x).slice(0, 80); });
+  if (u.net && u.net.length) o.net = u.net.slice(0, 200).map(function (x) { return String(x).slice(0, 40); });
   return o;
 }
 function profPublish(force) {
@@ -3543,6 +3545,7 @@ function profLoad() {
         if (pub.profiles.length) pub.defaultProfileId = pub.profiles.some(function (x) { return x.id === d.defProfile; }) ? d.defProfile : pub.profiles[0].id; else delete pub.profiles;
       }
       pub.orgs = Array.isArray(d.orgs) ? d.orgs.slice(0, 10).map(function (x) { return s(x, 80); }).filter(Boolean) : [];
+      pub.net = Array.isArray(d.net) ? d.net.slice(0, 200).map(function (x) { return s(x, 40); }).filter(Boolean) : [];
       if (u) { if (u.id === sessionId || u.passHash || !u.remote) return; Object.keys(pub).forEach(function (k) { u[k] = pub[k]; }); }
       else { pub.id = row.id; pub.email = ''; pub.remote = true; pub.linkedin = false; pub.createdAt = Number(d.createdAt) || 0; db.users.push(pub); }
     });
@@ -3707,9 +3710,10 @@ function recLoad() {
       }
       var prev = recSig[row.id], dirty = !prev || prev.h !== recHash(recJson(loc));
       if (!dirty && up > (loc._u || 0)) {
-        var oldS = loc.status, oldA = loc.appt && loc.appt.status;
+        var oldS = loc.status, oldA = loc.appt && loc.appt.status, oldN = Object.keys(loc.answers || {}).length;
         Object.keys(loc).forEach(function (k) { delete loc[k]; }); Object.keys(d).forEach(function (k) { loc[k] = d[k]; }); loc._u = up;
         recSig[row.id] = { h: recHash(recJson(loc)), k: row.kind }; changed = true;
+        if (!quiet && row.kind === 'invite' && row.employer_id === u.id) { var nn = Object.keys(loc.answers || {}).length; if (nn > oldN) notes.push([u.id, userName(loc.interviewerId) + ' recorded an answer (' + nn + ' of ' + (loc.questions || []).length + ') for “' + title + '”.', 'job-' + loc.jobId]); }
         if (!quiet && (oldS !== loc.status || oldA !== (loc.appt && loc.appt.status)) && row.kind !== 'interest') notes.push([u.id, 'Update on “' + title + '”: ' + (row.kind === 'invite' ? 'round ' + loc.round + ' is now ' + loc.status : 'screening ' + (loc.result || loc.status)) + '.', row.interviewer_id === u.id ? 'invites' : 'job-' + loc.jobId]);
       }
     });
@@ -3969,7 +3973,7 @@ function renderAdminParts() {
         (x.pro && x.pro.active ? chip('Pro', 'solid') : '') + (typeof boostTier === 'function' && boostTier(x) ? chip(boostTier(x) === 'plus' ? 'Boost Plus' : 'Boost', 'solid') : '') + (x.suspended ? chip('Suspended', 'warn') : '') + (x.noComment ? chip('Cannot comment', 'warn') : '') + (x.demo ? chip('Example', 'muted') : '') + '</div></div>' +
         '<div class="acts"><button class="btn ghost small" type="button" data-act="ad-suspend" data-id="' + x.id + '">' + (x.suspended ? 'Unsuspend' : 'Suspend') + '</button>' +
         '<button class="btn ghost small" type="button" data-act="ad-pro" data-id="' + x.id + '">' + (x.pro && x.pro.active ? 'Remove Pro' : 'Give Pro') + '</button>' +
-        (x.role === 'interviewer' && typeof boostTier === 'function' ? '<button class="btn ghost small" type="button" data-act="ad-boost" data-id="' + x.id + '">' + (boostTier(x) === 'plus' ? 'Remove boost' : boostTier(x) ? 'Upgrade to Boost Plus' : 'Give Boost (30 days)') + '</button>' : '') + '<button class="btn ghost small" type="button" data-act="ad-nocomment" data-id="' + x.id + '">' + (x.noComment ? 'Allow commenting' : 'Stop commenting') + '</button>' +
+        (x.role === 'interviewer' && typeof boostTier === 'function' ? '<button class="btn ghost small" type="button" data-act="ad-boost" data-id="' + x.id + '">' + (boostTier(x) === 'plus' ? 'Remove boost' : boostTier(x) ? 'Upgrade to Boost Plus' : 'Give Boost (30 days)') + '</button>' : '') + '<button class="btn ghost small" type="button" data-act="ad-netctl" data-id="' + x.id + '">' + (typeof netPaid === 'function' && netPaid(x) ? 'Remove Network Control' : 'Give Network Control') + '</button>' + '<button class="btn ghost small" type="button" data-act="ad-nocomment" data-id="' + x.id + '">' + (x.noComment ? 'Allow commenting' : 'Stop commenting') + '</button>' +
         (x.role === 'employer' ? '<button class="btn ghost small" type="button" data-act="ad-verify" data-id="' + x.id + '">' + (x.verified ? 'Remove verification' : 'Verify') + '</button>' : '') +
         '<button class="btn danger small" type="button" data-act="ad-user-del" data-id="' + x.id + '">Delete</button></div></li>';
     });
@@ -4083,6 +4087,7 @@ function modApplyUser(u) {
   if (f.noComment !== undefined) setb('noComment', f.noComment);
   if (f.verified !== undefined) setb('verified', f.verified);
   if (f.pro !== undefined && !!(u.pro && u.pro.active) !== !!f.pro) { u.pro = { active: !!f.pro, by: 'admin', ts: Date.now() }; ch = true; }
+  if (f.netUntil !== undefined) { var nu = Number(f.netUntil) || 0; if ((u.netUntil || 0) !== nu) { u.netUntil = nu; ch = true; } }
   if (f.boost !== undefined) { var b = f.boost || {}, un = Number(b.until) || 0, tr = b.tier === 'plus' ? 'plus' : b.tier === 'boost' ? 'boost' : ''; if ((u.boostUntil || 0) !== un || (u.boostTier || '') !== tr) { u.boostUntil = un; u.boostTier = tr; ch = true; } }
   return ch;
 }
@@ -5353,9 +5358,10 @@ function alertScan() {
 setInterval(alertScan, 6000);
 /* ---- Matching profiles to jobs, candidate search, and boosted (sponsored) profiles ---- */
 var BOOST_PLANS = [
-  { id: 'week', name: 'Spotlight', tier: 'boost', days: 7, price: 5, per: 'one week', blurb: 'A low-risk way to try it. Above free profiles in matching searches for 7 days.' },
-  { id: 'boost', name: 'Boost', tier: 'boost', month: 12, year: 120, blurb: 'Above free profiles whenever an employer searches or looks for people to invite.' },
-  { id: 'plus', name: 'Boost Plus', tier: 'plus', month: 24, year: 240, blurb: 'Always above Boost and free profiles, with a gold “Top pick” badge and first place in each employer’s suggested candidates.' }
+  { id: 'week', name: 'Spotlight', tier: 'boost', days: 7, price: 10, per: 'one week', blurb: 'A low-risk way to try it. Above free profiles in matching searches for 7 days.' },
+  { id: 'boost', name: 'Boost', tier: 'boost', month: 12, blurb: 'Above free profiles whenever an employer searches or looks for people to invite.' },
+  { id: 'plus', name: 'Boost Plus', tier: 'plus', month: 22, blurb: 'Always above Boost and free profiles, with a gold “Top pick” badge and first place in each employer’s suggested candidates.' },
+  { id: 'net', name: 'Network Control', tier: 'net', month: 4, blurb: 'Anyone can add you to their network. With Network Control you can remove people and decline referral requests.' }
 ];
 function boostTier(u) { return u && (u.boostUntil || 0) > Date.now() ? (u.boostTier === 'plus' ? 'plus' : 'boost') : ''; }
 function boostRank(u) { var t = boostTier(u); return t === 'plus' ? 2 : t ? 1 : 0; }
@@ -5374,7 +5380,7 @@ function matchOf(p, j) {
   return { pct: Math.round(100 * hits.length / terms.length), hits: hits };
 }
 function candList(u, q, jobId) {
-  var j = jobId ? byId(db.jobs, jobId) : null, toks = qTokens(q), out = [];
+  var j = jobId ? byId(db.jobs, jobId) : null, toks = Array.isArray(q) ? q.map(function (w) { return String(w).toLowerCase().trim(); }).filter(Boolean) : qTokens(q), out = [];
   db.users.forEach(function (p) {
     if (p.role !== 'interviewer' || p.suspended) return;
     var blob = personBlob(p), qh = toks.filter(function (t) { return blob.indexOf(t) >= 0; }).length, m = j ? matchOf(p, j) : { pct: 0, hits: [] };
@@ -5387,25 +5393,51 @@ function candList(u, q, jobId) {
 function candRow(x, j) {
   var p = x.p, m = x.m;
   return '<li class="row' + (x.tier ? ' boosted' : '') + '">' + avatar(p) + '<div class="grow"><a class="name" href="#person-' + p.id + '">' + esc(p.name) + '</a> ' + boostChip(p) + '<span class="meta">' + esc(p.headline || '') + '</span>' +
-    (j && m.pct ? '<div class="chips"><span class="chip">' + m.pct + '% match</span><span class="meta">' + esc(m.hits.slice(0, 5).join(', ')) + '</span></div>' : '') + '</div><a class="btn ghost small" href="#person-' + p.id + '">View profile</a></li>';
+    ((ui.cw || []).length && x.qh ? '<span class="meta">Matches ' + x.qh + ' of ' + ui.cw.length + ' words</span>' : '') + (j && m.pct ? '<div class="chips"><span class="chip">' + m.pct + '% match</span><span class="meta">' + esc(m.hits.slice(0, 5).join(', ')) + '</span></div>' : '') + '</div><a class="btn ghost small" href="#person-' + p.id + '">View profile</a></li>';
 }
 function candListHtml(u) {
-  var rows = candList(u, ui.cq || '', ui.cj || '').map(function (x) { return candRow(x, ui.cj ? byId(db.jobs, ui.cj) : null); }).join('');
-  return rows ? '<ul class="list" id="cand-list">' + rows + '</ul>' : '<div class="empty" id="cand-list"><h3>No one matches yet</h3><p>Try fewer or different words.</p></div>';
+  var words = ui.cw || [], jb = ui.cj ? byId(db.jobs, ui.cj) : null, list = candList(u, words, ui.cj || '');
+  var rows = list.slice(0, 200).map(function (x) { return candRow(x, jb); }).join('');
+  var bar = list.length && jb ? '<div class="box tint" id="cand-bulk"><b>' + list.length + ' interviewee' + (list.length === 1 ? '' : 's') + ' match.</b> Invite them to a pre-recorded round of “' + esc(jb.title) + '” using that job’s questions. People already invited are skipped.' +
+    '<div class="acts"><button class="btn" type="button" data-act="cand-inv-all">Invite all</button><span>or the first</span><input type="number" id="cand-n" min="1" max="500" value="' + Math.min(50, list.length) + '" style="width:90px" aria-label="How many"><button class="btn ghost" type="button" data-act="cand-inv-n">Invite first…</button></div></div>' : (list.length ? '<p class="sub">Pick one of your jobs above to invite these people in bulk.</p>' : '');
+  return bar + (rows ? '<ul class="list">' + rows + '</ul>' : '<div class="empty"><h3>No one matches yet</h3><p>Add a word above, or try different words.</p></div>');
 }
 function candSection(u) {
-  var jobs = db.jobs.filter(function (j) { return j.employerId === u.id && j.status === 'open'; });
-  return '<section class="sec" id="cand-sec"><h2>Interviewees</h2><div class="row2"><div class="field"><label for="cand-q">Search by skill, job title or name</label><input type="search" id="cand-q" placeholder="software engineer, python, nurse…" value="' + esc(ui.cq || '') + '"></div>' +
-    '<div class="field"><label for="cand-job">Match to one of my jobs</label><select id="cand-job"><option value="">No job selected</option>' + jobs.map(function (j) { return '<option value="' + j.id + '"' + (ui.cj === j.id ? ' selected' : '') + '>' + esc(j.title) + '</option>'; }).join('') + '</select></div></div>' +
-    '<p class="sub">Sponsored profiles are paid placements and appear first when they match what you search for.</p>' + candListHtml(u) + '</section>';
+  var jobs = db.jobs.filter(function (j) { return j.employerId === u.id && j.status === 'open'; }), words = ui.cw || [];
+  return '<section class="sec" id="cand-sec"><h2>Interviewees</h2><div class="field"><label for="cand-q">Add words to search for</label><div class="acts"><input type="text" id="cand-q" placeholder="emails, python, nurse… press Enter" style="flex:1;min-width:200px"><button class="btn small" type="button" data-act="cand-add">Add word</button></div>' +
+    '<div class="chips" id="cand-words">' + words.map(function (w, i) { return '<button type="button" class="chip" data-act="cand-del" data-i="' + i + '" aria-label="Remove ' + esc(w) + '">' + esc(w) + ' ✕</button>'; }).join('') + '</div></div>' +
+    '<div class="field"><label for="cand-job">Match to one of my jobs</label><select id="cand-job"><option value="">No job selected</option>' + jobs.map(function (j) { return '<option value="' + j.id + '"' + (ui.cj === j.id ? ' selected' : '') + '>' + esc(j.title) + '</option>'; }).join('') + '</select></div>' +
+    '<p class="sub">People who contain more of your words come first; sponsored profiles are paid placements and appear first among matches.</p><div id="cand-list">' + candListHtml(u) + '</div></section>';
 }
+function candRefresh() { var s = document.getElementById('cand-sec'); if (s) { var q = document.getElementById('cand-q'), had = q && q === document.activeElement; s.outerHTML = candSection(me()); if (had) document.getElementById('cand-q').focus(); } }
+acts['cand-add'] = function () {
+  var q = document.getElementById('cand-q'); if (!q) return;
+  q.value.split(',').forEach(function (w) { w = w.trim().toLowerCase().slice(0, 40); ui.cw = ui.cw || []; if (w && ui.cw.indexOf(w) < 0 && ui.cw.length < 40) ui.cw.push(w); });
+  candRefresh();
+};
+acts['cand-del'] = function (el) { (ui.cw || []).splice(+el.dataset.i, 1); candRefresh(); };
+function bulkInvite(n, el) {
+  var u = me(), j = byId(db.jobs, ui.cj); if (!u || !j) return;
+  if (!(j.questions || []).length) { toast('Add at least one question to this job first (open the job, then “Job details, questions and screening”).'); return; }
+  var list = candList(u, ui.cw || [], j.id).filter(function (x) { return !db.invites.some(function (i) { return i.jobId === j.id && i.interviewerId === x.p.id; }); }).slice(0, n);
+  if (!list.length) { toast('Everyone in this list was already invited.'); return; }
+  confirmTwice(el, 'Click again to invite ' + list.length, function () {
+    list.forEach(function (x) {
+      db.invites.push({ id: uid(), jobId: j.id, employerId: u.id, interviewerId: x.p.id, round: 1, kind: 'prerecorded', scheduledAt: '', appt: null, questions: j.questions.slice(), limits: (j.limits || []).slice(), note: '', status: 'invited', answers: {}, videoIds: [], createdAt: Date.now() });
+      notify(x.p.id, 'You were invited to round 1 for “' + j.title + '”.', 'invites');
+    });
+    save(); toast('Sent ' + list.length + ' invitation' + (list.length === 1 ? '' : 's') + '.'); candRefresh();
+  });
+}
+acts['cand-inv-all'] = function (el) { bulkInvite(500, el); };
+acts['cand-inv-n'] = function (el) { var n = parseInt((document.getElementById('cand-n') || {}).value, 10) || 0; if (n < 1) { toast('Type how many to invite.'); return; } bulkInvite(Math.min(n, 500), el); };
 viewExplore = (function (prev) { return function () {
   prev(); var u = me(); if (!u || u.role !== 'employer') return;
   var h = Array.prototype.filter.call(document.querySelectorAll('#app h2'), function (x) { return x.textContent === 'Interviewees'; })[0], sec = h && h.closest('section'); if (!sec) return;
   sec.outerHTML = candSection(u);
 }; })(viewExplore);
-document.addEventListener('input', function (e) { if (e.target && e.target.id === 'cand-q') { ui.cq = e.target.value; var l = document.getElementById('cand-list'); if (l) l.outerHTML = candListHtml(me()); } });
-document.addEventListener('change', function (e) { if (e.target && e.target.id === 'cand-job') { ui.cj = e.target.value; var l = document.getElementById('cand-list'); if (l) l.outerHTML = candListHtml(me()); } });
+document.addEventListener('keydown', function (e) { if (e.target && e.target.id === 'cand-q' && (e.key === 'Enter' || e.key === ',')) { e.preventDefault(); acts['cand-add'](); } });
+document.addEventListener('change', function (e) { if (e.target && e.target.id === 'cand-job') { ui.cj = e.target.value; var l = document.getElementById('cand-list'); if (l) l.innerHTML = candListHtml(me()); } });
 
 /* suggested candidates on the employer's job page */
 viewJobManage = (function (prev) { return function (j, u) {
@@ -5427,22 +5459,21 @@ viewJob = (function (prev) { return function (id) {
 
 /* the Boost page for interviewees */
 function viewBoost() {
-  var u = me(), t = boostTier(u), yearly = ui.bill !== 'month';
+  var u = me(), t = boostTier(u);
   var cards = BOOST_PLANS.map(function (p) {
-    var price = p.price ? '$' + p.price : yearly ? '$' + p.year : '$' + p.month, per = p.price ? p.per : yearly ? 'per year' : 'per month', note = p.price ? '' : yearly ? 'Two months free (that is $' + (p.year / 12) + ' a month)' : '';
-    return '<div class="box' + (p.id === 'plus' ? ' strong' : '') + '"><h3>' + esc(p.name) + (p.id === 'plus' ? ' ✨' : '') + '</h3><div style="font-size:1.9rem;font-weight:800">' + price + '</div><span class="meta">' + per + '</span>' + (note ? '<p class="sub"><b>' + note + '</b></p>' : '') + '<p class="sub">' + esc(p.blurb) + '</p><button class="btn" type="button" data-act="boost-buy" data-plan="' + p.id + '">Choose ' + esc(p.name) + '</button></div>';
+    var price = '$' + (p.price || p.month), per = p.price ? p.per : 'per month';
+    return '<div class="box' + (p.id === 'plus' ? ' strong' : '') + '"><h3>' + esc(p.name) + (p.id === 'plus' ? ' ✨' : '') + '</h3><div style="font-size:1.9rem;font-weight:800">' + price + '</div><span class="meta">' + per + '</span><p class="sub">' + esc(p.blurb) + '</p><button class="btn" type="button" data-act="boost-buy" data-plan="' + p.id + '">Choose ' + esc(p.name) + '</button></div>';
   }).join('');
-  show('<div class="page" style="max-width:980px"><div class="page-head"><div><span class="eyebrow">Get seen first</span><h1>Boost your profile</h1></div></div>' +
-    '<p class="sub">When an employer searches for people or looks for someone to invite, boosted profiles appear above everyone else who matches, with a ✨ Sponsored badge. Free profiles still appear below, so you only pay to be seen sooner.</p>' +
+  show('<div class="page" style="max-width:1100px"><div class="page-head"><div><span class="eyebrow">Get seen first</span><h1>Boost your profile</h1></div></div>' +
+    '<p class="sub">When an employer searches for people or looks for someone to invite, boosted profiles appear above everyone else who matches, with a ✨ Sponsored badge. Free profiles still appear below, so you only pay to be seen sooner. Plans are month to month, so you can stop the day you are hired.</p>' +
     (t ? '<div class="box strong"><b>Your boost is on (' + (t === 'plus' ? 'Boost Plus' : 'Boost') + ') until ' + esc(fmtDate(u.boostUntil)) + '.</b></div>' : '') +
-    '<div class="acts"><button class="btn' + (yearly ? '' : ' ghost') + '" type="button" data-act="boost-bill" data-v="year">Yearly (2 months free)</button><button class="btn' + (yearly ? ' ghost' : '') + '" type="button" data-act="boost-bill" data-v="month">Monthly</button></div>' +
-    '<div class="three">' + cards + '</div><p class="notice">Payments are not open yet, so nothing is charged. Choose a plan and the site owner will be told you want it; boosts are switched on by hand until card payments are added.</p>' +
-    '<div class="box tint"><b>Tip:</b> a boost works best when your profile lists the real skills and software employers search for. Employers see the ✨ Sponsored badge, so keep your profile and videos strong.</div></div>');
+    '<div class="four">' + cards + '</div><p class="notice">Payments are not open yet, so nothing is charged. Choose a plan and the site owner will be told you want it; plans are switched on by hand until card payments are added.</p>' +
+    '<div class="box tint"><b>Tip:</b> a boost works best when your profile lists the real skills and software employers search for.</div></div>');
 }
-acts['boost-bill'] = function (el) { ui.bill = el.dataset.v; viewBoost(); };
+acts['boost-bill'] = function () { };
 acts['boost-buy'] = function (el) {
   var u = me(), p = BOOST_PLANS.filter(function (x) { return x.id === el.dataset.plan; })[0]; if (!u || !p) return;
-  u.boostWant = { plan: p.id, bill: ui.bill === 'month' ? 'month' : 'year', ts: Date.now() }; save();
+  u.boostWant = { plan: p.id, ts: Date.now() }; save();
   toast('Thanks! Payments are not open yet. Your request for ' + p.name + ' was saved.');
 };
 acts['ad-boost'] = function (el) {
@@ -5471,6 +5502,75 @@ acts['ad-boost'] = function (el) {
   document.addEventListener('mouseover', function (e) { var ad = e.target.closest && e.target.closest('.ad'); if (!ad || ad === cur) return; cur = ad; clearInterval(timer); burst(); timer = setInterval(burst, 140); });
   document.addEventListener('mouseout', function (e) { if (!cur) return; var to = e.relatedTarget; if (to && cur.contains(to)) return; clearInterval(timer); cur = null; });
 })();
+/* ---- Open networking, Network Control, and a per-job activity feed ---- */
+function netPaid(u) { return !!u && (u.netUntil || 0) > Date.now(); }
+connectionsOf = (function (prev) { return function (u) {
+  var base = prev(u), ids = {}; base.forEach(function (x) { ids[x.id] = 1; });
+  var gone = u.netGone || [];
+  db.users.forEach(function (x) {
+    if (x.id === u.id || x.role === 'admin' || x.suspended || ids[x.id]) return;
+    if ((u.net || []).indexOf(x.id) >= 0 || (x.net || []).indexOf(u.id) >= 0) { base.push(x); ids[x.id] = 1; }
+  });
+  return base.filter(function (x) { return gone.indexOf(x.id) < 0; });
+}; })(connectionsOf);
+acts['net-add'] = function (el) {
+  var u = me(), id = el.dataset.id, p = byId(db.users, id); if (!u || !p || id === u.id || p.role === 'admin') return;
+  u.net = u.net || []; if (u.net.indexOf(id) < 0) u.net.push(id);
+  u.netGone = (u.netGone || []).filter(function (x) { return x !== id; });
+  notify(id, u.name + ' added you to their network.', 'network'); save(); toast(p.name + ' is now in your network.'); refresh();
+};
+acts['net-remove'] = function (el) {
+  var u = me(), id = el.dataset.id; if (!u) return;
+  if (!netPaid(u)) { toast('Removing people from your network is part of Network Control ($4 a month).'); go('boost'); return; }
+  u.net = (u.net || []).filter(function (x) { return x !== id; }); u.netGone = (u.netGone || []).concat([id]); save(); toast('Removed.'); refresh();
+};
+
+acts['req-decline'] = (function (prev) { return function (el) { var u = me(); if (!netPaid(u)) { toast('Declining is part of Network Control ($4 a month). You can accept this request.'); return; } prev(el); }; })(acts['req-decline']);
+acts['net-find'] = function () { var q = document.getElementById('net-q'); ui.nq = q ? q.value : ''; var l = document.getElementById('net-res'); if (l) l.innerHTML = netResults(); };
+function netResults() {
+  var u = me(), q = String(ui.nq || '').trim().toLowerCase(); if (q.length < 2) return '<p class="sub">Type at least two letters of a name, company or job title.</p>';
+  var have = connectionsOf(u).map(function (x) { return x.id; });
+  var l = db.users.filter(function (p) { return p.id !== u.id && p.role !== 'admin' && !p.suspended && (p.name + ' ' + (p.headline || '') + ' ' + (p.company || '')).toLowerCase().indexOf(q) >= 0; }).slice(0, 30);
+  return l.length ? '<ul class="list">' + l.map(function (p) { return '<li class="row">' + avatar(p) + '<div class="grow"><a class="name" href="#person-' + p.id + '">' + esc(p.name) + '</a><span class="meta">' + esc(p.headline || companyOf(p)) + '</span></div>' + (have.indexOf(p.id) >= 0 ? chip('In your network', 'solid') : '<button class="btn small" type="button" data-act="net-add" data-id="' + p.id + '">Add to network</button>') + '</li>'; }).join('') + '</ul>' : '<p class="sub">No one found.</p>';
+}
+document.addEventListener('input', function (e) { if (e.target && e.target.id === 'net-q') acts['net-find'](); });
+viewNetwork = (function (prev) { return function () {
+  prev(); var u = me(), pg = document.querySelector('#app .page'); if (!pg || u.role === 'admin') return;
+  var sec = document.createElement('section'); sec.className = 'box';
+  sec.innerHTML = '<h3>Add people to your network</h3><p class="sub">Anyone can add anyone. The other person does not need to agree.' + (netPaid(u) ? ' Network Control is on, so you can remove people and decline requests.' : ' Removing people or declining requests is part of <a href="#boost">Network Control</a>.') + '</p><div class="field"><label for="net-q">Search by name, company or job title</label><input type="search" id="net-q" value="' + esc(ui.nq || '') + '"></div><div id="net-res">' + netResults() + '</div>';
+  var h2 = pg.querySelector('.sub'); (h2 || pg.firstChild).insertAdjacentElement('afterend', sec);
+  pg.querySelectorAll('.list a.name').forEach(function (a) {
+    var li = a.closest('li'), id = (a.getAttribute('href') || '').replace('#person-', ''); if (!li || !(connectionsOf(u).some(function (x) { return x.id === id; })) || li.querySelector('[data-act="net-remove"]')) return;
+    var b = document.createElement('button'); b.className = 'btn ghost small'; b.type = 'button'; b.dataset.act = 'net-remove'; b.dataset.id = id; b.textContent = 'Remove'; li.appendChild(b);
+  });
+}; })(viewNetwork);
+viewPerson = (function (prev) { return function (arg) {
+  prev(arg); var u = me(), id = String(arg).split('-')[0], p = byId(db.users, id), h = document.querySelector('#app .page .page-head'); if (!u || !p || !h || id === u.id || p.role === 'admin') return;
+  var inn = connectionsOf(u).some(function (x) { return x.id === id; });
+  h.insertAdjacentHTML('afterend', inn ? '<p class="sub" style="margin:0">' + chip('In your network', 'solid') + '</p>' : '<div class="acts"><button class="btn small" type="button" data-act="net-add" data-id="' + id + '">Add to network</button></div>');
+}; })(viewPerson);
+
+/* Network Control grants via admin moderation use the same switch as boosts */
+acts['ad-netctl'] = function (el) {
+  var x = byId(db.users, el.dataset.id); if (!x) return; x.netUntil = netPaid(x) ? 0 : Date.now() + 30 * 86400000;
+  adminDone(netPaid(x) ? 'Network Control on for ' + x.name : 'Network Control removed', 'Done.'); modPush('user', x.id, { netUntil: x.netUntil });
+};
+
+/* Activity feed on the employer's job page */
+viewJobManage = (function (prev) { return function (j, u) {
+  prev(j, u);
+  var pg = document.querySelector('#app .page'); if (!pg) return;
+  var link = 'job-' + j.id, notes = db.notifications.filter(function (n) { return n.userId === u.id && n.link === link; }).sort(function (a, b) { return b.ts - a.ts; }).slice(0, 15);
+  var scr = db.screenings.filter(function (s) { return s.jobId === j.id; }), waiting = scr.filter(function (s) { return s.status === 'submitted' && !s.result; }).length;
+  var inv = db.invites.filter(function (i) { return i.jobId === j.id; }), answered = inv.filter(function (i) { return Object.keys(i.answers || {}).length; }).length;
+  var interest = db.interests.filter(function (i) { return i.jobId === j.id; }).length;
+  var sec = document.createElement('section'); sec.className = 'box'; sec.id = 'job-activity';
+  sec.innerHTML = '<h3>Activity for this job</h3><div class="chips">' + chip(interest + ' interested', 'muted') + chip(inv.length + ' invited', 'muted') + chip(answered + ' recorded answers', 'muted') + chip(scr.length + ' screening' + (scr.length === 1 ? '' : 's') + ' sent', 'muted') + (waiting ? chip(waiting + ' screening' + (waiting === 1 ? '' : 's') + ' to review', 'solid') : '') + '</div>' +
+    (notes.length ? '<ul class="list">' + notes.map(function (n) { return '<li class="row"><div class="grow">' + esc(n.text) + '<span class="meta">' + esc(fmtDateTime(n.ts)) + '</span></div></li>'; }).join('') + '</ul>' : '<p class="sub">Alerts about this job (new interest, screening answers, interview updates) appear here.</p>') +
+    '<p class="sub"><a href="#explore" data-act="cand-for-job" data-id="' + j.id + '">Search interviewees by words for this job</a></p>';
+  pg.insertBefore(sec, pg.children[2] || null);
+}; })(viewJobManage);
+acts['cand-for-job'] = function (el) { ui.cj = el.dataset.id; };
 
 sbBoot(); adsLoad(); modLoad(); profLoad().then(jobsLoad).then(function () { profPublish(false); jobsPublish(); }).then(recSync).then(vidSync).then(socSync);
 renderHeader();
