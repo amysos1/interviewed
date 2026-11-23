@@ -436,6 +436,71 @@ footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wr
 li.row.boosted { background: linear-gradient(90deg, #fffaf0, #fff); border-left: 4px solid #ffd24a; }
 .sparkle { position: absolute; pointer-events: none; z-index: 5; line-height: 1; text-shadow: 0 0 6px rgba(255, 220, 120, .9); animation: spark .95s ease-out forwards; }
 @keyframes spark { 0% { opacity: 0; transform: translate(0, 0) scale(.2) rotate(0deg); } 25% { opacity: 1; transform: translate(calc(var(--dx) * .3), calc(var(--dy) * .3)) scale(1.1) rotate(60deg); } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(.4) rotate(220deg); } }
+
+/* ---- Calmer, more modern look (overrides) ---- */
+:root { --line: #ebe4f7; --radius: 14px; --shadow: 0 1px 2px rgba(29,18,54,.05), 0 6px 20px rgba(60,30,120,.06); }
+body { font-size: 0.97rem; background: #fcfbff; }
+h1, h2 { font-family: var(--font-body); font-stretch: 100%; text-transform: none; font-weight: 750; letter-spacing: -0.02em; line-height: 1.12; }
+h1 { font-size: clamp(2rem, 4.6vw, 3rem); }
+h2 { font-size: clamp(1.3rem, 3vw, 1.7rem); }
+.page-head h1, .studio-head h1 { font-size: clamp(1.7rem, 4vw, 2.3rem); }
+.sec > h2 { font-size: clamp(1.15rem, 2.6vw, 1.4rem); }
+h3 { font-size: 1.05rem; font-weight: 650; }
+.eyebrow { font-family: var(--font-body); font-size: 0.78rem; letter-spacing: 0.06em; font-weight: 600; color: var(--purple); }
+.brand { font-family: var(--font-body); font-stretch: 100%; font-size: 1.3rem; text-transform: none; letter-spacing: -0.02em; font-weight: 800; }
+.shell { gap: 28px; }
+.btn { border-width: 1.5px; border-radius: 10px; padding: 8px 16px; min-height: 40px; font-weight: 650; font-size: 0.95rem; transition: background .15s, box-shadow .15s, transform .1s; }
+.btn:hover { box-shadow: 0 4px 12px rgba(106,47,216,.22); }
+.btn:active { transform: translateY(1px); }
+.btn.small { padding: 5px 12px; min-height: 34px; font-size: 0.88rem; }
+.box, .row, .qcard, .rc-box, .empty { border-radius: var(--radius); }
+.box { padding: 18px; box-shadow: var(--shadow); border-color: var(--line); }
+.box.strong { border: 1.5px solid var(--purple); background: #fff; }
+.box.tint { box-shadow: none; }
+.row { padding: 14px; box-shadow: none; }
+.row:hover { border-color: #d6c6f3; }
+.chip { font-family: var(--font-body); font-size: 0.76rem; letter-spacing: 0; font-weight: 600; padding: 2px 9px; }
+.empty { border-width: 1.5px; padding: 24px 20px; }
+.empty h3 { font-family: var(--font-body); font-stretch: 100%; text-transform: none; font-size: 1.1rem; font-weight: 700; }
+.notice { font-family: var(--font-body); font-size: 0.85rem; }
+input[type="text"], input[type="email"], input[type="password"], input[type="datetime-local"], input[type="search"], input[type="number"], select, textarea { border-radius: 10px; padding: 9px 12px; min-height: 40px; background: #fff; border-color: #ddd2f2; }
+textarea { min-height: 80px; }
+.field { gap: 5px; }
+label, legend, .label { font-size: 0.9rem; }
+.seg { border-width: 1.5px; border-radius: 10px; }
+.seg button { min-height: 34px; padding: 5px 12px; }
+.rc-box { border-width: 1.5px; padding: 11px 13px; }
+.rc-box b { font-size: 0.98rem; }
+/* Studio: lighter frame, smaller buttons */
+.studio { gap: 16px; max-width: 780px; }
+.qcard { border: 1px solid var(--line); box-shadow: var(--shadow); }
+.qcard .clapper { height: 6px; background: linear-gradient(90deg, var(--purple), #b98af0); }
+.qbody { padding: 16px 18px 18px; gap: 10px; }
+.qmeta { font-family: var(--font-body); font-size: 0.76rem; letter-spacing: 0.04em; }
+.qtext { font-size: clamp(1.1rem, 2.6vw, 1.4rem); }
+.qstep { border-width: 1.5px; border-radius: 8px; padding: 4px 10px; min-height: 32px; font-family: var(--font-body); font-size: 0.82rem; }
+.stage { border-radius: 18px; box-shadow: var(--shadow); }
+.controls { gap: 8px; }
+.controls .btn { min-height: 40px; }
+/* icon buttons */
+.ibtn { width: 34px; min-width: 34px; height: 34px; min-height: 34px; padding: 0; font-size: 1.05rem; line-height: 1; border-radius: 50%; }
+.ibtn.ok { background: #e7f8ee; color: #137a42; border-color: #b8e6cc; }
+.ibtn.del { background: #fff; color: var(--err); border-color: #efc4dc; }
+.ibtn.add { background: var(--purple-soft); color: var(--purple-deep); border-color: #d6c6f3; }
+.opt-box { border: 1px dashed #d6c6f3; border-radius: 12px; padding: 10px 14px; background: #fcfaff; }
+.opt-box > summary { cursor: pointer; font-weight: 600; color: var(--purple-deep); font-size: .92rem; }
+.opt-box[open] > summary { margin-bottom: 12px; }
+.plan-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+.plan-grid .box { padding: 14px; gap: 8px; box-shadow: none; }
+.plan-grid .price { font-size: 1.35rem; font-weight: 800; }
+.top { gap: 8px 18px; }
+.ad-side { box-shadow: 0 6px 18px rgba(80,40,160,.12); }
+.stage, #view-studio .stage { border: 0 !important; background: var(--ink) !important; padding: 0 !important; }
+.rc-set { gap: 8px !important; }
+.rc-box { min-height: 0; padding: 9px 12px; }
+.rc-box b { font-weight: 600; }
+.opt { font-weight: 400; color: var(--muted); }
+.bul { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 4px; }
 </style>
 
 <div class="shell">
@@ -609,7 +674,7 @@ li.row.boosted { background: linear-gradient(90deg, #fffaf0, #fff); border-left:
   <div id="ads" class="ads" aria-label="Advertisements"></div>
   <footer>
     <span>Interviewed. Video interviews for interviewees and employers.</span>
-    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.23.0</span> · <a href="#terms">Terms</a> · <a href="#privacy">Privacy</a> · <a href="#sync">Sync check</a> · <a href="#admin-setup">Administrator</a></span>
+    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.27.0</span> · <a href="#ranking">Ranking</a> · <a href="#terms">Terms</a> · <a href="#privacy">Privacy</a> · <a href="#sync">Sync check</a> · <a href="#admin-setup">Administrator</a></span>
   </footer>
 </div>
 
@@ -914,7 +979,7 @@ var R = { name: '', arg: '', key: '' };
 var ui = {};
 var pendingInvite = null;
 var acts = {}, forms = {}, changes = {};
-var NEEDS_LOGIN = { coffee: 1, network: 1, events: 1, event: 1, notifications: 1, screen: 1, setup: 1, jobs: 1, invites: 1, job: 1, studio: 1, live: 1, videos: 1, playlists: 1, explore: 1, person: 1, profile: 1, sync: 1 };
+var NEEDS_LOGIN = { gate: 1, coffee: 1, network: 1, events: 1, event: 1, notifications: 1, screen: 1, setup: 1, jobs: 1, invites: 1, job: 1, studio: 1, live: 1, videos: 1, playlists: 1, explore: 1, person: 1, profile: 1, sync: 1 };
 
 function homeFor(u) { return u && u.role === 'admin' ? 'admin' : 'jobs'; }
 var ADMIN_BLOCKED = { invites: 1, live: 1, setup: 1, profile: 1 };
@@ -948,7 +1013,7 @@ function renderHeader() {
     var unread = db.notifications.filter(function (n) { return n.userId === u.id && !n.read; }).length;
     var pending = u.role === 'interviewer' ? db.invites.filter(function (i) { return i.interviewerId === u.id && i.status === 'invited'; }).length : 0;
     var key = navKey();
-    var GROUPS = { '@videos': [['videos', 'My videos'], ['playlists', 'My playlists']], '@explore': [['explore', 'Videos'], ['events', 'Events']] };
+    var GROUPS = { '@videos': [['videos', 'My videos'], ['playlists', 'My playlists']], '@explore': [['explore', 'Videos'], ['events', 'Events'], ['ranking', 'Ranking']] };
     nav = '<nav class="mainnav" aria-label="Main">' + items.map(function (it) {
       if (GROUPS[it[0]]) {
         var g = GROUPS[it[0]], on = g.some(function (x) { return x[0] === key; }), open = ui.navOpen === it[0];
@@ -996,7 +1061,7 @@ function route(noScroll) {
     $('app').hidden = false;
     var views = { login: viewLogin, signup: viewSignup, setup: viewSetup, profile: viewProfile, person: viewPerson,
       coffee: viewCoffee, network: viewNetwork, jobs: viewJobs, job: viewJob, invites: viewInvites, videos: viewVideos, watch: viewWatch, playlists: viewPlaylists,
-      list: viewList, explore: viewExplore, admin: viewAdmin, screen: viewScreen, events: viewEvents, event: viewEvent, notifications: viewNotifications, ranking: viewRanking, chooserole: viewChooseRole, forgot: viewForgot, reset: viewReset, terms: viewTerms, privacy: viewPrivacy, boost: viewBoost, sync: viewSync };
+      list: viewList, explore: viewExplore, admin: viewAdmin, screen: viewScreen, events: viewEvents, event: viewEvent, notifications: viewNotifications, ranking: viewRanking, gate: viewGate, chooserole: viewChooseRole, forgot: viewForgot, reset: viewReset, terms: viewTerms, privacy: viewPrivacy, boost: viewBoost, sync: viewSync };
     (views[name] || viewNotFound)(arg);
   }
   if (!noScroll) window.scrollTo(0, 0);
@@ -2644,14 +2709,14 @@ function viewNetwork() {
 function askForm(p) {
   var jobs = openJobs('');
   return '<form data-form="askref" data-to="' + p.id + '" class="box tint" novalidate><div class="field"><label for="ask-job">Which job?</label><select id="ask-job" name="job">' + (jobs.length ? jobs.map(function (j) { return '<option value="' + j.id + '">' + esc(jobLabel(j)) + '</option>'; }).join('') : '<option value="">No open jobs</option>') + '</select></div>' +
-    '<div class="field"><label for="ask-note">Message <span class="opt">(optional)</span></label><input type="text" id="ask-note" name="note" maxlength="200"></div><div class="acts"><button class="btn small" type="submit">Send request</button><button class="btn ghost small" type="button" data-act="ask-cancel">Cancel</button></div></form>';
+    '<div class="acts"><button class="btn small" type="submit">Send request</button><button class="btn ghost small" type="button" data-act="ask-cancel">Cancel</button></div></form>';
 }
 acts['ask-open'] = function (el) { ui.ask = el.dataset.id; refresh(); };
 acts['ask-cancel'] = function () { ui.ask = ''; refresh(); };
 forms.askref = function (f) {
   var u = me(), to = f.dataset.to, jobId = f.elements.job.value; if (!jobId) { toast('Choose a job first.'); return; }
   if (db.referrals.some(function (r) { return r.type === 'request' && r.fromId === u.id && r.toId === to && r.jobId === jobId && r.status === 'pending'; })) { toast('You already asked this person for that job.'); return; }
-  db.referrals.push({ id: uid(), type: 'request', fromId: u.id, toId: to, jobId: jobId, note: f.elements.note.value.trim(), status: 'pending', ts: Date.now() });
+  db.referrals.push({ id: uid(), type: 'request', fromId: u.id, toId: to, jobId: jobId, note: '', status: 'pending', ts: Date.now() });
   notify(to, u.name + ' asked you for a referral to ' + jobLabel(byId(db.jobs, jobId)) + '.', 'network');
   ui.ask = ''; save(); toast('Request sent.'); refresh();
 };
@@ -2837,7 +2902,7 @@ candidateRow = function (p, j) {
 };
 
 /* ================= Coffee chat (paid program), messages ================= */
-var COFFEE_PRICE = 10;
+var COFFEE_PLUS = 20, COFFEE_PRICE = 10;
 function coffeeOk(u) { return !!u && (u.role === 'admin' || (u.pro && u.pro.active) || (u.coffee && u.coffee.active)); }
 function coffeeUrl(c) { return 'https://meet.jit.si/Interviewed-coffee-' + c.id; }
 function people(except) { return db.users.filter(function (x) { return x.id !== except && x.role !== 'admin' && !x.suspended; }); }
@@ -3030,6 +3095,7 @@ acts['jf-clear'] = function () { ui.jf = {}; refresh(); };
 function rankList() {
   var counts = {};
   db.referrals.forEach(function (r) { if (r.type === 'referral' && r.referrerId) counts[r.referrerId] = (counts[r.referrerId] || 0) + 1; });
+  db.users.forEach(function (x) { if (x.rc && x.rc > (counts[x.id] || 0)) counts[x.id] = x.rc; });
   var arr = Object.keys(counts).map(function (id) { return { u: byId(db.users, id), n: counts[id] }; }).filter(function (x) { return x.u && x.u.role !== 'admin' && !x.u.suspended; });
   arr.sort(function (a, b) { return b.n - a.n || a.u.name.localeCompare(b.u.name); });
   arr.forEach(function (x, i) { x.rank = i > 0 && arr[i - 1].n === x.n ? arr[i - 1].rank : i + 1; });
@@ -3049,7 +3115,7 @@ function viewRanking() {
       return '<li class="row"' + (u && u.id === x.u.id ? ' style="background:var(--purple-soft)"' : '') + '><span class="name" style="min-width:2.5em;font-family:var(--font-mono)">#' + x.rank + '</span>' + avatar(x.u) +
         '<div class="grow"><a class="name" href="#person-' + x.u.id + '">' + esc(x.u.name) + '</a><span class="meta">' + (x.u.role === 'employer' ? esc(companyOf(x.u)) : esc(x.u.headline || 'Interviewee')) + '</span></div>' + chip(x.n + ' referral' + (x.n === 1 ? '' : 's'), 'solid') + '</li>';
     }).join('') + '</ol>' : '<div class="empty"><h3>No referrals yet</h3><p>Refer someone to a job from the Network page or a job post and you will appear here.</p></div>') +
-    '<p class="notice">Only referrals made on Interviewed are counted. In this prototype they are counted from data stored in this browser.</p></div>');
+    '<p class="notice">Only referrals made on Interviewed are counted.</p></div>');
 }
 function pageEl() { return document.querySelector('#app .page'); }
 function rankBox(id, mine) { return '<div class="box tint"><p style="margin:0">' + rankLine(id, mine) + ' · <a href="#ranking">See the ranking</a></p></div>'; }
@@ -3518,6 +3584,8 @@ function profPayload(u) {
     o.defProfile = String(u.defaultProfileId || '').slice(0, 40);
   }
   if (u.orgs && u.orgs.length) o.orgs = u.orgs.slice(0, 10).map(function (x) { return String(x).slice(0, 80); });
+  if (u.resumeText) o.resume = String(u.resumeText).slice(0, 12000);
+  var rc = db.referrals.filter(function (r) { return r.type === 'referral' && r.referrerId === u.id; }).length; if (rc) o.rc = rc;
   if (u.net && u.net.length) o.net = u.net.slice(0, 200).map(function (x) { return String(x).slice(0, 40); });
   return o;
 }
@@ -3545,6 +3613,11 @@ function profLoad() {
         if (pub.profiles.length) pub.defaultProfileId = pub.profiles.some(function (x) { return x.id === d.defProfile; }) ? d.defProfile : pub.profiles[0].id; else delete pub.profiles;
       }
       pub.orgs = Array.isArray(d.orgs) ? d.orgs.slice(0, 10).map(function (x) { return s(x, 80); }).filter(Boolean) : [];
+      if (typeof d.resume === 'string') pub.resumeText = d.resume.slice(0, 12000);
+      pub.cp = d.cp ? 1 : 0;
+      pub.fbn = {}; if (d.fbn && typeof d.fbn === 'object') Object.keys(d.fbn).slice(0, 100).forEach(function (k) { pub.fbn[s(k, 40)] = s(d.fbn[k], 400); });
+      pub.fb = {}; if (d.fb && typeof d.fb === 'object') Object.keys(d.fb).slice(0, 300).forEach(function (k) { pub.fb[s(k, 40)] = d.fb[k] === 'i' ? 'i' : 'g'; });
+      pub.rc = Math.max(0, Math.min(100000, parseInt(d.rc, 10) || 0));
       pub.net = Array.isArray(d.net) ? d.net.slice(0, 200).map(function (x) { return s(x, 40); }).filter(Boolean) : [];
       if (u) { if (u.id === sessionId || u.passHash || !u.remote) return; Object.keys(pub).forEach(function (k) { u[k] = pub[k]; }); }
       else { pub.id = row.id; pub.email = ''; pub.remote = true; pub.linkedin = false; pub.createdAt = Number(d.createdAt) || 0; db.users.push(pub); }
@@ -3567,7 +3640,7 @@ function sbAuthed(path, method, body, extra) {
 }
 function jobPayload(j) {
   var o = { status: j.status === 'closed' ? 'closed' : 'open', createdAt: j.createdAt || 0 };
-  ['title', 'type', 'mode', 'location', 'description', 'currency', 'salaryMin', 'salaryMax', 'salaryPeriod', 'responsibilities', 'qualifications', 'skills', 'software', 'questions', 'limits', 'screening'].forEach(function (k) { if (j[k] !== undefined) o[k] = j[k]; });
+  ['title', 'type', 'mode', 'location', 'description', 'currency', 'salaryMin', 'salaryMax', 'salaryPeriod', 'responsibilities', 'qualifications', 'skills', 'software', 'questions', 'limits', 'screening', 'hireStatus', 'hiredId'].forEach(function (k) { if (j[k] !== undefined) o[k] = j[k]; });
   return o;
 }
 function jobsPublish() {
@@ -3597,7 +3670,7 @@ function jobClean(d) {
   var num = function (v) { return typeof v === 'number' && isFinite(v) ? v : ''; };
   return { status: d.status === 'closed' ? 'closed' : 'open', createdAt: Number(d.createdAt) || 0, title: s(d.title, 120) || 'Job', type: s(d.type, 40), mode: s(d.mode, 40), location: s(d.location, 100), description: s(d.description, 6000),
     currency: s(d.currency, 8), salaryMin: num(d.salaryMin), salaryMax: num(d.salaryMax), salaryPeriod: s(d.salaryPeriod, 20), responsibilities: arr(d.responsibilities, 300, 40), qualifications: arr(d.qualifications, 300, 40),
-    skills: arr(d.skills, 80, 40), software: arr(d.software, 80, 40), questions: arr(d.questions, 400, 30), limits: Array.isArray(d.limits) ? d.limits.slice(0, 30).map(function (x) { return Number(x) || 0; }) : [], screening: sc };
+    skills: arr(d.skills, 80, 40), software: arr(d.software, 80, 40), questions: arr(d.questions, 400, 30), limits: Array.isArray(d.limits) ? d.limits.slice(0, 30).map(function (x) { return Number(x) || 0; }) : [], screening: sc, hireStatus: ['site', 'other', 'searching'].indexOf(d.hireStatus) >= 0 ? d.hireStatus : '', hiredId: s(d.hiredId, 40) };
 }
 function jobsLoad() {
   return sbCall('/rest/v1/jobs?select=id,employer_id,data&limit=1000', 'GET').then(function (r) {
@@ -3680,6 +3753,7 @@ function recFromRow(row) {
     d.kind = d.kind === 'live' ? 'live' : 'prerecorded'; d.round = Number(d.round) || 1;
     if (['invited', 'accepted', 'declined', 'completed', 'withdrawn'].indexOf(d.status) < 0) d.status = 'invited';
     if (typeof d.scheduledAt !== 'string') d.scheduledAt = '';
+    if (d.rate && typeof d.rate === 'object') d.rate = { v: d.rate.v === 'i' ? 'i' : 'g', t: String(d.rate.t || '').slice(0, 600), ts: Number(d.rate.ts) || 0 }; else delete d.rate;
     if (d.appt && typeof d.appt === 'object') { if (!Array.isArray(d.appt.slots)) d.appt.slots = []; } else d.appt = null;
   } else {
     if (!Array.isArray(d.answers)) d.answers = [];
@@ -3710,9 +3784,10 @@ function recLoad() {
       }
       var prev = recSig[row.id], dirty = !prev || prev.h !== recHash(recJson(loc));
       if (!dirty && up > (loc._u || 0)) {
-        var oldS = loc.status, oldA = loc.appt && loc.appt.status, oldN = Object.keys(loc.answers || {}).length;
+        var oldS = loc.status, oldA = loc.appt && loc.appt.status, oldN = Object.keys(loc.answers || {}).length, oldR = !!loc.rate;
         Object.keys(loc).forEach(function (k) { delete loc[k]; }); Object.keys(d).forEach(function (k) { loc[k] = d[k]; }); loc._u = up;
         recSig[row.id] = { h: recHash(recJson(loc)), k: row.kind }; changed = true;
+        if (!quiet && row.kind === 'invite' && row.employer_id === u.id && loc.rate && !oldR) notes.push([u.id, userName(loc.interviewerId) + ' rated the live interview for “' + title + '”: ' + (loc.rate.v === 'g' ? 'great' : 'needs improvement'), 'job-' + loc.jobId]);
         if (!quiet && row.kind === 'invite' && row.employer_id === u.id) { var nn = Object.keys(loc.answers || {}).length; if (nn > oldN) notes.push([u.id, userName(loc.interviewerId) + ' recorded an answer (' + nn + ' of ' + (loc.questions || []).length + ') for “' + title + '”.', 'job-' + loc.jobId]); }
         if (!quiet && (oldS !== loc.status || oldA !== (loc.appt && loc.appt.status)) && row.kind !== 'interest') notes.push([u.id, 'Update on “' + title + '”: ' + (row.kind === 'invite' ? 'round ' + loc.round + ' is now ' + loc.status : 'screening ' + (loc.result || loc.status)) + '.', row.interviewer_id === u.id ? 'invites' : 'job-' + loc.jobId]);
       }
@@ -5361,19 +5436,25 @@ var BOOST_PLANS = [
   { id: 'week', name: 'Spotlight', tier: 'boost', days: 7, price: 10, per: 'one week', blurb: 'A low-risk way to try it. Above free profiles in matching searches for 7 days.' },
   { id: 'boost', name: 'Boost', tier: 'boost', month: 12, blurb: 'Above free profiles whenever an employer searches or looks for people to invite.' },
   { id: 'plus', name: 'Boost Plus', tier: 'plus', month: 22, blurb: 'Always above Boost and free profiles, with a gold “Top pick” badge and first place in each employer’s suggested candidates.' },
-  { id: 'net', name: 'Network Control', tier: 'net', month: 4, blurb: 'Anyone can add you to their network. With Network Control you can remove people and decline referral requests.' }
+  { id: 'net', name: 'Network Control', tier: 'net', month: 30, blurb: 'Anyone can add you to their network. With Network Control you can remove people and decline referral requests.' }
 ];
 function boostTier(u) { return u && (u.boostUntil || 0) > Date.now() ? (u.boostTier === 'plus' ? 'plus' : 'boost') : ''; }
 function boostRank(u) { var t = boostTier(u); return t === 'plus' ? 2 : t ? 1 : 0; }
 function boostChip(u) { var t = boostTier(u); return t === 'plus' ? '<span class="chip gold">✨ Top pick · Sponsored</span>' : t ? '<span class="chip gold">✨ Sponsored</span>' : ''; }
 var STOP = { the: 1, and: 1, for: 1, with: 1, of: 1, a: 1, an: 1, in: 1, at: 1, to: 1, senior: 1, junior: 1, lead: 1, sr: 1, jr: 1, i: 1, ii: 1, iii: 1 };
 function qTokens(s) { return String(s || '').toLowerCase().split(/[^a-z0-9+#.]+/).map(function (w) { return w.length > 3 && /s$/.test(w) && !/ss$/.test(w) ? w.slice(0, -1) : w; }).filter(function (w) { return w.length > 1 && !STOP[w]; }); }
+var COMMON = {}; ('about above after also been being between both build can come could does each from have help high into join just like look make many more most must need next only other over part some such than that their them then there these they this through well were what when where which while will with within work would your you our are job role team company working years year experience ability strong skills including etc able good new use used using plus per the and for').split(' ').forEach(function (w) { COMMON[w] = 1; });
 function jobTerms(j) {
   var t = [].concat(j.skills || [], j.software || []).map(function (x) { return String(x).trim().toLowerCase(); }).filter(Boolean);
-  if (t.length < 3) qTokens(j.title).forEach(function (w) { if (t.indexOf(w) < 0) t.push(w); });
+  if (t.length < 3) {
+    var txt = [j.title, j.title, j.title, j.description, (j.responsibilities || []).join(' '), (j.qualifications || []).join(' ')].join(' '), freq = {};
+    qTokens(txt).forEach(function (w) { if (w.length > 2 && !COMMON[w] && !/^\d+$/.test(w)) freq[w] = (freq[w] || 0) + 1; });
+    Object.keys(freq).sort(function (a, b) { return freq[b] - freq[a] || b.length - a.length; }).slice(0, 25).forEach(function (w) { if (t.indexOf(w) < 0) t.push(w); });
+  }
   return t.filter(function (x, i, a) { return a.indexOf(x) === i; }).slice(0, 30);
 }
-function personBlob(p) { return (profileText(p) + ' ' + (p.name || '') + ' ' + (p.headline || '') + ' ' + (p.location || '')).toLowerCase(); }
+function isBlank(p) { return personBlob(p).replace(/\s+/g, ' ').trim().length < (String(p.name || '').length + 25); }
+function personBlob(p) { return (profileText(p) + ' ' + (p.resumeText || '') + ' ' + (p.name || '') + ' ' + (p.headline || '') + ' ' + (p.location || '')).toLowerCase(); }
 function matchOf(p, j) {
   var terms = jobTerms(j); if (!terms.length) return { pct: 0, hits: [] };
   var txt = personBlob(p), hits = terms.filter(function (t) { return txt.indexOf(t) >= 0; });
@@ -5384,22 +5465,27 @@ function candList(u, q, jobId) {
   db.users.forEach(function (p) {
     if (p.role !== 'interviewer' || p.suspended) return;
     var blob = personBlob(p), qh = toks.filter(function (t) { return blob.indexOf(t) >= 0; }).length, m = j ? matchOf(p, j) : { pct: 0, hits: [] };
-    if (toks.length && !qh) return;
-    out.push({ p: p, qh: qh, m: m, tier: boostRank(p) });
+    var blank = isBlank(p);
+    if (toks.length && !qh && !(blank && ui.cempty !== false)) return;
+    out.push({ p: p, qh: qh, m: m, tier: boostRank(p), blank: blank });
   });
-  out.sort(function (a, b) { var ar = (a.qh || a.m.pct || !toks.length && !j) ? a.tier : 0, br = (b.qh || b.m.pct || !toks.length && !j) ? b.tier : 0; return br - ar || b.qh - a.qh || b.m.pct - a.m.pct || String(a.p.name).localeCompare(String(b.p.name)); });
+  out.sort(function (a, b) { if (!!a.blank !== !!b.blank && toks.length) return a.blank ? 1 : -1; var ar = (a.qh || a.m.pct || !toks.length && !j) ? a.tier : 0, br = (b.qh || b.m.pct || !toks.length && !j) ? b.tier : 0; return br - ar || b.qh - a.qh || b.m.pct - a.m.pct || String(a.p.name).localeCompare(String(b.p.name)); });
   return out;
 }
 function candRow(x, j) {
   var p = x.p, m = x.m;
-  return '<li class="row' + (x.tier ? ' boosted' : '') + '">' + avatar(p) + '<div class="grow"><a class="name" href="#person-' + p.id + '">' + esc(p.name) + '</a> ' + boostChip(p) + '<span class="meta">' + esc(p.headline || '') + '</span>' +
+  return '<li class="row' + (x.tier ? ' boosted' : '') + '">' + avatar(p) + '<div class="grow"><a class="name" href="#person-' + p.id + '">' + esc(p.name) + '</a> ' + boostChip(p) + '<span class="meta">' + esc(p.headline || '') + (x.blank ? ' Profile not filled in yet' : '') + '</span>' +
     ((ui.cw || []).length && x.qh ? '<span class="meta">Matches ' + x.qh + ' of ' + ui.cw.length + ' words</span>' : '') + (j && m.pct ? '<div class="chips"><span class="chip">' + m.pct + '% match</span><span class="meta">' + esc(m.hits.slice(0, 5).join(', ')) + '</span></div>' : '') + '</div><a class="btn ghost small" href="#person-' + p.id + '">View profile</a></li>';
 }
 function candListHtml(u) {
   var words = ui.cw || [], jb = ui.cj ? byId(db.jobs, ui.cj) : null, list = candList(u, words, ui.cj || '');
-  var rows = list.slice(0, 200).map(function (x) { return candRow(x, jb); }).join('');
-  var bar = list.length && jb ? '<div class="box tint" id="cand-bulk"><b>' + list.length + ' interviewee' + (list.length === 1 ? '' : 's') + ' match.</b> Invite them to a pre-recorded round of “' + esc(jb.title) + '” using that job’s questions. People already invited are skipped.' +
-    '<div class="acts"><button class="btn" type="button" data-act="cand-inv-all">Invite all</button><span>or the first</span><input type="number" id="cand-n" min="1" max="500" value="' + Math.min(50, list.length) + '" style="width:90px" aria-label="How many"><button class="btn ghost" type="button" data-act="cand-inv-n">Invite first…</button></div></div>' : (list.length ? '<p class="sub">Pick one of your jobs above to invite these people in bulk.</p>' : '');
+  var rows = list.slice(0, 200).map(function (x) { return candRow(x, jb); }).join(''), blanks = list.filter(function (x) { return x.blank; }).length;
+  var jobs = db.jobs.filter(function (j) { return j.employerId === u.id && j.status === 'open'; });
+  var bar = '<div class="box tint" id="cand-bulk"><b>' + list.length + ' interviewee' + (list.length === 1 ? '' : 's') + ' in this list</b>' +
+    (blanks ? '<label class="check"><input type="checkbox" id="cand-empty"' + (ui.cempty !== false ? ' checked' : '') + '> Also show people who have not filled in their profile yet (' + blanks + ')</label>' : (words.length ? '<label class="check"><input type="checkbox" id="cand-empty"' + (ui.cempty !== false ? ' checked' : '') + '> Also show people who have not filled in their profile yet</label>' : '')) +
+    '<div class="acts"><select id="cand-job2" aria-label="Job to invite them to" style="width:auto;max-width:100%"><option value="">Choose the job to invite them to</option>' + jobs.map(function (j) { return '<option value="' + j.id + '"' + (ui.cj === j.id ? ' selected' : '') + '>' + esc(j.title) + '</option>'; }).join('') + '</select>' +
+    '<button class="btn" type="button" data-act="cand-inv-all">Invite all</button><span class="sub">or the first</span><input type="number" id="cand-n" min="1" max="500" value="' + Math.min(50, Math.max(1, list.length)) + '" style="width:80px" aria-label="How many"><button class="btn ghost" type="button" data-act="cand-inv-n">Invite first…</button></div>' +
+    (jb ? '<p class="sub">Sends a pre-recorded round of “' + esc(jb.title) + '” with that job’s questions. People already invited are skipped.</p>' : '<p class="sub">Choose a job first. Invitations use that job’s questions.</p>') + '</div>';
   return bar + (rows ? '<ul class="list">' + rows + '</ul>' : '<div class="empty"><h3>No one matches yet</h3><p>Add a word above, or try different words.</p></div>');
 }
 function candSection(u) {
@@ -5437,6 +5523,7 @@ viewExplore = (function (prev) { return function () {
   sec.outerHTML = candSection(u);
 }; })(viewExplore);
 document.addEventListener('keydown', function (e) { if (e.target && e.target.id === 'cand-q' && (e.key === 'Enter' || e.key === ',')) { e.preventDefault(); acts['cand-add'](); } });
+document.addEventListener('change', function (e) { if (e.target && e.target.id === 'cand-job2') { ui.cj = e.target.value; var s2 = document.getElementById('cand-job'); if (s2) s2.value = ui.cj; var l2 = document.getElementById('cand-list'); if (l2) l2.innerHTML = candListHtml(me()); } if (e.target && e.target.id === 'cand-empty') { ui.cempty = e.target.checked; candRefresh(); } });
 document.addEventListener('change', function (e) { if (e.target && e.target.id === 'cand-job') { ui.cj = e.target.value; var l = document.getElementById('cand-list'); if (l) l.innerHTML = candListHtml(me()); } });
 
 /* suggested candidates on the employer's job page */
@@ -5460,15 +5547,15 @@ viewJob = (function (prev) { return function (id) {
 /* the Boost page for interviewees */
 function viewBoost() {
   var u = me(), t = boostTier(u);
-  var cards = BOOST_PLANS.map(function (p) {
+  var emp = u.role === 'employer', cards = BOOST_PLANS.filter(function (p) { return !emp || p.id === 'net'; }).map(function (p) {
     var price = '$' + (p.price || p.month), per = p.price ? p.per : 'per month';
-    return '<div class="box' + (p.id === 'plus' ? ' strong' : '') + '"><h3>' + esc(p.name) + (p.id === 'plus' ? ' ✨' : '') + '</h3><div style="font-size:1.9rem;font-weight:800">' + price + '</div><span class="meta">' + per + '</span><p class="sub">' + esc(p.blurb) + '</p><button class="btn" type="button" data-act="boost-buy" data-plan="' + p.id + '">Choose ' + esc(p.name) + '</button></div>';
+    return '<div class="box' + (p.id === 'plus' ? ' strong' : '') + '"><h3>' + esc(p.name) + (p.id === 'plus' ? ' ✨' : '') + '</h3><div class="price">' + price + '</div><span class="meta">' + per + '</span><p class="sub">' + esc(p.blurb) + '</p><button class="btn" type="button" data-act="boost-buy" data-plan="' + p.id + '">Choose ' + esc(p.name) + '</button></div>';
   }).join('');
-  show('<div class="page" style="max-width:1100px"><div class="page-head"><div><span class="eyebrow">Get seen first</span><h1>Boost your profile</h1></div></div>' +
-    '<p class="sub">When an employer searches for people or looks for someone to invite, boosted profiles appear above everyone else who matches, with a ✨ Sponsored badge. Free profiles still appear below, so you only pay to be seen sooner. Plans are month to month, so you can stop the day you are hired.</p>' +
+  show('<div class="page" style="max-width:1100px"><div class="page-head"><div><span class="eyebrow">' + (emp ? 'For employers' : 'Get seen first') + '</span><h1>' + (emp ? 'Network Control' : 'Boost your profile') + '</h1></div></div>' +
+    (emp ? '<p class="sub">Anyone on Interviewed can add you to their network without asking. Network Control lets you remove people from your network and decline referral requests. It is month to month.</p>' : '') + (emp ? '' : '<p class="sub">When an employer searches for people or looks for someone to invite, boosted profiles appear above everyone else who matches, with a ✨ Sponsored badge. Free profiles still appear below, so you only pay to be seen sooner. Plans are month to month, so you can stop the day you are hired.</p>') +
     (t ? '<div class="box strong"><b>Your boost is on (' + (t === 'plus' ? 'Boost Plus' : 'Boost') + ') until ' + esc(fmtDate(u.boostUntil)) + '.</b></div>' : '') +
-    '<div class="four">' + cards + '</div><p class="notice">Payments are not open yet, so nothing is charged. Choose a plan and the site owner will be told you want it; plans are switched on by hand until card payments are added.</p>' +
-    '<div class="box tint"><b>Tip:</b> a boost works best when your profile lists the real skills and software employers search for.</div></div>');
+    '<div class="plan-grid">' + cards + '</div><p class="notice">Payments are not open yet, so nothing is charged. Choose a plan and the site owner will be told you want it; plans are switched on by hand until card payments are added.</p>' +
+    (emp ? '' : '<div class="box tint"><b>Tip:</b> a boost works best when your profile lists the real skills and software employers search for.</div>') + '</div>');
 }
 acts['boost-bill'] = function () { };
 acts['boost-buy'] = function (el) {
@@ -5521,11 +5608,11 @@ acts['net-add'] = function (el) {
 };
 acts['net-remove'] = function (el) {
   var u = me(), id = el.dataset.id; if (!u) return;
-  if (!netPaid(u)) { toast('Removing people from your network is part of Network Control ($4 a month).'); go('boost'); return; }
+  if (!netPaid(u)) { toast('Removing people from your network is part of Network Control ($30 a month).'); go('boost'); return; }
   u.net = (u.net || []).filter(function (x) { return x !== id; }); u.netGone = (u.netGone || []).concat([id]); save(); toast('Removed.'); refresh();
 };
 
-acts['req-decline'] = (function (prev) { return function (el) { var u = me(); if (!netPaid(u)) { toast('Declining is part of Network Control ($4 a month). You can accept this request.'); return; } prev(el); }; })(acts['req-decline']);
+acts['req-decline'] = (function (prev) { return function (el) { var u = me(); if (!netPaid(u)) { toast('Declining is part of Network Control ($30 a month). You can accept this request.'); return; } prev(el); }; })(acts['req-decline']);
 acts['net-find'] = function () { var q = document.getElementById('net-q'); ui.nq = q ? q.value : ''; var l = document.getElementById('net-res'); if (l) l.innerHTML = netResults(); };
 function netResults() {
   var u = me(), q = String(ui.nq || '').trim().toLowerCase(); if (q.length < 2) return '<p class="sub">Type at least two letters of a name, company or job title.</p>';
@@ -5571,6 +5658,372 @@ viewJobManage = (function (prev) { return function (j, u) {
   pg.insertBefore(sec, pg.children[2] || null);
 }; })(viewJobManage);
 acts['cand-for-job'] = function (el) { ui.cj = el.dataset.id; };
+/* ---- Less congestion: simpler job form, icon buttons, compact sponsor panel, paste-your-resume box ---- */
+function tidyJobForm() {
+  var f = document.querySelector('form[data-form="job"]'); if (!f || f.dataset.tidy) return; f.dataset.tidy = '1';
+  var d = f.querySelector('#j-desc'); if (d) { d.maxLength = 6000; d.rows = 9; var lb = f.querySelector('label[for="j-desc"]'); if (lb) lb.innerHTML = 'Job description <span class="opt">(paste the whole post; no need to split it up)</span>'; }
+  var det = document.createElement('details'); det.className = 'opt-box';
+  var has = ['j-resp', 'j-qual', 'j-skills', 'j-soft'].some(function (id) { var e = f.querySelector('#' + id); return e && e.value.trim(); });
+  if (has) det.open = true;
+  det.innerHTML = '<summary>Optional: list responsibilities, qualifications, skills and software separately</summary><div class="stack"></div>';
+  var box = det.querySelector('.stack'); box.style.cssText = 'display:flex;flex-direction:column;gap:12px';
+  var moved = [];
+  ['j-resp', 'j-qual'].forEach(function (id) { var e = f.querySelector('#' + id); e = e && e.closest('.field'); if (e) moved.push(e); });
+  var sk = f.querySelector('#j-skills'); sk = sk && sk.closest('.row2'); if (sk) moved.push(sk);
+  if (!moved.length) return;
+  f.insertBefore(det, moved[0]); moved.forEach(function (e) { box.appendChild(e); });
+  box.insertAdjacentHTML('afterbegin', '<p class="sub">Matching works from the full description, so you can skip this.</p>');
+  f.querySelectorAll('.qed .qrow button').forEach(function (b) { if (/remove|delete/i.test(b.textContent)) { b.setAttribute('aria-label', 'Remove question'); b.title = 'Remove'; b.textContent = '✕'; b.classList.add('ibtn', 'del'); } });
+  var add = f.querySelector('[data-act="q-add"]'); if (add) { add.setAttribute('aria-label', 'Add a question'); add.title = 'Add a question'; add.innerHTML = '＋ <span>Add question</span>'; add.classList.add('add'); }
+  var sub = f.querySelector('button[type="submit"]'); if (sub && !/^✓/.test(sub.textContent)) sub.textContent = '✓ ' + sub.textContent;
+  var sal = f.querySelector('fieldset.field'); if (sal && sal.querySelector('[name="salaryMin"]') && !sal.closest('details')) { /* keep salary visible */ }
+}
+viewJob = (function (prev) { return function (id) { prev(id); tidyJobForm(); }; })(viewJob);
+viewJobManage = (function (prev) { return function (j, u) { prev(j, u); tidyJobForm(); }; })(viewJobManage);
+document.addEventListener('click', function (e) { if (e.target && e.target.closest && e.target.closest('[data-act="q-add"]')) setTimeout(function () { document.querySelectorAll('.qed .qrow button').forEach(function (b) { if (/remove|delete/i.test(b.textContent)) { b.setAttribute('aria-label', 'Remove question'); b.textContent = '✕'; b.classList.add('ibtn', 'del'); } }); }, 0); });
+
+/* compact sponsor panel with details */
+sponsorPanel = function (j, u) {
+  var free = u.role === 'admin', on = jobSponsored(j);
+  var cards = SPONSOR_PLANS.map(function (p) {
+    return '<div class="box" style="padding:12px 14px"><b>' + p.label + '</b>' + (p.id === '30d' ? ' <span class="chip gold">Best value</span>' : '') + '<div class="price">' + (free ? 'Free' : '$' + p.price) + '</div><span class="meta">' + (free ? '' : '$' + (p.price / p.days).toFixed(2) + ' per day') + '</span>' +
+      '<button class="btn small" type="button" data-act="sponsor" data-job="' + j.id + '" data-plan="' + p.id + '">Sponsor</button></div>';
+  }).join('');
+  return '<details class="box" id="sponsor-box"' + (on ? ' open' : '') + '><summary style="cursor:pointer"><b>Sponsor this job</b> <span class="sub">' + (on ? 'Sponsored until ' + esc(fmtDate(j.sponsoredUntil)) : 'Get seen first · from $' + SPONSOR_PLANS[0].price) + '</span></summary><div style="display:flex;flex-direction:column;gap:12px;margin-top:12px">' +
+    '<ul class="bul"><li>Your job sits at the top of the Jobs list for the whole period, above unsponsored jobs.</li><li>It gets a “Sponsored” tag and a purple outline so job seekers notice it.</li><li>Sponsoring again adds days to what is left. Nothing renews by itself.</li><li>You can still close, edit or delete the job at any time.</li></ul>' +
+    '<div class="plan-grid">' + cards + '</div>' +
+    (free ? '<p class="notice">Administrators sponsor jobs at no charge.</p>' : '<p class="notice">Prototype checkout: no card is charged yet. Real payments need a payment service such as Stripe.</p>') + '</div></details>';
+};
+
+/* paste-your-whole-resume box (used for matching; sections are optional) */
+viewProfile = (function (prev) { return function () {
+  prev(); var u = me(), pg = document.querySelector('#app .page'); if (!pg || !u || u.role !== 'interviewer') return;
+  var s = document.createElement('section'); s.className = 'box';
+  s.innerHTML = '<h3>Paste your resume</h3><p class="sub">Copy everything from your resume and paste it here. Employers’ searches and job matching read this text, so you do not need to fill in separate sections.</p><form data-form="resumetext" novalidate><textarea name="t" rows="8" maxlength="12000" aria-label="Resume text">' + esc(u.resumeText || '') + '</textarea><div class="acts"><button class="btn small" type="submit">✓ Save resume text</button></div></form>';
+  var head = pg.querySelector('.page-head'); (head || pg.firstChild).insertAdjacentElement('afterend', s);
+}; })(viewProfile);
+forms.resumetext = function (f) { var u = me(); u.resumeText = f.elements.t.value.trim().slice(0, 12000); save(); toast('Saved. Employers can now match you from this text.'); };
+
+/* ranking visible to everyone, including visitors who are not signed in */
+viewRanking = (function (prev) { return function () { prev(); if (typeof profLoad === 'function') profLoad().then(function () { if (R.name === 'ranking') prev(); }); }; })(viewRanking);
+/* ---- Jobs from other sites (Arbeitnow + Remotive public job feeds), shown to interviewees ---- */
+var XJ = { list: null, loading: false, err: '', at: 0 };
+function xjText(h) { var d = document.createElement('div'); d.innerHTML = String(h || '').replace(/<(br|\/p|\/li|\/h\d)\s*\/?>/gi, ' '); return (d.textContent || '').replace(/\s+/g, ' ').trim(); }
+function xjHttps(u) { return /^https:\/\//i.test(String(u || '')) ? String(u) : ''; }
+function xjFetch(url) { return fetch(url, { headers: { 'Accept': 'application/json' } }).then(function (r) { if (!r.ok) throw new Error('bad'); return r.json(); }); }
+function xjLoad(force) {
+  if (XJ.loading) return; var c = null;
+  try { c = JSON.parse(localStorage.getItem('interviewed.xjobs') || 'null'); } catch (e) { }
+  if (!force && c && Date.now() - c.at < 6 * 3600000 && Array.isArray(c.list)) { XJ.list = c.list; XJ.at = c.at; return; }
+  XJ.loading = true; XJ.err = '';
+  Promise.all([
+    xjFetch('https://www.arbeitnow.com/api/job-board-api').then(function (d) { return (d.data || []).slice(0, 60).map(function (x) { return { src: 'Arbeitnow', title: String(x.title || '').slice(0, 120), co: String(x.company_name || '').slice(0, 80), loc: String(x.location || '').slice(0, 80) + (x.remote ? ' · Remote' : ''), txt: xjText(x.description).slice(0, 1500), url: xjHttps(x.url), ts: (Number(x.created_at) || 0) * 1000 }; }); }).catch(function () { return []; }),
+    xjFetch('https://remotive.com/api/remote-jobs?limit=60').then(function (d) { return (d.jobs || []).slice(0, 60).map(function (x) { return { src: 'Remotive', title: String(x.title || '').slice(0, 120), co: String(x.company_name || '').slice(0, 80), loc: String(x.candidate_required_location || 'Remote').slice(0, 80) + ' · Remote', txt: xjText(x.description).slice(0, 1500), url: xjHttps(x.url), ts: Date.parse(x.publication_date) || 0, pay: String(x.salary || '').slice(0, 60) }; }); }).catch(function () { return []; })
+  ]).then(function (a) {
+    var l = a[0].concat(a[1]).filter(function (x) { return x.title && x.url; });
+    XJ.loading = false; if (!l.length) { XJ.err = 'Could not load jobs from other sites right now. Try again later.'; XJ.list = XJ.list || []; } else { XJ.list = l; XJ.at = Date.now(); try { localStorage.setItem('interviewed.xjobs', JSON.stringify({ at: XJ.at, list: l })); } catch (e) { } }
+    if (R.name === 'jobs') xjRender();
+  });
+}
+function xjHtml() {
+  var u = me(), q = String(ui.xq || '').toLowerCase().trim(), toks = q.split(/\s+/).filter(Boolean);
+  if (XJ.list === null) return '<p class="sub">Loading jobs from other sites…</p>';
+  var rows = XJ.list.map(function (x) { var m = matchOf(u, { title: x.title, description: x.txt }); return { x: x, pct: m.pct }; }).filter(function (r) { var hay = (r.x.title + ' ' + r.x.co + ' ' + r.x.loc + ' ' + r.x.txt).toLowerCase(); return toks.every(function (t) { return hay.indexOf(t) >= 0; }); });
+  rows.sort(function (a, b) { return b.pct - a.pct || b.x.ts - a.x.ts; });
+  return (XJ.err ? '<p class="notice">' + esc(XJ.err) + '</p>' : '') + (rows.length ? '<ul class="list">' + rows.slice(0, 40).map(function (r) {
+    var x = r.x; return '<li class="row"><div class="grow"><span class="name">' + esc(x.title) + '</span><span class="meta">' + esc(x.co) + (x.loc ? ' · ' + esc(x.loc) : '') + (x.pay ? ' · ' + esc(x.pay) : '') + '</span><p class="sub">' + esc(x.txt.slice(0, 180)) + '…</p><div class="chips">' + chip('From ' + x.src, 'muted') + (r.pct ? chip(r.pct + '% match', 'solid') : '') + '</div></div><a class="btn small" href="' + esc(x.url) + '" target="_blank" rel="noopener noreferrer nofollow">Apply on ' + esc(x.src) + '</a></li>';
+  }).join('') + '</ul>' : '<div class="empty"><h3>Nothing found</h3><p>Try fewer words.</p></div>');
+}
+function xjRender() { var b = document.getElementById('xj-list'); if (b) b.innerHTML = xjHtml(); }
+viewJobs = (function (prev) { return function () {
+  prev(); var u = me(), pg = document.querySelector('#app .page'); if (!pg || !u || u.role !== 'interviewer') return;
+  var s = document.createElement('section'); s.className = 'sec'; s.id = 'xj-sec';
+  s.innerHTML = '<h2>Jobs from other sites</h2><p class="sub">Listings from public job boards (Arbeitnow and Remotive). “Apply” opens the original site; applying there is outside Interviewed. Sorted by how well your profile and pasted resume match.</p><div class="field"><label for="xj-q">Search these jobs</label><input type="search" id="xj-q" value="' + esc(ui.xq || '') + '"></div><div id="xj-list"></div>';
+  pg.appendChild(s); xjLoad(false); xjRender();
+}; })(viewJobs);
+document.addEventListener('input', function (e) { if (e.target && e.target.id === 'xj-q') { ui.xq = e.target.value; xjRender(); } });
+/* ---- References + recommendation letters (Coffee chat → References tab), shared through public profile data ---- */
+function recList() { return (db.recs = db.recs || []); }
+function xrBuild(u) {
+  var x = {};
+  var ask = db.references.filter(function (r) { return r.forId === u.id && r.status !== 'declined'; }).map(function (r) { return r.giverId; });
+  var give = db.references.filter(function (r) { return r.giverId === u.id && (r.status === 'accepted' || r.status === 'declined'); }).map(function (r) { return { f: r.forId, s: r.status, n: String(r.note || '').slice(0, 300), p: String(r.phone || '').slice(0, 30), e: String(r.contactEmail || '').slice(0, 120) }; });
+  var rec = recList().filter(function (r) { return r.fromId === u.id; }).map(function (r) { return { f: r.forId, t: String(r.text || '').slice(0, 1500), ts: r.ts || 0 }; });
+  if (ask.length) x.ask = ask.slice(0, 100); if (give.length) x.give = give.slice(0, 100); if (rec.length) x.rec = rec.slice(0, 100);
+  if ((u.xrOk || []).length) x.ok = u.xrOk.slice(0, 100);
+  return Object.keys(x).length ? x : null;
+}
+function xrMerge() {
+  var u = me(); if (!u) return; var changed = false;
+  db.users.forEach(function (x) {
+    var d = x.xr; if (!d || x.id === u.id) return;
+    if ((d.ask || []).indexOf(u.id) >= 0 && !refBetween(x.id, u.id)) { db.references.push({ id: uid(), forId: x.id, giverId: u.id, status: 'pending', note: '', ts: Date.now() }); notify(u.id, x.name + ' asked you to be their reference.', 'coffee'); changed = true; }
+    (d.give || []).forEach(function (g) {
+      if (g.f !== u.id) return; var r = refBetween(u.id, x.id), st = g.s === 'declined' ? 'declined' : 'accepted';
+      if (!r) { db.references.push({ id: uid(), forId: u.id, giverId: x.id, status: st, note: g.n || '', phone: g.p || '', contactEmail: g.e || '', ts: Date.now() }); notify(u.id, x.name + (st === 'accepted' ? ' agreed to be your reference.' : ' could not be your reference.'), 'coffee'); changed = true; }
+      else if (r.status !== st || r.note !== (g.n || '') || r.phone !== (g.p || '') || r.contactEmail !== (g.e || '')) { r.status = st; r.note = g.n || ''; r.phone = g.p || ''; r.contactEmail = g.e || ''; changed = true; }
+    });
+    (d.rec || []).forEach(function (rc) {
+      var id = x.id + '_' + rc.f; if (!byId(db.users, rc.f)) return; var ex = byId(recList(), id);
+      if (!ex) { recList().push({ id: id, forId: rc.f, fromId: x.id, text: String(rc.t || '').slice(0, 1500), ts: rc.ts || 0 }); if (rc.f === u.id) notify(u.id, x.name + ' wrote you a recommendation.', 'coffee'); changed = true; }
+      else if (ex.text !== rc.t) { ex.text = String(rc.t || '').slice(0, 1500); changed = true; }
+    });
+  });
+  if (changed) save();
+}
+function recShown(r) { var t = byId(db.users, r.forId); return !!t && (t.xrOk || []).indexOf(r.id) >= 0; }
+profLoad = (function (prev) { return function () { var p = prev.apply(null, arguments); return Promise.resolve(p).then(function (v) { try { xrMerge(); } catch (e) { } return v; }); }; })(profLoad);
+profPayload = (function (prev) { return function (u) { var o = prev(u); var x = xrBuild(u); if (x) o.xr = x; return o; }; })(profPayload);
+save = (function (prev) { return function () { var r = prev.apply(null, arguments); try { var u = me(); if (u && typeof profPublish === 'function' && u.role !== 'admin') { var sig = JSON.stringify(xrBuild(u)) + JSON.stringify(u.xrOk || []); if (sig !== window.__xrSig) { window.__xrSig = sig; profPublish(); } } } catch (e) { } return r; }; })(save);
+
+/* extra consent fields when saying yes to a reference request */
+referencesHtml = (function (prev) { return function (u) {
+  return prev(u).replace(/<input type="text" id="ref-note-([^"]+)"[^>]*>/g, function (m, id) { return m + '<div class="row2" style="margin-top:6px"><input type="text" id="ref-em-' + id + '" maxlength="120" placeholder="Email employers may use" aria-label="Email"><input type="text" id="ref-ph-' + id + '" maxlength="30" placeholder="Phone employers may call" aria-label="Phone"></div>'; });
+}; })(referencesHtml);
+acts['ref-accept'] = function (el) {
+  var r = byId(db.references, el.dataset.id), u = me(); if (!r || r.giverId !== u.id) return;
+  var em = (($('ref-em-' + r.id) || {}).value || '').trim(), ph = (($('ref-ph-' + r.id) || {}).value || '').trim();
+  if (!em && !ph) { toast('Add an email or phone number employers may use. That is what a reference is.'); return; }
+  r.status = 'accepted'; r.note = (($('ref-note-' + r.id) || {}).value || '').trim(); r.contactEmail = em; r.phone = ph;
+  notify(r.forId, u.name + ' agreed to be your reference.', 'person-' + r.forId); save(); toast('You are now their reference.'); refresh();
+};
+acts['rec-write'] = function () {
+  var u = me(), to = ($('rec-to') || {}).value, t = (($('rec-text') || {}).value || '').trim();
+  if (!to || !(haveMet(u.id, to) || recPlusOk(u, to))) { toast('Choose someone you have met in a video call.'); return; } if (t.length < 20) { toast('Write at least a couple of sentences.'); return; }
+  var id = u.id + '_' + to, ex = byId(recList(), id); if (ex) { ex.text = t.slice(0, 1500); ex.ts = Date.now(); } else recList().push({ id: id, forId: to, fromId: u.id, text: t.slice(0, 1500), ts: Date.now() });
+  notify(to, u.name + ' wrote you a recommendation.', 'coffee'); save(); toast('Sent. They choose whether to show it on their profile.'); refresh();
+};
+acts['rec-show'] = function (el) { var u = me(), id = el.dataset.id, r = byId(recList(), id); if (!r || r.forId !== u.id) return; u.xrOk = u.xrOk || []; var i = u.xrOk.indexOf(id); if (i >= 0) u.xrOk.splice(i, 1); else u.xrOk.push(id); save(); refresh(); };
+acts['rec-del'] = function (el) { var u = me(), r = byId(recList(), el.dataset.id); if (!r || r.fromId !== u.id) return; db.recs = recList().filter(function (x) { return x !== r; }); save(); refresh(); };
+
+function refsTab(u) {
+  var met = recTargets(u);
+  var got = recList().filter(function (r) { return r.forId === u.id; }), wrote = recList().filter(function (r) { return r.fromId === u.id; });
+  return '<div class="box tint"><h3>What is the difference?</h3><ul class="bul"><li><b>Reference:</b> someone who says it is OK for an employer to contact them by email or phone to vouch for you.</li><li><b>Recommendation:</b> a short letter someone writes about you. You choose whether it shows on your profile.</li><li><b>Referral:</b> introducing you to an employer or a job. It counts toward the ranking.</li></ul><p class="sub">You can ask or write for people you have met in a coffee chat or live interview.</p></div>' +
+    '<section class="sec"><h2>References</h2>' + referencesHtml(u) + '</section>' +
+    '<section class="sec"><h2>Recommendation letters</h2>' +
+    '<div class="box"><h3>Write one for someone</h3>' + (met.length ? '<div class="field"><label for="rec-to">Who is it for?</label><select id="rec-to"><option value="">Choose a person</option>' + met.map(function (p) { return '<option value="' + p.id + '">' + esc(p.name) + '</option>'; }).join('') + '</select></div><div class="field"><label for="rec-text">Your letter</label><textarea id="rec-text" rows="5" maxlength="1500"></textarea></div><div class="acts"><button class="btn small" type="button" data-act="rec-write">✓ Send</button></div>' : '<p class="sub">Nobody yet. People appear here after you share a coffee chat or live interview.</p>') + '</div>' +
+    '<h3>About you</h3>' + (got.length ? '<ul class="list">' + got.map(function (r) { return '<li class="row"><div class="grow"><span class="name">' + esc(userName(r.fromId)) + '</span><span class="meta" style="white-space:pre-wrap">' + esc(r.text) + '</span></div><button class="btn ghost small" type="button" data-act="rec-show" data-id="' + r.id + '">' + (recShown(r) ? 'Hide from my profile' : 'Show on my profile') + '</button></li>'; }).join('') + '</ul>' : '<p class="sub">None yet.</p>') +
+    (wrote.length ? '<h3>You wrote</h3><ul class="list">' + wrote.map(function (r) { return '<li class="row"><div class="grow"><span class="name">For ' + esc(userName(r.forId)) + '</span><span class="meta" style="white-space:pre-wrap">' + esc(r.text) + '</span></div><button class="btn ghost small ibtn del" type="button" data-act="rec-del" data-id="' + r.id + '" aria-label="Delete">✕</button></li>'; }).join('') + '</ul>' : '') + '</section>';
+}
+viewCoffee = (function (prev) { return function () {
+  prev(); var u = me(), pg = document.querySelector('#app .page'), seg = pg && pg.querySelector('.seg[aria-label="Coffee chat"]'); if (!seg) return;
+  seg.insertAdjacentHTML('beforeend', '<button type="button" data-act="ct-tab" data-v="refs" aria-pressed="' + (ui.ct === 'refs') + '">References</button>');
+  if (ui.ct === 'refs') { seg.querySelectorAll('button').forEach(function (b) { if (b.dataset.v !== 'refs') b.setAttribute('aria-pressed', 'false'); }); while (seg.nextSibling) seg.parentNode.removeChild(seg.nextSibling); seg.insertAdjacentHTML('afterend', refsTab(u)); }
+}; })(viewCoffee);
+/* references/recommendations shown on a person's page; contact details only for employers */
+viewPerson = (function (prev) { return function (arg) {
+  prev(arg); var id = String(arg).split('-')[0], p = byId(db.users, id), pg = document.querySelector('#app .page'), u = me(); if (!p || !pg) return;
+  var recs = recList().filter(function (r) { return r.forId === id && recShown(r); });
+  if (recs.length) pg.insertAdjacentHTML('beforeend', '<section class="sec"><h2>Recommendations</h2><ul class="list">' + recs.map(function (r) { return '<li class="row"><div class="grow"><a class="name" href="#person-' + r.fromId + '">' + esc(userName(r.fromId)) + '</a><span class="meta" style="white-space:pre-wrap">' + esc(r.text) + '</span></div></li>'; }).join('') + '</ul></section>');
+  if (u && (u.role === 'employer' || u.role === 'admin')) {
+    var refs = db.references.filter(function (r) { return r.forId === id && r.status === 'accepted' && (r.phone || r.contactEmail); });
+    if (refs.length) pg.insertAdjacentHTML('beforeend', '<section class="box tint"><h3>How to reach their references</h3><ul class="bul">' + refs.map(function (r) { return '<li>' + esc(userName(r.giverId)) + ' — ' + esc([r.contactEmail, r.phone].filter(Boolean).join(' · ')) + '</li>'; }).join('') + '</ul><p class="notice">They agreed to be contacted for this person.</p></section>');
+  }
+}; })(viewPerson);
+/* ---- Give-back rules: employers refer 2 interviewed candidates per job; hire-status question; losers refer before applying ---- */
+var HIRE_OPTS = [['', 'Choose one'], ['site', 'I hired someone from Interviewed'], ['other', 'I hired someone from another site'], ['searching', 'I am still searching']];
+function interviewedIds(j) { var out = []; db.invites.forEach(function (i) { if (i.jobId === j.id && (i.status === 'completed' || Object.keys(i.answers || {}).length) && out.indexOf(i.interviewerId) < 0) out.push(i.interviewerId); }); return out; }
+function empDebts(u) {
+  var out = [];
+  db.jobs.filter(function (j) { return j.employerId === u.id; }).forEach(function (j) {
+    var c = interviewedIds(j), need = Math.min(2, c.length); if (!need) return;
+    var made = db.referrals.filter(function (r) { return r.type === 'referral' && r.referrerId === u.id && r.forJob === j.id; }).length;
+    var targets = openJobs(j.id).filter(function (t) { return t.employerId !== u.id; });
+    if (made < need && targets.length) out.push({ j: j, left: need - made, cands: c });
+  });
+  return out;
+}
+function loserDebts(u) {
+  if (!u || u.role !== 'interviewer') return [];
+  return db.jobs.filter(function (j) { return (j.hireStatus === 'site' || j.hireStatus === 'other') && j.hiredId !== u.id && db.invites.some(function (i) { return i.jobId === j.id && i.interviewerId === u.id; }) && !db.referrals.some(function (r) { return r.type === 'referral' && r.referrerId === u.id && r.forJob === j.id; }); })
+    .filter(function (j) { return openJobs(j.id).length > 0 && db.users.some(function (x) { return x.role === 'interviewer' && x.id !== u.id && x.id !== j.hiredId && !x.suspended; }); });
+}
+function candOpts(ids) { return ids.map(function (id) { return '<option value="' + id + '">' + esc(userName(id)) + '</option>'; }).join(''); }
+function jobOpts(list) { return list.map(function (t) { return '<option value="' + t.id + '">' + esc(jobLabel(t)) + '</option>'; }).join(''); }
+function hireSelect(id, cur) { return '<select id="hs-' + id + '" aria-label="Hiring status">' + HIRE_OPTS.map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === cur ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select>'; }
+
+function viewGate() {
+  var u = me(), h = '<div class="page" style="max-width:760px"><div class="page-head"><div><span class="eyebrow">One quick step</span><h1>' + (u.role === 'employer' ? 'Before you post another job' : 'Refer someone to keep interviewing') + '</h1></div></div>';
+  if (u.role === 'employer') {
+    var open = db.jobs.filter(function (j) { return j.employerId === u.id && j.status === 'open'; }), debts = empDebts(u);
+    h += '<p class="sub">Interviewed works because people help each other. Two quick things first.</p>';
+    if (open.length) h += '<section class="box"><h3>1. How is hiring going for your open jobs?</h3>' + open.map(function (j) { var c = interviewedIds(j);
+      return '<div class="field"><label for="hs-' + j.id + '">' + esc(j.title) + '</label>' + hireSelect(j.id, j.hireStatus || '') + (c.length ? '<select id="hw-' + j.id + '" aria-label="Who was hired"><option value="">If hired here, who?</option>' + candOpts(c) + '</select>' : '') + '</div>'; }).join('') +
+      '<p class="sub">If you hired someone, that job closes and the other people you interviewed are told.</p><div class="acts"><button class="btn small" type="button" data-act="gate-save">✓ Save answers</button></div></section>';
+    if (debts.length) h += '<section class="box"><h3>' + (open.length ? '2. ' : '') + 'Refer people you interviewed to another job</h3><p class="sub">Pick two candidates from each job you interviewed for and send them to another job post (it can be anyone’s).</p>' + debts.map(function (d) {
+      return '<div class="field"><b>' + esc(d.j.title) + '</b> <span class="meta">' + d.left + ' more to refer</span>' + d.cands.filter(function (c) { return !db.referrals.some(function (r) { return r.type === 'referral' && r.forJob === d.j.id && r.candidateId === c; }); }).map(function (c) {
+        return '<div class="acts"><span>' + esc(userName(c)) + '</span><select id="rt-' + d.j.id + '-' + c + '" aria-label="Refer to which job">' + jobOpts(openJobs(d.j.id).filter(function (t) { return t.employerId !== u.id; })) + '</select><button class="btn small" type="button" data-act="gate-ref" data-job="' + d.j.id + '" data-cand="' + c + '">Refer</button></div>'; }).join('') + '</div>'; }).join('') + '</section>';
+    h += '<div class="acts"><button class="btn" type="button" data-act="gate-go">Continue to post a job</button></div>';
+  } else {
+    var ds = loserDebts(u), others = db.users.filter(function (x) { return x.role === 'interviewer' && x.id !== u.id && !x.suspended; }).map(function (x) { return x.id; });
+    h += '<p class="sub">A job you interviewed for was filled. Please refer one other interviewee to an open job. After that you can interview for other jobs again.</p>' + ds.map(function (j) {
+      return '<section class="box"><h3>' + esc(j.title) + ' was filled</h3><div class="acts"><select id="lc-' + j.id + '" aria-label="Who to refer">' + candOpts(others.filter(function (x) { return x !== j.hiredId; })) + '</select><select id="lt-' + j.id + '" aria-label="To which job">' + jobOpts(openJobs(j.id)) + '</select><button class="btn small" type="button" data-act="lose-ref" data-job="' + j.id + '">✓ Refer</button></div></section>'; }).join('');
+    if (!ds.length) h += '<div class="empty"><h3>All done</h3><p>You can interview for other jobs again.</p><a class="btn" href="#jobs">See jobs</a></div>';
+  }
+  show(h + '</div>');
+}
+function closeJobWith(j, hs, hid) {
+  j.hireStatus = hs; j.hiredId = hid || ''; j.status = 'closed'; j.hireAt = Date.now();
+  if (hs === 'site' || hs === 'other') db.invites.filter(function (i) { return i.jobId === j.id && i.interviewerId !== hid; }).forEach(function (i) { notify(i.interviewerId, '“' + j.title + '” was filled. Refer one other interviewee to keep interviewing for jobs.', 'gate'); });
+}
+acts['gate-save'] = function () {
+  var u = me(); var open = db.jobs.filter(function (j) { return j.employerId === u.id && j.status === 'open'; }), bad = 0;
+  open.forEach(function (j) { var v = ($('hs-' + j.id) || {}).value; if (!v) { bad++; return; } if (v === 'searching') { j.hireStatus = 'searching'; } else closeJobWith(j, v, v === 'site' ? (($('hw-' + j.id) || {}).value || '') : ''); });
+  if (bad) toast('Answer for every job to continue.'); else toast('Thanks. Saved.'); save(); ui.gateAns = !bad; viewGate();
+};
+acts['gate-ref'] = function (el) {
+  var u = me(), jid = el.dataset.job, c = el.dataset.cand, t = ($('rt-' + jid + '-' + c) || {}).value; if (!t) return;
+  addReferral({ referrerId: u.id, candidateId: c, jobId: t, forJob: jid, note: '' }); save(); toast('Referred.'); viewGate();
+};
+acts['gate-go'] = function () {
+  var u = me(), open = db.jobs.filter(function (j) { return j.employerId === u.id && j.status === 'open'; });
+  if (open.length && (!ui.gateAns || open.some(function (j) { return !j.hireStatus; }))) { toast('Answer the hiring question for every open job and press Save answers.'); return; }
+  if (empDebts(u).length) { toast('Refer your candidates first.'); return; }
+  ui.gateOk = true; viewJob('new');
+};
+acts['lose-ref'] = function (el) {
+  var u = me(), jid = el.dataset.job, c = ($('lc-' + jid) || {}).value, t = ($('lt-' + jid) || {}).value; if (!c || !t) { toast('Choose a person and a job.'); return; }
+  addReferral({ referrerId: u.id, candidateId: c, jobId: t, forJob: jid, note: '' }); save(); toast('Thank you. Referred.'); if (loserDebts(u).length) viewGate(); else go('jobs');
+};
+viewJob = (function (prev) { return function (id) {
+  var u = me();
+  if (id === 'new' && u && u.role === 'employer' && !ui.gateOk) {
+    var open = db.jobs.some(function (j) { return j.employerId === u.id && j.status === 'open'; });
+    if (open || empDebts(u).length) { viewGate(); return; }
+  }
+  prev(id);
+}; })(viewJob);
+
+/* interviewees who lost a job must refer before applying or interviewing */
+acts.interest = (function (prev) { return function (el) { var u = me(); if (u && !isInterested(el.dataset.id, u.id) && loserDebts(u).length) { toast('Please refer someone first.'); go('gate'); return; } prev(el); }; })(acts.interest);
+viewInvites = (function (prev) { return function () { var u = me(); if (u && loserDebts(u).length) { viewGate(); return; } prev(); }; })(viewInvites);
+viewJobs = (function (prev) { return function () { prev(); var u = me(), pg = document.querySelector('#app .page'); if (u && pg && loserDebts(u).length) pg.insertAdjacentHTML('afterbegin', '<div class="box strong"><b>A job you interviewed for was filled.</b> Refer one other interviewee to keep applying. <a class="btn small" href="#gate">Refer now</a></div>'); }; })(viewJobs);
+
+/* closing a job asks whether you hired */
+acts['job-toggle'] = (function (prev) { return function (el) {
+  var j = byId(db.jobs, el.dataset.id), u = me(); if (j && j.status === 'open' && u && u.role === 'employer') { ui.closing = j.id; refresh(); return; } prev(el);
+}; })(acts['job-toggle']);
+acts['close-cancel'] = function () { ui.closing = ''; refresh(); };
+acts['close-ok'] = function (el) {
+  var j = byId(db.jobs, el.dataset.id), v = ($('hs-' + j.id) || {}).value; if (!v) { toast('Choose one to close the job.'); return; }
+  closeJobWith(j, v, v === 'site' ? (($('hw-' + j.id) || {}).value || '') : ''); ui.closing = ''; save(); toast('Job closed.'); refresh();
+};
+viewJobManage = (function (prev) { return function (j, u) {
+  prev(j, u); var pg = document.querySelector('#app .page'); if (!pg) return;
+  var c = interviewedIds(j), d = empDebts(u).filter(function (x) { return x.j.id === j.id; })[0];
+  if (ui.closing === j.id) pg.insertBefore(Object.assign(document.createElement('section'), { className: 'box strong', innerHTML: '<h3>Before you close this job</h3><div class="field"><label for="hs-' + j.id + '">Did you hire someone?</label>' + hireSelect(j.id, '') + (c.length ? '<select id="hw-' + j.id + '" aria-label="Who was hired"><option value="">If hired here, who?</option>' + candOpts(c) + '</select>' : '') + '</div><div class="acts"><button class="btn small" type="button" data-act="close-ok" data-id="' + j.id + '">✓ Close job</button><button class="btn ghost small" type="button" data-act="close-cancel">Cancel</button></div>' }), pg.children[2] || null);
+  if (d) pg.insertBefore(Object.assign(document.createElement('div'), { className: 'notice', innerHTML: 'You still need to refer ' + d.left + ' of the people you interviewed for this job to another job before you can post a new one. <a href="#job-new">Do it now</a>' }), pg.children[2] || null);
+}; })(viewJobManage);
+
+/* let losers know even if the employer's device did the closing */
+setInterval(function () { var u = me(); if (!u || u.role !== 'interviewer') return; u.lostSeen = u.lostSeen || []; var ch = false;
+  loserDebts(u).forEach(function (j) { if (u.lostSeen.indexOf(j.id) < 0) { u.lostSeen.push(j.id); notify(u.id, '“' + j.title + '” was filled. Refer one other interviewee to keep interviewing for jobs.', 'gate'); ch = true; } }); if (ch) save(); }, 20000);
+/* ---- Coffee Plus ($20/month): members are routed reference + recommendation requests until someone agrees ---- */
+var CPLUS = 20;
+function coffeePlus(u) { return !!u && (u.role === 'admin' || !!(u.coffee && u.coffee.active && u.coffee.plus)); }
+function plusMembers(exceptId) { return db.users.filter(function (x) { return x.id !== exceptId && x.role !== 'admin' && !x.suspended && (x.cp || (x.coffee && x.coffee.active && x.coffee.plus)); }); }
+function recTargets(u) {
+  var ids = metIds(u.id).slice(); if (coffeePlus(u)) plusMembers(u.id).forEach(function (x) { if (ids.indexOf(x.id) < 0) ids.push(x.id); });
+  return ids.map(function (id) { return byId(db.users, id); }).filter(Boolean);
+}
+function recPlusOk(u, to) { var t = byId(db.users, to); return coffeePlus(u) && !!t && plusMembers(u.id).some(function (x) { return x.id === to; }); }
+profPayload = (function (prev) { return function (u) { var o = prev(u); if (u.role !== 'admin' && coffeePlus(u)) o.cp = 1; return o; }; })(profPayload);
+acts['coffee-plus'] = function () {
+  var u = me(); u.coffee = { active: true, plus: true, since: Date.now(), renewsAt: Date.now() + 30 * 86400000, demo: true };
+  db.payments.push({ id: uid(), userId: u.id, kind: 'coffee-plus', amount: CPLUS, ts: Date.now(), demo: true }); save(); if (typeof profPublish === 'function') profPublish(); toast('Coffee Plus is on (demo, nothing was charged).'); refresh();
+};
+function plusRoute(u, n) {
+  var asked = db.references.filter(function (r) { return r.forId === u.id; }).map(function (r) { return r.giverId; }), pool = plusMembers(u.id).filter(function (x) { return asked.indexOf(x.id) < 0; }).slice(0, n), made = 0;
+  pool.forEach(function (x) { db.references.push({ id: uid(), forId: u.id, giverId: x.id, status: 'pending', note: '', ts: Date.now(), plus: true }); notify(x.id, u.name + ' asked you for a reference and a recommendation letter (Coffee Plus).', 'coffee'); made++; });
+  return made;
+}
+acts['plus-ask'] = function () {
+  var u = me(); if (!coffeePlus(u)) return; var n = plusRoute(u, 3);
+  if (n) { save(); toast('Sent to ' + n + ' Coffee Plus member' + (n === 1 ? '' : 's') + '. If nobody agrees within a week, it goes to more.'); } else toast('No other Plus members are available yet. We will send it as soon as some join.');
+  refresh();
+};
+/* weekly re-routing: if all my Plus requests are still unanswered after 7 days, ask 3 more */
+setInterval(function () {
+  var u = me(); if (!u || !coffeePlus(u)) return; var mine = db.references.filter(function (r) { return r.forId === u.id && r.plus; });
+  if (!mine.length || mine.some(function (r) { return r.status === 'accepted'; })) return;
+  if (mine.every(function (r) { return Date.now() - r.ts > 7 * 86400000; }) && plusRoute(u, 3)) save();
+}, 60000);
+refsTab = (function (prev) { return function (u) {
+  var box;
+  if (coffeePlus(u)) { var pool = plusMembers(u.id).length, got = db.references.filter(function (r) { return r.forId === u.id && r.status === 'accepted'; }).length;
+    box = '<div class="box strong"><h3>Coffee Plus ✨</h3><p class="sub">Ask the Plus pool (' + pool + ' other member' + (pool === 1 ? '' : 's') + ', employers included) for a reference and a recommendation letter. Requests go to three members at a time. If none agrees within a week, the site sends it to three more, until someone does. You have ' + got + ' reference' + (got === 1 ? '' : 's') + ' so far.</p><div class="acts"><button class="btn small" type="button" data-act="plus-ask">Ask the Plus pool</button></div></div>'; }
+  else box = '<div class="box strong"><h3>Coffee Plus — $' + CPLUS + ' a month</h3><ul class="bul"><li>Request a reference and a recommendation letter from the Plus pool, even from people you have not met.</li><li>Your request keeps going to more Plus members until someone agrees.</li><li>Employers can join too, and give references and letters.</li></ul><p class="notice">Nobody can be forced to write a letter, so “guaranteed” means we keep routing your request until a member accepts. Prototype checkout: no card is charged yet.</p><div class="acts"><button class="btn small" type="button" data-act="coffee-plus">Choose Coffee Plus ($' + CPLUS + '/month)</button></div></div>';
+  return box + prev(u);
+}; })(refsTab);
+viewCoffee = (function (prev) { return function () {
+  prev(); var u = me(), pg = document.querySelector('#app .page'); if (!pg || !u) return;
+  var sub = pg.querySelector('[data-act="coffee-sub"]'); if (sub && !coffeeOk(u)) { var bx = sub.closest('section'); if (bx) bx.insertAdjacentHTML('afterend', '<section class="box strong"><h2>Coffee Plus · $' + CPLUS + ' a month</h2><ul class="bul"><li>Everything in the $' + COFFEE_PRICE + ' plan</li><li>Guaranteed references and recommendation letters: your request keeps going to Plus members until one agrees</li><li>Employers can join and give references too</li></ul><div class="acts"><button class="btn" type="button" data-act="coffee-plus">Subscribe for $' + CPLUS + '/month</button></div><p class="notice">Prototype checkout: no card is charged yet.</p></section>'); }
+}; })(viewCoffee);
+/* ---- Video feedback: "Great video" or "Needs improvement" (one choice per person, shared through profiles) ---- */
+function fbTally(vid) {
+  var g = 0, n = 0; db.users.forEach(function (x) { var f = x.fb && x.fb[vid]; if (f === 'g') g++; else if (f === 'i') n++; });
+  return { g: g, i: n };
+}
+profPayload = (function (prev) { return function (u) { var o = prev(u); var ks = Object.keys(u.fb || {}); var nk = Object.keys(u.fbn || {}); if (nk.length) { o.fbn = {}; nk.slice(-100).forEach(function (k) { o.fbn[String(k).slice(0, 40)] = String(u.fbn[k]).slice(0, 400); }); } if (ks.length) { o.fb = {}; ks.slice(-300).forEach(function (k) { o.fb[String(k).slice(0, 40)] = u.fb[k] === 'i' ? 'i' : 'g'; }); } return o; }; })(profPayload);
+function _fbx() {}
+acts['vid-fb'] = function (el) {
+  var u = me(), id = el.dataset.id, v = el.dataset.v === 'i' ? 'i' : 'g', vid = byId(db.videos, id); if (!u || !vid) return;
+  u.fb = u.fb || {}; u.fbn = u.fbn || {};
+  if (v === 'i') { ui.fbOpen = id; refresh(); return; }
+  if (u.fb[id] === 'g') delete u.fb[id]; else { u.fb[id] = 'g'; delete u.fbn[id]; if (vid.ownerId && vid.ownerId !== u.id) notify(vid.ownerId, u.name + ' said your video “' + (vid.title || 'Video') + '” is great.', 'watch-' + id); }
+  ui.fbOpen = ''; save(); if (typeof profPublish === 'function') profPublish(); refresh();
+};
+acts['vid-fb-send'] = function (el) {
+  var u = me(), id = el.dataset.id, vid = byId(db.videos, id), t = (($('fb-t') || {}).value || '').trim(); if (!u || !vid) return;
+  if (t.length < 5) { toast('Please say what needs improvement (a few words at least).'); return; }
+  u.fb = u.fb || {}; u.fbn = u.fbn || {}; u.fb[id] = 'i'; u.fbn[id] = t.slice(0, 400); ui.fbOpen = '';
+  if (vid.ownerId && vid.ownerId !== u.id) notify(vid.ownerId, u.name + ' left feedback on “' + (vid.title || 'Video') + '”: ' + t.slice(0, 120), 'watch-' + id);
+  save(); if (typeof profPublish === 'function') profPublish(); toast('Thanks. The owner can read your note.'); refresh();
+};
+acts['vid-fb-cancel'] = function () { ui.fbOpen = ''; refresh(); };
+renderWatchMeta = (function (prev) { return function () {
+  prev(); var id = R.arg, v = byId(db.videos, id), u = me(), pg = document.getElementById('w-meta'); if (!v || !pg) return;
+  var t = fbTally(id), mine = u && u.fb && u.fb[id], own = u && v.ownerId === u.id, row = pg.querySelector('[data-act="like"]'); row = row && row.parentNode; if (!row) return;
+  var box = document.createElement('div'); box.className = 'acts'; box.id = 'vid-fb';
+  box.innerHTML = '<span class="sub">Feedback:</span><button class="btn ghost small" type="button" data-act="vid-fb" data-v="g" data-id="' + id + '" aria-pressed="' + (mine === 'g') + '"' + (u ? '' : ' disabled') + '>👍 Great video' + (t.g ? ' · ' + t.g : '') + '</button><button class="btn ghost small" type="button" data-act="vid-fb" data-v="i" data-id="' + id + '" aria-pressed="' + (mine === 'i') + '"' + (u ? '' : ' disabled') + '>🔧 Needs improvement' + (own && t.i ? ' · ' + t.i : '') + '</button>' + (u ? '' : '<span class="meta">Log in to give feedback.</span>');
+  if (!pg.querySelector('#vid-fb')) {
+    row.insertAdjacentElement('afterend', box);
+    var extra = '';
+    if (u && ui.fbOpen === id) extra += '<div class="box tint" id="fb-form"><div class="field"><label for="fb-t">What needs improvement? <span class="opt">(required)</span></label><textarea id="fb-t" rows="3" maxlength="400">' + esc((u.fbn || {})[id] || '') + '</textarea></div><div class="acts"><button class="btn small" type="button" data-act="vid-fb-send" data-id="' + id + '">✓ Send feedback</button><button class="btn ghost small" type="button" data-act="vid-fb-cancel">Cancel</button></div></div>';
+    if (own) { var notes = db.users.filter(function (x) { return x.fb && x.fb[id] === 'i' && x.fbn && x.fbn[id]; }); if (notes.length) extra += '<div class="box"><h3>What people say needs improvement</h3><ul class="bul">' + notes.map(function (x) { return '<li><b>' + esc(x.name) + ':</b> ' + esc(x.fbn[id]) + '</li>'; }).join('') + '</ul></div>'; }
+    if (extra) box.insertAdjacentHTML('afterend', extra);
+  }
+}; })(renderWatchMeta);
+/* ---- Interviewee rates a live job interview: Great, or Needs improvement (with a required comment) ---- */
+function irEligible(i) {
+  if (i.kind !== 'live' || i.rate || i.status === 'declined' || i.status === 'withdrawn' || !i.appt || i.appt.status !== 'confirmed' || !i.appt.chosen) return false;
+  var joined = i.joined && Object.keys(i.joined).length; return !!joined || Date.now() > i.appt.chosen + 30 * 60000;
+}
+acts['ir-pick'] = function (el) { ui.irv = ui.irv || {}; ui.irv[el.dataset.id] = el.dataset.v; refresh(); };
+acts['ir-save'] = function (el) {
+  var u = me(), i = byId(db.invites, el.dataset.id), v = (ui.irv || {})[el.dataset.id], t = (($('ir-t-' + el.dataset.id) || {}).value || '').trim(); if (!i || i.interviewerId !== u.id || !v) { toast('Choose Great or Needs improvement.'); return; }
+  if (v === 'i' && t.length < 5) { toast('Please say what needs to be improved.'); return; }
+  i.rate = { v: v, t: t.slice(0, 600), ts: Date.now() }; var j = byId(db.jobs, i.jobId);
+  notify(i.employerId, u.name + ' rated the live interview' + (j ? ' for “' + j.title + '”' : '') + ': ' + (v === 'g' ? 'great' : 'needs improvement') + '.', 'job-' + i.jobId); save(); toast('Thanks for the feedback.'); refresh();
+};
+viewInvites = (function (prev) { return function () {
+  prev(); var u = me(), pg = document.querySelector('#app .page'); if (!pg || !u) return;
+  var l = db.invites.filter(function (i) { return i.interviewerId === u.id && irEligible(i); }); if (!l.length) return;
+  var sec = document.createElement('section'); sec.className = 'box strong';
+  sec.innerHTML = '<h3>How was your live interview?</h3>' + l.map(function (i) {
+    var j = byId(db.jobs, i.jobId), v = (ui.irv || {})[i.id];
+    return '<div class="field"><b>' + esc(j ? jobLabel(j) : 'Interview') + '</b><div class="acts"><button class="btn ghost small" type="button" data-act="ir-pick" data-id="' + i.id + '" data-v="g" aria-pressed="' + (v === 'g') + '">👍 Great</button><button class="btn ghost small" type="button" data-act="ir-pick" data-id="' + i.id + '" data-v="i" aria-pressed="' + (v === 'i') + '">🔧 Needs improvement</button></div>' +
+      (v ? '<label for="ir-t-' + i.id + '">' + (v === 'i' ? 'What needs to be improved? <span class="opt">(required)</span>' : 'Anything to add? <span class="opt">(optional)</span>') + '</label><textarea id="ir-t-' + i.id + '" rows="3" maxlength="600"></textarea><div class="acts"><button class="btn small" type="button" data-act="ir-save" data-id="' + i.id + '">✓ Send</button></div>' : '') + '</div>'; }).join('');
+  var head = pg.querySelector('.page-head'); (head || pg.firstChild).insertAdjacentElement('afterend', sec);
+}; })(viewInvites);
+viewJobManage = (function (prev) { return function (j, u) {
+  prev(j, u); var pg = document.querySelector('#app .page'); if (!pg) return;
+  var r = db.invites.filter(function (i) { return i.jobId === j.id && i.rate; }); if (!r.length) return;
+  var s = document.createElement('section'); s.className = 'box';
+  s.innerHTML = '<h3>Interview feedback from candidates</h3><ul class="bul">' + r.map(function (i) { return '<li><b>' + esc(userName(i.interviewerId)) + ':</b> ' + (i.rate.v === 'g' ? '👍 Great' : '🔧 Needs improvement') + (i.rate.t ? ' — ' + esc(i.rate.t) : '') + '</li>'; }).join('') + '</ul>';
+  pg.insertBefore(s, pg.children[3] || null);
+}; })(viewJobManage);
 
 sbBoot(); adsLoad(); modLoad(); profLoad().then(jobsLoad).then(function () { profPublish(false); jobsPublish(); }).then(recSync).then(vidSync).then(socSync);
 renderHeader();
