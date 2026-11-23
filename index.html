@@ -501,6 +501,27 @@ label, legend, .label { font-size: 0.9rem; }
 .rc-box b { font-weight: 600; }
 .opt { font-weight: 400; color: var(--muted); }
 .bul { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 4px; }
+
+.pane { position: fixed; top: 0; right: 0; bottom: 0; width: min(460px, 100%); background: #fff; border-left: 1px solid var(--line); box-shadow: -12px 0 32px rgba(40,20,90,.14); z-index: 60; display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; outline: none; }
+.pane-head { display: flex; align-items: center; gap: 10px; }
+.pane-body { overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 12px; padding-bottom: 20px; }
+.pane .seg { flex-wrap: wrap; }
+.pane-video { width: 100%; border-radius: 10px; background: #000; max-height: 220px; }
+.linklike { background: none; border: 0; padding: 0; font: inherit; font-weight: 650; color: var(--ink); text-decoration: underline; text-decoration-color: #cdb8f2; text-underline-offset: 3px; cursor: pointer; text-align: left; }
+.linklike:hover { color: var(--purple); }
+.score { text-align: right; min-width: 56px; }
+.score b { font-size: 1.25rem; color: var(--purple-deep); display: block; }
+.jstats { margin: 6px 0; }
+.cheer { position: fixed; inset: 0; z-index: 200; background: rgba(60,20,120,.35); display: grid; place-items: center; overflow: hidden; }
+.cheer-card { background: #fff; border-radius: 22px; padding: 28px 30px; max-width: 360px; text-align: center; box-shadow: 0 20px 60px rgba(60,20,120,.35); animation: pop .5s cubic-bezier(.2,1.4,.4,1); }
+.cheer-card h2 { margin: 6px 0; }
+.cheer-em { font-size: 3.2rem; animation: bob 1.2s ease-in-out infinite; }
+.cf { position: absolute; top: -40px; font-size: 1.8rem; animation: fall 4s linear infinite; }
+@keyframes pop { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes bob { 50% { transform: translateY(-8px) rotate(-6deg); } }
+@keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .cf, .cheer-em, .cheer-card { animation: none; } }
+@media (min-width: 1100px) { .page.has-pane { margin-right: min(460px, 34vw); } }
 </style>
 
 <div class="shell">
@@ -674,7 +695,7 @@ label, legend, .label { font-size: 0.9rem; }
   <div id="ads" class="ads" aria-label="Advertisements"></div>
   <footer>
     <span>Interviewed. Video interviews for interviewees and employers.</span>
-    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.27.0</span> · <a href="#ranking">Ranking</a> · <a href="#terms">Terms</a> · <a href="#privacy">Privacy</a> · <a href="#sync">Sync check</a> · <a href="#admin-setup">Administrator</a></span>
+    <span>&copy; 2026 Mia. All rights reserved. · <span id="site-version">Version 1.28.0</span> · <a href="#ranking">Ranking</a> · <a href="#terms">Terms</a> · <a href="#privacy">Privacy</a> · <a href="#sync">Sync check</a> · <a href="#admin-setup">Administrator</a></span>
   </footer>
 </div>
 
@@ -2094,7 +2115,8 @@ function sRowHtml(s) {
   return '<div class="srow box"><div class="acts"><select class="s-type" aria-label="Answer type" style="width:auto"><option value="text"' + (s.type === 'text' ? ' selected' : '') + '>Write-in answer</option><option value="choice"' + (s.type === 'choice' ? ' selected' : '') + '>Multiple choice</option></select>' +
     '<button type="button" class="btn ghost small" data-act="s-del">Remove</button></div>' +
     '<input type="text" class="s-q" value="' + esc(s.q) + '" maxlength="300" placeholder="Screening question" aria-label="Screening question">' +
-    '<textarea class="s-opts" rows="3" placeholder="One choice per line" aria-label="Choices"' + (s.type === 'choice' ? '' : ' hidden') + '>' + esc((s.options || []).join('\n')) + '</textarea></div>';
+    '<textarea class="s-opts" rows="3" placeholder="One choice per line" aria-label="Choices"' + (s.type === 'choice' ? '' : ' hidden') + '>' + esc((s.options || []).join('\n')) + '</textarea>' +
+    '<input type="text" class="s-ok" value="' + esc(s.ok || '') + '" maxlength="280" placeholder="Good answer (optional): for choices type the right choice(s) separated by | ; for write-in type key words separated by commas" aria-label="Good answer"></div>';
 }
 function screenEditor(list) {
   return '<div class="sed">' + (list || []).map(sRowHtml).join('') + '<button type="button" class="btn ghost small" data-act="s-add">Add a screening question</button></div>';
@@ -2108,7 +2130,7 @@ function readScreening(f, old) {
     var q = r.querySelector('.s-q').value.trim(); if (!q) return;
     var type = r.querySelector('.s-type').value, opts2 = type === 'choice' ? r.querySelector('.s-opts').value.split('\n').map(function (x) { return x.trim(); }).filter(Boolean) : [];
     if (type === 'choice' && opts2.length < 2) opts2 = ['Yes', 'No'];
-    out.push({ id: uid(), type: type, q: q, options: opts2 });
+    out.push({ id: uid(), type: type, q: q, options: opts2, ok: (r.querySelector('.s-ok') || { value: '' }).value.trim().slice(0, 280) });
   });
   return out;
 }
@@ -2766,7 +2788,7 @@ acts.hire = function (el) {
   var j = byId(db.jobs, el.dataset.job), u = me(); if (!j || j.employerId !== u.id) return;
   j.hired = j.hired || []; if (j.hired.indexOf(el.dataset.id) < 0) j.hired.push(el.dataset.id);
   j.crossed = (j.crossed || []).filter(function (x) { return x !== el.dataset.id; });
-  notify(el.dataset.id, 'Good news: ' + companyOf(u) + ' chose to hire you for “' + j.title + '”.', 'job-' + j.id);
+  notify(el.dataset.id, '🎉🥳 Congratulations! ' + companyOf(u) + ' chose YOU for “' + j.title + '”! All your hard work paid off. 💜', 'job-' + j.id);
   save(); toast('Marked as hired. They were notified.'); refresh();
 };
 acts.unhire = function (el) { var j = byId(db.jobs, el.dataset.job); if (!j || j.employerId !== me().id) return; j.hired = (j.hired || []).filter(function (x) { return x !== el.dataset.id; }); save(); refresh(); };
@@ -3640,7 +3662,7 @@ function sbAuthed(path, method, body, extra) {
 }
 function jobPayload(j) {
   var o = { status: j.status === 'closed' ? 'closed' : 'open', createdAt: j.createdAt || 0 };
-  ['title', 'type', 'mode', 'location', 'description', 'currency', 'salaryMin', 'salaryMax', 'salaryPeriod', 'responsibilities', 'qualifications', 'skills', 'software', 'questions', 'limits', 'screening', 'hireStatus', 'hiredId'].forEach(function (k) { if (j[k] !== undefined) o[k] = j[k]; });
+  ['title', 'type', 'mode', 'location', 'description', 'currency', 'salaryMin', 'salaryMax', 'salaryPeriod', 'responsibilities', 'qualifications', 'skills', 'software', 'questions', 'limits', 'screening', 'hireStatus', 'hiredId', 'hired'].forEach(function (k) { if (j[k] !== undefined) o[k] = j[k]; });
   return o;
 }
 function jobsPublish() {
@@ -3670,7 +3692,7 @@ function jobClean(d) {
   var num = function (v) { return typeof v === 'number' && isFinite(v) ? v : ''; };
   return { status: d.status === 'closed' ? 'closed' : 'open', createdAt: Number(d.createdAt) || 0, title: s(d.title, 120) || 'Job', type: s(d.type, 40), mode: s(d.mode, 40), location: s(d.location, 100), description: s(d.description, 6000),
     currency: s(d.currency, 8), salaryMin: num(d.salaryMin), salaryMax: num(d.salaryMax), salaryPeriod: s(d.salaryPeriod, 20), responsibilities: arr(d.responsibilities, 300, 40), qualifications: arr(d.qualifications, 300, 40),
-    skills: arr(d.skills, 80, 40), software: arr(d.software, 80, 40), questions: arr(d.questions, 400, 30), limits: Array.isArray(d.limits) ? d.limits.slice(0, 30).map(function (x) { return Number(x) || 0; }) : [], screening: sc, hireStatus: ['site', 'other', 'searching'].indexOf(d.hireStatus) >= 0 ? d.hireStatus : '', hiredId: s(d.hiredId, 40) };
+    skills: arr(d.skills, 80, 40), software: arr(d.software, 80, 40), questions: arr(d.questions, 400, 30), limits: Array.isArray(d.limits) ? d.limits.slice(0, 30).map(function (x) { return Number(x) || 0; }) : [], screening: sc, hireStatus: ['site', 'other', 'searching'].indexOf(d.hireStatus) >= 0 ? d.hireStatus : '', hiredId: s(d.hiredId, 40), hired: Array.isArray(d.hired) ? d.hired.slice(0, 50).map(function (x) { return s(x, 40); }).filter(Boolean) : [] };
 }
 function jobsLoad() {
   return sbCall('/rest/v1/jobs?select=id,employer_id,data&limit=1000', 'GET').then(function (r) {
@@ -5662,17 +5684,10 @@ acts['cand-for-job'] = function (el) { ui.cj = el.dataset.id; };
 function tidyJobForm() {
   var f = document.querySelector('form[data-form="job"]'); if (!f || f.dataset.tidy) return; f.dataset.tidy = '1';
   var d = f.querySelector('#j-desc'); if (d) { d.maxLength = 6000; d.rows = 9; var lb = f.querySelector('label[for="j-desc"]'); if (lb) lb.innerHTML = 'Job description <span class="opt">(paste the whole post; no need to split it up)</span>'; }
-  var det = document.createElement('details'); det.className = 'opt-box';
-  var has = ['j-resp', 'j-qual', 'j-skills', 'j-soft'].some(function (id) { var e = f.querySelector('#' + id); return e && e.value.trim(); });
-  if (has) det.open = true;
-  det.innerHTML = '<summary>Optional: list responsibilities, qualifications, skills and software separately</summary><div class="stack"></div>';
-  var box = det.querySelector('.stack'); box.style.cssText = 'display:flex;flex-direction:column;gap:12px';
   var moved = [];
   ['j-resp', 'j-qual'].forEach(function (id) { var e = f.querySelector('#' + id); e = e && e.closest('.field'); if (e) moved.push(e); });
   var sk = f.querySelector('#j-skills'); sk = sk && sk.closest('.row2'); if (sk) moved.push(sk);
-  if (!moved.length) return;
-  f.insertBefore(det, moved[0]); moved.forEach(function (e) { box.appendChild(e); });
-  box.insertAdjacentHTML('afterbegin', '<p class="sub">Matching works from the full description, so you can skip this.</p>');
+  if (moved.length) { var hid = document.createElement('div'); hid.hidden = true; f.insertBefore(hid, moved[0]); moved.forEach(function (e) { hid.appendChild(e); }); }
   f.querySelectorAll('.qed .qrow button').forEach(function (b) { if (/remove|delete/i.test(b.textContent)) { b.setAttribute('aria-label', 'Remove question'); b.title = 'Remove'; b.textContent = '✕'; b.classList.add('ibtn', 'del'); } });
   var add = f.querySelector('[data-act="q-add"]'); if (add) { add.setAttribute('aria-label', 'Add a question'); add.title = 'Add a question'; add.innerHTML = '＋ <span>Add question</span>'; add.classList.add('add'); }
   var sub = f.querySelector('button[type="submit"]'); if (sub && !/^✓/.test(sub.textContent)) sub.textContent = '✓ ' + sub.textContent;
@@ -5864,7 +5879,7 @@ function viewGate() {
   show(h + '</div>');
 }
 function closeJobWith(j, hs, hid) {
-  j.hireStatus = hs; j.hiredId = hid || ''; j.status = 'closed'; j.hireAt = Date.now();
+  j.hireStatus = hs; j.hiredId = hid || ''; if (hid) { j.hired = j.hired || []; if (j.hired.indexOf(hid) < 0) j.hired.push(hid); } j.status = 'closed'; j.hireAt = Date.now();
   if (hs === 'site' || hs === 'other') db.invites.filter(function (i) { return i.jobId === j.id && i.interviewerId !== hid; }).forEach(function (i) { notify(i.interviewerId, '“' + j.title + '” was filled. Refer one other interviewee to keep interviewing for jobs.', 'gate'); });
 }
 acts['gate-save'] = function () {
@@ -6024,6 +6039,122 @@ viewJobManage = (function (prev) { return function (j, u) {
   s.innerHTML = '<h3>Interview feedback from candidates</h3><ul class="bul">' + r.map(function (i) { return '<li><b>' + esc(userName(i.interviewerId)) + ':</b> ' + (i.rate.v === 'g' ? '👍 Great' : '🔧 Needs improvement') + (i.rate.t ? ' — ' + esc(i.rate.t) : '') + '</li>'; }).join('') + '</ul>';
   pg.insertBefore(s, pg.children[3] || null);
 }; })(viewJobManage);
+/* ---- Manage a job: two tabs (Interviewees, Edit job post), ranked list with match %, and a side panel ---- */
+function screenScore(scr, j) {
+  if (!scr || scr.status !== 'submitted') return null; var tot = 0, n = 0, rows = [];
+  (scr.questions || []).forEach(function (q, i) {
+    var a = String((scr.answers || [])[i] || ''), ok = String(q.ok || '').trim(); if (!ok) { rows.push({ q: q, a: a, s: null }); return; }
+    var sc;
+    if (q.type === 'choice') sc = ok.split('|').map(function (x) { return x.trim().toLowerCase(); }).indexOf(a.trim().toLowerCase()) >= 0 ? 1 : 0;
+    else { var kw = ok.split(',').map(function (x) { return x.trim().toLowerCase(); }).filter(Boolean), t = a.toLowerCase(); sc = kw.length ? kw.filter(function (k) { return t.indexOf(k) >= 0; }).length / kw.length : 0; }
+    tot += sc; n++; rows.push({ q: q, a: a, s: sc });
+  });
+  return n ? { pct: Math.round(100 * tot / n), rows: rows, n: n } : { pct: null, rows: rows, n: 0 };
+}
+function candScore(p, j) {
+  var m = matchOf(p, j).pct, scr = db.screenings.filter(function (s) { return s.jobId === j.id && s.interviewerId === p.id; })[0], sc = screenScore(scr, j);
+  var total = sc && sc.pct !== null ? Math.round((m + sc.pct) / 2) : m;
+  return { m: m, s: sc && sc.pct, total: total, scr: scr };
+}
+function jobPeople(j) {
+  var seen = {}, out = [];
+  function add(id) { var p = byId(db.users, id); if (p && !seen[id]) { seen[id] = 1; out.push(p); } }
+  db.interests.forEach(function (i) { if (i.jobId === j.id) add(i.interviewerId); });
+  db.invites.forEach(function (i) { if (i.jobId === j.id) add(i.interviewerId); });
+  db.screenings.forEach(function (s) { if (s.jobId === j.id) add(s.interviewerId); });
+  return out;
+}
+function jobStats(j) {
+  var inv = db.invites.filter(function (i) { return i.jobId === j.id; }), scr = db.screenings.filter(function (s) { return s.jobId === j.id; });
+  var rec = 0; inv.forEach(function (i) { rec += Object.keys(i.answers || {}).length; });
+  return { interested: db.interests.filter(function (i) { return i.jobId === j.id; }).length, invited: inv.length, screens: scr.length, done: scr.filter(function (s) { return s.status === 'submitted'; }).length, rec: rec, hired: (j.hired || []).length, rated: inv.filter(function (i) { return i.rate; }).length };
+}
+function jobStatsHtml(j) {
+  var s = jobStats(j); return '<div class="chips jstats">' + chip('👀 ' + s.interested + ' interested', 'muted') + chip('✉️ ' + s.invited + ' invited', 'muted') + chip('✅ ' + s.done + '/' + s.screens + ' screenings done', 'muted') + chip('🎥 ' + s.rec + ' recorded answers', 'muted') + (s.hired ? chip('🎉 ' + s.hired + ' hired', 'solid') : '') + '</div>';
+}
+/* stats next to "Manage" in the employer's job list */
+viewJobs = (function (prev) { return function () {
+  prev(); var u = me(); if (!u || u.role !== 'employer') return;
+  document.querySelectorAll('#app a[href^="#job-"]').forEach(function (a) { if (a.dataset.st || !/manage/i.test(a.textContent)) return; var j = byId(db.jobs, a.getAttribute('href').slice(5)); if (!j || j.employerId !== u.id) return; a.dataset.st = 1; var host = a.closest('li') || a.parentNode; var d = document.createElement('div'); d.innerHTML = jobStatsHtml(j); (host.querySelector('.grow') || host).appendChild(d.firstChild); });
+}; })(viewJobs);
+
+acts['mt-tab'] = function (el) { ui.mt = el.dataset.v; ui.pane = ''; refresh(); };
+acts['pane-open'] = function (el) { ui.pane = el.dataset.id; ui.pt = 'profile'; refresh(); setTimeout(function () { var a = document.getElementById('pane'); if (a) a.focus(); }, 0); };
+acts['pane-tab'] = function (el) { ui.pt = el.dataset.v; refresh(); };
+acts['pane-close'] = function () { ui.pane = ''; refresh(); };
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && ui.pane && R.name === 'job') acts['pane-close'](); });
+
+function paneHtml(j, p) {
+  var t = ui.pt || 'profile', c = candScore(p, j), invs = db.invites.filter(function (i) { return i.jobId === j.id && i.interviewerId === p.id; }).sort(function (a, b) { return a.round - b.round; });
+  var tabs = [['profile', 'Profile'], ['videos', 'Video answers'], ['screening', 'Screening'], ['manage', 'Manage']].map(function (x) { return '<button type="button" data-act="pane-tab" data-v="' + x[0] + '" aria-pressed="' + (t === x[0]) + '">' + x[1] + '</button>'; }).join('');
+  var body = '';
+  if (t === 'profile') {
+    var pr = profileFor(p, j.id), it = interestOf(j.id, p.id), hits = matchOf(p, j).hits;
+    body = '<p class="sub">' + (it ? 'Applied with the profile “' + esc(pr.name || 'Profile') + '”.' : 'Has not applied. Showing their main profile.') + '</p>' + (pr.headline ? '<p><b>' + esc(pr.headline) + '</b></p>' : '') +
+      (hits.length ? '<div class="chips">' + hits.slice(0, 12).map(function (h) { return chip('✓ ' + h, 'solid'); }).join('') + '</div>' : '') + profileBlocks(pr, false) +
+      (p.resumeText ? '<details class="box"><summary><b>Pasted resume</b></summary><p class="pre">' + esc(p.resumeText) + '</p></details>' : '') + '<p><a class="btn ghost small" href="#person-' + p.id + '">Open full page</a></p>';
+  } else if (t === 'videos') {
+    var rows = '';
+    invs.forEach(function (i) {
+      if (i.kind === 'live') { rows += '<div class="box"><b>Round ' + i.round + ' · live interview</b><p class="sub">' + (i.rate ? 'Their rating: ' + (i.rate.v === 'g' ? '👍 Great' : '🔧 Needs improvement') + (i.rate.t ? ' — ' + esc(i.rate.t) : '') : 'No rating yet.') + '</p></div>'; return; }
+      rows += '<div class="box"><b>Round ' + i.round + '</b>' + (i.questions || []).map(function (q, k) { var vid = i.answers && i.answers[k];
+        return '<div class="field"><span class="label">' + (k + 1) + '. ' + esc(q) + '</span>' + (vid ? '<div class="vstage"><video class="pane-video" data-vid="' + vid + '" controls playsinline></video></div><a class="btn ghost small" href="#watch-' + vid + '">Open</a>' : '<span class="meta">Not recorded yet</span>') + '</div>'; }).join('') + '</div>';
+    });
+    body = rows || '<div class="empty"><h3>No recorded answers</h3><p>Invite them to a round and their video answers appear here.</p></div>';
+  } else if (t === 'screening') {
+    var scr = c.scr, sc = screenScore(scr, j);
+    if (!scr) body = '<div class="empty"><h3>No screening sent</h3><p>Use the Manage tab to send the screening questions.</p></div>';
+    else if (scr.status === 'sent') body = '<div class="empty"><h3>Waiting for their answers</h3></div>';
+    else body = (sc && sc.pct !== null ? '<p><b>' + sc.pct + '% of the good answers.</b></p>' : '') + '<ol class="list">' + sc.rows.map(function (r) { return '<li class="row"><div class="grow"><span class="name">' + esc(r.q.q) + '</span><span class="meta">' + esc(r.a || 'No answer') + '</span>' + (r.s === null ? '' : '<div class="chips">' + chip(r.s >= 1 ? '✓ Good answer' : r.s > 0 ? '≈ Partly' : '✕ Not the answer wanted', r.s >= 1 ? 'solid' : 'muted') + '</div>') + '</div></li>'; }).join('') + '</ol>' +
+      '<div class="acts"><button class="btn small" type="button" data-act="scr-pass" data-id="' + scr.id + '">Passed</button><button class="btn ghost small" type="button" data-act="scr-fail" data-id="' + scr.id + '">Not passed</button></div>' + (scr.result ? '<p class="sub">Marked: ' + (scr.result === 'pass' ? 'passed' : 'not passed') + '</p>' : '');
+  } else body = '<ul class="list">' + candidateRow(p, j) + '</ul>';
+  return '<aside class="pane" id="pane" tabindex="-1" aria-label="' + esc(p.name) + '"><div class="pane-head">' + avatar(p) + '<div class="grow"><b>' + esc(p.name) + '</b><span class="meta">' + c.total + '% overall match' + (c.s !== null && c.s !== undefined ? ' · screening ' + c.s + '%' : '') + '</span></div><button class="btn ghost small ibtn" type="button" data-act="pane-close" aria-label="Close panel">✕</button></div><div class="seg" role="group" aria-label="Candidate details">' + tabs + '</div><div class="pane-body">' + body + '</div></aside>';
+}
+
+function manageJob(j, u) {
+  var tab = ui.mt === 'edit' ? 'edit' : 'people', ppl = jobPeople(j).map(function (p) { return { p: p, c: candScore(p, j) }; });
+  var shown = ppl.filter(function (x) { return (j.crossed || []).indexOf(x.p.id) < 0; }).sort(function (a, b) { return b.c.total - a.c.total || a.p.name.localeCompare(b.p.name); }), crossed = ppl.filter(function (x) { return (j.crossed || []).indexOf(x.p.id) >= 0; });
+  var d = (typeof empDebts === 'function') ? empDebts(u).filter(function (x) { return x.j.id === j.id; })[0] : null, c = interviewedIds(j);
+  var all = db.users.filter(function (x) { return x.role === 'interviewer' && !x.suspended && !ppl.some(function (y) { return y.p.id === x.id; }); });
+  var row = function (x) { var st = (j.hired || []).indexOf(x.p.id) >= 0 ? chip('🎉 Hired', 'solid') : '', scr = x.c.scr;
+    return '<li class="row cand-row">' + avatar(x.p) + '<div class="grow"><button type="button" class="linklike name" data-act="pane-open" data-id="' + x.p.id + '">' + esc(x.p.name) + '</button><div class="chips">' + (isInterested(j.id, x.p.id) ? chip('Interested', 'muted') : '') + st + (scr ? chip(scr.status === 'submitted' ? 'Screening done' : 'Screening sent', 'muted') : '') + (Object.keys((db.invites.filter(function (i) { return i.jobId === j.id && i.interviewerId === x.p.id; })[0] || {}).answers || {}).length ? chip('🎥 answers in', 'muted') : '') + '</div></div><div class="score" title="Profile and screening match"><b>' + x.c.total + '%</b><span class="meta">match</span></div></li>'; };
+  var people = '<section class="sec"><h2>Interviewees (' + shown.length + ')</h2><p class="sub">Highest match first. Match combines profile, resume and screening answers. Select a name to see everything about them.</p>' + (shown.length ? '<ul class="list">' + shown.map(row).join('') + '</ul>' : '<div class="empty"><h3>No one yet</h3><p>People appear here when they tap “I’m interested”, or when you invite them.</p></div>') + '</section>' +
+    (crossed.length ? '<section class="sec"><h2>Crossed off (' + crossed.length + ')</h2><ul class="list">' + crossed.map(row).join('') + '</ul></section>' : '') +
+    '<section class="box tint"><h3>Invite or screen another interviewee</h3>' + (all.length ? '<div class="acts"><select id="pick-int" aria-label="Interviewee" style="width:auto;max-width:100%"><option value="">Choose an interviewee</option>' + all.map(function (p) { return '<option value="' + p.id + '">' + esc(p.name) + '</option>'; }).join('') + '</select><button class="btn small" type="button" data-act="scr-pick">Open</button></div>' : '<p class="sub">Everyone on Interviewed is already listed for this job.</p>') + '</section>';
+  var refs = db.referrals.filter(function (r) { return r.type === 'referral' && r.jobId === j.id; }).sort(function (a, b) { return b.ts - a.ts; });
+  if (refs.length) people += '<section class="sec"><h2>Referrals (' + refs.length + ')</h2><ul class="list">' + refs.map(refRow).join('') + '</ul></section>';
+  var closing = ui.closing === j.id ? '<section class="box strong"><h3>Before you close this job</h3><div class="field"><label for="hs-' + j.id + '">Did you hire someone?</label>' + hireSelect(j.id, '') + (c.length ? '<select id="hw-' + j.id + '" aria-label="Who was hired"><option value="">If hired here, who?</option>' + candOpts(c) + '</select>' : '') + '</div><div class="acts"><button class="btn small" type="button" data-act="close-ok" data-id="' + j.id + '">✓ Close job</button><button class="btn ghost small" type="button" data-act="close-cancel">Cancel</button></div></section>' : '';
+  var pane = ui.pane && byId(db.users, ui.pane) && tab === 'people' ? paneHtml(j, byId(db.users, ui.pane)) : '';
+  show('<div class="page' + (pane ? ' has-pane' : '') + '"><a class="back" href="#jobs">Back to jobs</a>' +
+    '<div class="page-head"><div><span class="eyebrow">' + esc(jobMeta(j)) + '</span><h1>' + esc(j.title) + '</h1></div><div class="acts">' + chip(j.status === 'open' ? 'Open' : 'Closed', j.status === 'open' ? 'solid' : 'muted') +
+    '<button class="btn ghost small" type="button" data-act="job-toggle" data-id="' + j.id + '">' + (j.status === 'open' ? 'Close job' : 'Reopen job') + '</button><button class="btn danger small" type="button" data-act="job-delete" data-id="' + j.id + '">Delete job</button></div></div>' + closing +
+    (d ? '<div class="notice">You still need to refer ' + d.left + ' of the people you interviewed to another job before you can post a new one. <a href="#job-new">Do it now</a></div>' : '') + jobStatsHtml(j) +
+    '<div class="seg" role="group" aria-label="Job sections"><button type="button" data-act="mt-tab" data-v="people" aria-pressed="' + (tab === 'people') + '">Interviewees</button><button type="button" data-act="mt-tab" data-v="edit" aria-pressed="' + (tab === 'edit') + '">Edit job post</button></div>' +
+    (tab === 'people' ? people : sponsorPanel(j, u) + '<section class="box"><h3>Job details, questions and screening</h3>' + jobForm(j) + '</section>') + pane + '</div>', function () {
+      if (typeof tidyJobForm === 'function') tidyJobForm();
+      document.querySelectorAll('video.pane-video').forEach(function (v) { try { attachVideo(v, v.dataset.vid); } catch (e) { } });
+    });
+}
+
+viewJobManage = manageJob; /* replaces every earlier wrapper on purpose */
+
+/* the Jitsi note: the first person to open a room on the public server may need to sign in */
+meetBox = (function (prev) { return function (i) {
+  var h = prev(i); if (!i.appt || i.appt.status !== 'confirmed') return h;
+  return h + '<p class="notice">Does it say “the meeting has not started because no moderator is present”? Jitsi’s free public server now asks the <b>first person in the room</b> (the host) to sign in once with Google, GitHub or Facebook. Everyone else joins without an account. If you would rather not, use the <a href="#" data-act="meet-alt" data-id="' + i.id + '">backup room</a> (a community-run Jitsi server that needs no sign-in).</p>';
+}; })(meetBox);
+acts['meet-alt'] = function (el) { window.open('https://meet.ffmuc.net/Interviewed-' + el.dataset.id, '_blank', 'noopener'); };
+
+/* celebration when you are hired (works across devices, shown once) */
+setInterval(function () {
+  var u = me(); if (!u || u.role !== 'interviewer') return; u.hireSeen = u.hireSeen || [];
+  var j = db.jobs.filter(function (x) { return (x.hired || []).indexOf(u.id) >= 0 && u.hireSeen.indexOf(x.id) < 0; })[0]; if (!j) return;
+  u.hireSeen.push(j.id); var emp = byId(db.users, j.employerId) || {};
+  notify(u.id, '🎉🥳 Congratulations! ' + companyOf(emp) + ' chose YOU for “' + j.title + '”! All your hard work paid off. 💜', 'job-' + j.id); save();
+  var d = document.createElement('div'); d.className = 'cheer'; d.setAttribute('role', 'status');
+  d.innerHTML = '<div class="cheer-card"><div class="cheer-em">🎉</div><h2>You got the job!</h2><p>' + esc(companyOf(emp)) + ' chose you for <b>' + esc(j.title) + '</b>. Congratulations! 💜</p><button class="btn" type="button">Yay!</button></div>' + ['🎉', '✨', '💜', '🌸', '⭐', '🎊'].map(function (e, k) { return '<span class="cf" style="left:' + (8 + k * 16) + '%;animation-delay:' + (k * 0.25) + 's">' + e + '</span>'; }).join('');
+  d.querySelector('button').onclick = function () { d.remove(); }; document.body.appendChild(d); setTimeout(function () { d.remove(); }, 15000);
+}, 5000);
 
 sbBoot(); adsLoad(); modLoad(); profLoad().then(jobsLoad).then(function () { profPublish(false); jobsPublish(); }).then(recSync).then(vidSync).then(socSync);
 renderHeader();
